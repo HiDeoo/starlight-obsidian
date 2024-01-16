@@ -1,8 +1,9 @@
 import type { Root } from 'mdast'
 import { remark } from 'remark'
 import remarkFrontmatter from 'remark-frontmatter'
+import remarkGfm from 'remark-gfm'
 
-const parser = remark().use(remarkFrontmatter).use(remarkEnsureFrontmatter)
+const parser = remark().use(remarkGfm).use(remarkFrontmatter).use(remarkEnsureFrontmatter)
 
 export function transformMarkdown(markdown: string) {
   return parser.process(markdown)
