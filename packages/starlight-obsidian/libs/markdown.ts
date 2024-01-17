@@ -21,6 +21,7 @@ function remarkEnsureFrontmatter() {
 
       hasFrontmatter = true
       node.value = getFrontmatterNodeValue()
+      break
     }
 
     if (!hasFrontmatter) {
