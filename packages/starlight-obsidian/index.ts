@@ -1,23 +1,40 @@
 import type { StarlightPlugin } from '@astrojs/starlight/types'
+import { z } from 'astro/zod'
 
 import { getObsidianPaths, getVault } from './libs/obsidian'
+import { throwUserError } from './libs/plugin'
 import { addObsidianFiles } from './libs/starlight'
 
-export default function starlightObsidianPlugin(options: StarlightObsidianOptions): StarlightPlugin {
+const starlightObsidianConfigSchema = z.object({
+  // TODO(HiDeoo) doc with @default
+  output: z.string().default('notes'),
+  // TODO(HiDeoo) Add doc (absolute or relative path)
+  // TODO(HiDeoo) vaultDir? Something else
+  vault: z.string(),
+})
+
+export default function starlightObsidianPlugin(userConfig: StarlightObsidianUserConfig): StarlightPlugin {
+  const parsedConfig = starlightObsidianConfigSchema.safeParse(userConfig)
+
+  if (!parsedConfig.success) {
+    throwUserError(
+      `The provided plugin configuration is invalid.\n${parsedConfig.error.issues.map((issue) => issue.message).join('\n')}`,
+    )
+  }
+
+  const config = parsedConfig.data
+
   return {
     name: 'starlight-obsidian-plugin',
     hooks: {
       async setup() {
-        const vault = await getVault(options)
+        const vault = await getVault(config)
         const obsidianPaths = await getObsidianPaths(vault)
-        await addObsidianFiles(vault, obsidianPaths)
+        await addObsidianFiles(config, vault, obsidianPaths)
       },
     },
   }
 }
 
-export interface StarlightObsidianOptions {
-  // TODO(HiDeoo) Add doc (absolute or relative path)
-  // TODO(HiDeoo) vaultDir? Something else
-  vault: string
-}
+export type StarlightObsidianUserConfig = z.input<typeof starlightObsidianConfigSchema>
+export type StarlightObsidianConfig = z.output<typeof starlightObsidianConfigSchema>

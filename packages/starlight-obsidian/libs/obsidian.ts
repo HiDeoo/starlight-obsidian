@@ -2,13 +2,13 @@ import path from 'node:path'
 
 import { globby } from 'globby'
 
-import type { StarlightObsidianOptions } from '..'
+import type { StarlightObsidianConfig } from '..'
 
 import { isDirectory, isFile } from './fs'
 import { throwUserError } from './plugin'
 
-export async function getVault(options: StarlightObsidianOptions): Promise<Vault> {
-  const vaultPath = path.resolve(options.vault)
+export async function getVault(config: StarlightObsidianConfig): Promise<Vault> {
+  const vaultPath = path.resolve(config.vault)
 
   if (!(await isDirectory(vaultPath))) {
     throwUserError('The provided vault path is not a directory.')
