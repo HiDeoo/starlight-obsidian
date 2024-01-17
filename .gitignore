@@ -20,6 +20,7 @@ build
 coverage
 dist
 dist-ssr
+example/src/content/docs/notes
 fixtures/**/workspace.json
 lerna-debug.log*
 logs
