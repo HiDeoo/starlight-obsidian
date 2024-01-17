@@ -5,8 +5,22 @@ description: // TODO(HiDeoo)
 
 ## Basic formatting syntax
 
-| Name                                                                                                                               | Supported |
-| ---------------------------------------------------------------------------------------------------------------------------------- | :-------: |
-| [Paragraphs](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Paragraphs)                                   |    ✅     |
-| [Headings](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Headings)                                       |    ✅     |
-| [Bold, italics, highlights](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Bold,%20italics,%20highlights) |    ❌     |
+| Name                                                                                                                                             | Supported |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | :-------: |
+| [Paragraphs](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Paragraphs)                                                 |    ✅     |
+| [Headings](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Headings)                                                     |    ✅     |
+| [Bold, italics, highlights](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Bold,%20italics,%20highlights)               |    ✅     |
+| [Internal links](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Internal%20links)                                       |    ❌     |
+| [External links](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#External%20links)                                       |    ✅     |
+| [External links with blank spaces](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Escape%20blank%20spaces%20in%20links) |    ❌     |
+| [External images](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#External%20images)                                     |    ✅     |
+| [External images with dimensions](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#External%20images)                     |    ❌     |
+| [Quotes](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Quotes)                                                         |    ✅     |
+| [Lists](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Lists)                                                           |    ✅     |
+| [Task lists](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Task%20lists)                                               |    ✅     |
+| [Nesting lists](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Nesting%20lists)                                         |    ✅     |
+| [Horizontal rule](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Horizontal%20rule)                                     |    ✅     |
+| [Inline code](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Inline%20code)                                             |    ✅     |
+| [Code blocks](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Code%20blocks)                                             |    ✅     |
+| [Footnotes](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Footnotes)                                                   |    ✅     |
+| [Comments](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Comments)                                                     |    ❌     |
