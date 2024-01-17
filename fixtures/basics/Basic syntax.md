@@ -24,4 +24,10 @@ _Italic text alternative_
 
 ~~Striked out text~~
 
+==Highlighted text 1==
+
+==Highlighted text 2==
+
+`==Highlighted text in code==`
+
 // TODO(HiDeoo) https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax

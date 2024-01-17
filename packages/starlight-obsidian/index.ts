@@ -27,10 +27,14 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
   return {
     name: 'starlight-obsidian-plugin',
     hooks: {
-      async setup() {
+      async setup({ config: starlightConfig, updateConfig }) {
         const vault = await getVault(config)
         const obsidianPaths = await getObsidianPaths(vault)
         await addObsidianFiles(config, vault, obsidianPaths)
+
+        updateConfig({
+          customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles'],
+        })
       },
     },
   }

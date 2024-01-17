@@ -34,6 +34,12 @@ test('supports basic syntax', async () => {
 
     ~~Striked out text~~
 
+    <mark class="sl-obs-highlight">Highlighted text 1</mark>
+
+    <mark class="sl-obs-highlight">Highlighted text 2</mark>
+
+    \`==Highlighted text in code==\`
+
     // TODO(HiDeoo) <https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax>
     "
   `)

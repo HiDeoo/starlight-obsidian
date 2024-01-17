@@ -1,0 +1,13 @@
+:root {
+  --sl--bs-hue-yellow: 51;
+
+  --sl-obs-highlight: hsl(var(--sl--bs-hue-yellow), 82%, 43%);
+}
+
+:root[data-theme='light'] {
+  --sl-obs-highlight: hsl(var(--sl--bs-hue-yellow), 90%, 46%);
+}
+
+.sl-obs-highlight {
+  background-color: var(--sl-obs-highlight);
+}
