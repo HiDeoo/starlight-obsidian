@@ -4,11 +4,39 @@ import { transformMarkdown } from '../libs/markdown'
 
 import { getFixtureFile } from './utils'
 
-test('supports GitHub Flavored Markdown', async () => {
-  const md = await transformFixtureMdFile('basics', 'gfm.md')
+test('supports basic syntax', async () => {
+  const md = await transformFixtureMdFile('basics', 'Basic syntax.md')
 
-  // If GFM is not supported, the task list items would look like `* \[x] …
-  expect(md).not.toContain('\\[')
+  expect(md).toMatchInlineSnapshot(`
+    "This is a paragraph.
+
+    This is another paragraph.
+
+    # This is a heading 1
+
+    ## This is a heading 2
+
+    ### This is a heading 3
+
+    #### This is a heading 4
+
+    ##### This is a heading 5
+
+    ###### This is a heading 6
+
+    **Bold text**
+
+    **Bold text alternative**
+
+    *Italic text*
+
+    *Italic text alternative*
+
+    ~~Striked out text~~
+
+    // TODO(HiDeoo) <https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax>
+    "
+  `)
 })
 
 async function transformFixtureMdFile(fixtureName: string, filePath: string): ReturnType<typeof transformMarkdown> {

@@ -3,10 +3,10 @@ title: Features
 description: // TODO(HiDeoo)
 ---
 
-## Syntax
+## Basic formatting syntax
 
-| Name                                                       | Supported |
-| ---------------------------------------------------------- | :-------: |
-| [CommonMark](https://commonmark.org/)                      |    ✅     |
-| [GitHub Flavored Markdown](https://github.github.com/gfm/) |    ✅     |
-| [LaTeX](https://www.latex-project.org/)                    |    ❌     |
+| Name                                                                                                                               | Supported |
+| ---------------------------------------------------------------------------------------------------------------------------------- | :-------: |
+| [Paragraphs](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Paragraphs)                                   |    ✅     |
+| [Headings](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Headings)                                       |    ✅     |
+| [Bold, italics, highlights](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Bold,%20italics,%20highlights) |    ❌     |
