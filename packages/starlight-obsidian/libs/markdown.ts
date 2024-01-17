@@ -5,8 +5,10 @@ import remarkGfm from 'remark-gfm'
 
 const parser = remark().use(remarkGfm).use(remarkFrontmatter).use(remarkEnsureFrontmatter)
 
-export function transformMarkdown(markdown: string) {
-  return parser.process(markdown)
+export async function transformMarkdown(markdown: string) {
+  const file = await parser.process(markdown)
+
+  return String(file)
 }
 
 function remarkEnsureFrontmatter() {

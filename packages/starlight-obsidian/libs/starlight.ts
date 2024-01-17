@@ -23,7 +23,7 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
       const starlightDirPath = path.dirname(starlightPath)
 
       await fs.mkdir(starlightDirPath, { recursive: true })
-      await fs.writeFile(starlightPath, String(starlightContent))
+      await fs.writeFile(starlightPath, starlightContent)
     }),
   )
 }

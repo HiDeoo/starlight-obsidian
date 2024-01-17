@@ -1,0 +1,3 @@
+- [ ] Task list using GitHub Flavored Markdown syntax
+- [x] More tasks
+- [ ] …
