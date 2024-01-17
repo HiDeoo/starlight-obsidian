@@ -7,9 +7,10 @@ import { addObsidianFiles } from '../libs/starlight'
 
 import { getFixtureConfig } from './utils'
 
-const mkdirSpy = vi.spyOn(fs, 'mkdir').mockImplementation(() => Promise.resolve(void 0))
+const mkdirSpy = vi.spyOn(fs, 'mkdir').mockImplementation(() => Promise.resolve(undefined))
 const readFileSpy = vi.spyOn(fs, 'readFile').mockImplementation(() => Promise.resolve(''))
-const writeFileSpy = vi.spyOn(fs, 'writeFile').mockImplementation(() => Promise.resolve(void 0))
+const rmSpy = vi.spyOn(fs, 'rm').mockImplementation(() => Promise.resolve())
+const writeFileSpy = vi.spyOn(fs, 'writeFile').mockImplementation(() => Promise.resolve())
 
 afterEach(() => {
   vi.clearAllMocks()
@@ -44,4 +45,24 @@ test('copies Obsidian files to a custom output directory', async () => {
 
   expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/test', { recursive: true })
   expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/test/foo.md', expect.any(String))
+})
+
+test('clears the default output directory', async () => {
+  const config = getFixtureConfig('basics')
+  const vault = await getVault(config)
+
+  await addObsidianFiles(config, vault, ['foo.md'])
+
+  expect(rmSpy).toHaveBeenCalledOnce()
+  expect(rmSpy).toHaveBeenCalledWith('src/content/docs/notes', { force: true, recursive: true })
+})
+
+test('clears a custom output directory', async () => {
+  const config = getFixtureConfig('basics', { output: 'test' })
+  const vault = await getVault(config)
+
+  await addObsidianFiles(config, vault, ['foo.md'])
+
+  expect(rmSpy).toHaveBeenCalledOnce()
+  expect(rmSpy).toHaveBeenCalledWith('src/content/docs/test', { force: true, recursive: true })
 })

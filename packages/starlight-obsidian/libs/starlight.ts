@@ -11,7 +11,7 @@ const docsPath = 'src/content/docs'
 export async function addObsidianFiles(config: StarlightObsidianConfig, vault: Vault, obsidianPaths: string[]) {
   const outputPath = path.join(docsPath, config.output)
 
-  // TODO(HiDeoo) clear the destination?
+  await fs.rm(outputPath, { force: true, recursive: true })
 
   // TODO(HiDeoo) worker? queue? parallel?
   await Promise.all(
