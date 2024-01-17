@@ -12,6 +12,10 @@ test('highlights text', async () => {
 
     <mark class="sl-obs-highlight">Highlighted text 2</mark>
 
+    <mark class="sl-obs-highlight">Highlighted = text 3</mark>
+
+    <mark class="sl-obs-highlight">Highlighted</mark> text 4
+
     \`==Highlighted text in code==\`
     "
   `)
