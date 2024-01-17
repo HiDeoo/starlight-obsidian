@@ -8,6 +8,7 @@ export default function starlightObsidianPlugin(options: StarlightObsidianOption
     name: 'starlight-obsidian-plugin',
     hooks: {
       async setup() {
+        // TODO(HiDeoo) Check the path is a vault?
         const obsidianPaths = await getObsidianPaths(options.vault)
         await addObsidianFiles(options.vault, obsidianPaths)
       },

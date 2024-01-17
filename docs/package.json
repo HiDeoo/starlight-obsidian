@@ -1,5 +1,5 @@
 {
-  "name": "starlight-obsidian-example",
+  "name": "starlight-obsidian-docs",
   "version": "0.0.1",
   "license": "MIT",
   "description": "// TODO(HiDeoo)",
@@ -14,8 +14,7 @@
   "dependencies": {
     "@astrojs/starlight": "0.15.3",
     "astro": "4.1.3",
-    "sharp": "0.33.2",
-    "starlight-obsidian": "workspace:*"
+    "sharp": "0.33.2"
   },
   "engines": {
     "node": ">=18.14.1"
