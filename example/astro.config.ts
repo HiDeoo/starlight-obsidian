@@ -8,7 +8,11 @@ export default defineConfig({
       editLink: {
         baseUrl: 'https://github.com/HiDeoo/starlight-obsidian/edit/main/example/',
       },
-      plugins: [starlightObsidian()],
+      plugins: [
+        starlightObsidian({
+          vault: '../fixtures/basics',
+        }),
+      ],
       // TODO(HiDeoo)
       sidebar: [
         {
