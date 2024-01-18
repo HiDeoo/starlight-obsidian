@@ -1,22 +1,30 @@
+import path from 'node:path'
+
 import type { Root } from 'mdast'
 import { findAndReplace } from 'mdast-util-find-and-replace'
 import { remark } from 'remark'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
+import { VFile } from 'vfile'
 
 const parser = remark().use(remarkGfm).use(remarkFrontmatter).use(remarkEnsureFrontmatter).use(remarkReplacements)
 
 const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)*)==/g
 const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)*)%%/gs
 
-export async function transformMarkdown(markdown: string) {
-  const file = await parser.process(markdown)
+export async function transformMarkdown(markdown: string, filePath: string) {
+  const file = new VFile({
+    path: filePath,
+    value: markdown,
+  })
 
-  return String(file)
+  const compiled = await parser.process(file)
+
+  return String(compiled)
 }
 
 function remarkEnsureFrontmatter() {
-  return function transformer(tree: Root) {
+  return function transformer(tree: Root, file: VFile) {
     let hasFrontmatter = false
 
     // The frontmatter is always at the root of the tree.
@@ -26,12 +34,12 @@ function remarkEnsureFrontmatter() {
       }
 
       hasFrontmatter = true
-      node.value = getFrontmatterNodeValue()
+      node.value = getFrontmatterNodeValue(file)
       break
     }
 
     if (!hasFrontmatter) {
-      tree.children.unshift({ type: 'yaml', value: getFrontmatterNodeValue() })
+      tree.children.unshift({ type: 'yaml', value: getFrontmatterNodeValue(file) })
     }
   }
 }
@@ -51,7 +59,12 @@ function remarkReplacements() {
   }
 }
 
-function getFrontmatterNodeValue() {
-  // TODO(HiDeoo)
-  return 'title: // TODO(HiDeoo)'
+function getFrontmatterNodeValue(file: VFile) {
+  if (!file.path) {
+    throw new Error('Could not find virtual file path.')
+  }
+
+  const title = path.parse(file.path).name
+
+  return `title: ${title}`
 }

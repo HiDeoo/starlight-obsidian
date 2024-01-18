@@ -17,7 +17,7 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
   await Promise.all(
     obsidianPaths.map(async (obsidianPath) => {
       const obsidianContent = await fs.readFile(obsidianPath, 'utf8')
-      const starlightContent = await transformMarkdown(obsidianContent)
+      const starlightContent = await transformMarkdown(obsidianContent, obsidianPath)
 
       const starlightPath = path.join(outputPath, obsidianPath.replace(vault.path, ''))
       const starlightDirPath = path.dirname(starlightPath)

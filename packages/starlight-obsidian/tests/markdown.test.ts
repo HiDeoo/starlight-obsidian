@@ -33,9 +33,27 @@ test('strips out comments', async () => {
   `)
 })
 
-async function transformFixtureMdFile(fixtureName: string, filePath: string): ReturnType<typeof transformMarkdown> {
+test('sets the proper title', async () => {
+  let md = await transformFixtureMdFile('basics', 'Random.md', true)
+
+  expect(md).toMatch(/^title: Random$/m)
+
+  md = await transformFixtureMdFile('basics', 'Basic syntax (comments).md', true)
+
+  expect(md).toMatch(/^title: Basic syntax \(comments\)$/m)
+})
+
+async function transformFixtureMdFile(
+  fixtureName: string,
+  filePath: string,
+  includeFrontmatter = false,
+): ReturnType<typeof transformMarkdown> {
   const md = await getFixtureFile(fixtureName, filePath)
-  const transformedMd = await transformMarkdown(md)
+  const transformedMd = await transformMarkdown(md, filePath)
+
+  if (includeFrontmatter) {
+    return transformedMd
+  }
 
   return transformedMd.replace(/^---\n.*\n---\n\n/, '')
 }
