@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm'
 
 const parser = remark().use(remarkGfm).use(remarkFrontmatter).use(remarkEnsureFrontmatter).use(remarkReplacements)
 
-const highlightReplacementRegex = /==((?:(?!==).)*)==/
+const highlightReplacementRegex = /==((?:(?!==).)*)==/g
 
 export async function transformMarkdown(markdown: string) {
   const file = await parser.process(markdown)
