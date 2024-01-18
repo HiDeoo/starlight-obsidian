@@ -4,7 +4,7 @@ import path from 'node:path'
 import type { StarlightObsidianConfig } from '..'
 
 import { transformMarkdown } from './markdown'
-import type { Vault } from './obsidian'
+import { getObsidianVaultFiles, type Vault } from './obsidian'
 
 const docsPath = 'src/content/docs'
 
@@ -13,13 +13,19 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
 
   await fs.rm(outputPath, { force: true, recursive: true })
 
+  const vaultFiles = getObsidianVaultFiles(vault, obsidianPaths)
+
   // TODO(HiDeoo) worker? queue? parallel?
   await Promise.all(
-    obsidianPaths.map(async (obsidianPath) => {
+    obsidianPaths.map(async (obsidianPath, index) => {
       const obsidianContent = await fs.readFile(obsidianPath, 'utf8')
-      const starlightContent = await transformMarkdown(obsidianContent, obsidianPath)
+      const starlightContent = await transformMarkdown(obsidianPath, obsidianContent, {
+        files: vaultFiles,
+        output: config.output,
+        vault,
+      })
 
-      const starlightPath = path.join(outputPath, obsidianPath.replace(vault.path, ''))
+      const starlightPath = path.join(outputPath, vaultFiles[index]?.path ?? obsidianPath.replace(vault.path, ''))
       const starlightDirPath = path.dirname(starlightPath)
 
       await fs.mkdir(starlightDirPath, { recursive: true })

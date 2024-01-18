@@ -62,9 +62,15 @@ importers:
 
   packages/starlight-obsidian:
     dependencies:
+      github-slugger:
+        specifier: 2.0.0
+        version: 2.0.0
       globby:
         specifier: 14.0.0
         version: 14.0.0
+      is-absolute-url:
+        specifier: 4.0.1
+        version: 4.0.1
       mdast-util-find-and-replace:
         specifier: 3.0.1
         version: 3.0.1
@@ -77,6 +83,9 @@ importers:
       remark-gfm:
         specifier: 4.0.0
         version: 4.0.0
+      unist-util-visit:
+        specifier: 5.0.0
+        version: 5.0.0
       vfile:
         specifier: 6.0.1
         version: 6.0.1
@@ -3498,6 +3507,11 @@ packages:
       hasown: 2.0.0
       side-channel: 1.0.4
     dev: true
+
+  /is-absolute-url@4.0.1:
+    resolution: {integrity: sha512-/51/TKE88Lmm7Gc4/8btclNXWS+g50wXhYJq8HWIBAGUBnoAdRu1aXeh364t/O7wXDAcTJDP8PNuNKWUDWie+A==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dev: false
 
   /is-alphabetical@2.0.1:
     resolution: {integrity: sha512-FWyyY60MeTNyeSRpkM2Iry0G9hpr7/9kD40mD/cGQEuilcZYS4okz8SN2Q6rLCJ8gbCt6fN+rC+6tMGS99LaxQ==}

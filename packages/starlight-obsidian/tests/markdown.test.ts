@@ -1,8 +1,6 @@
 import { expect, test } from 'vitest'
 
-import { transformMarkdown } from '../libs/markdown'
-
-import { getFixtureFile } from './utils'
+import { transformFixtureMdFile } from './utils'
 
 test('highlights text', async () => {
   const md = await transformFixtureMdFile('basics', 'Basic syntax (highlights).md')
@@ -34,26 +32,11 @@ test('strips out comments', async () => {
 })
 
 test('sets the proper title', async () => {
-  let md = await transformFixtureMdFile('basics', 'Random.md', true)
+  let md = await transformFixtureMdFile('basics', 'Random.md', { includeFrontmatter: true })
 
   expect(md).toMatch(/^title: Random$/m)
 
-  md = await transformFixtureMdFile('basics', 'Basic syntax (comments).md', true)
+  md = await transformFixtureMdFile('basics', 'Basic syntax (comments).md', { includeFrontmatter: true })
 
   expect(md).toMatch(/^title: Basic syntax \(comments\)$/m)
 })
-
-async function transformFixtureMdFile(
-  fixtureName: string,
-  filePath: string,
-  includeFrontmatter = false,
-): ReturnType<typeof transformMarkdown> {
-  const md = await getFixtureFile(fixtureName, filePath)
-  const transformedMd = await transformMarkdown(md, filePath)
-
-  if (includeFrontmatter) {
-    return transformedMd
-  }
-
-  return transformedMd.replace(/^---\n.*\n---\n\n/, '')
-}

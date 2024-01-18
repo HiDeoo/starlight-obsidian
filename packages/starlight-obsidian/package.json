@@ -15,11 +15,14 @@
     "lint": "prettier -c --cache . && eslint . --cache --max-warnings=0"
   },
   "dependencies": {
+    "github-slugger": "2.0.0",
     "globby": "14.0.0",
+    "is-absolute-url": "4.0.1",
     "mdast-util-find-and-replace": "3.0.1",
     "remark": "15.0.1",
     "remark-frontmatter": "5.0.0",
     "remark-gfm": "4.0.0",
+    "unist-util-visit": "5.0.0",
     "vfile": "6.0.1"
   },
   "devDependencies": {

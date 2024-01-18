@@ -10,7 +10,9 @@ export default defineConfig({
       },
       plugins: [
         starlightObsidian({
-          vault: '../fixtures/basics',
+          // vault: '../fixtures/basics',
+          // vault: '../fixtures/not-a-vault',
+          vault: '../fixtures/markdown-links-shortest',
         }),
       ],
       // TODO(HiDeoo)

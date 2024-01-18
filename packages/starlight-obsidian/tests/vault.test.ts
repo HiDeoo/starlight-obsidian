@@ -24,3 +24,22 @@ test('throws if the specified vault path is not a valid vault directory', async 
     `[AstroUserError: The provided vault path is not a valid Obsidian vault directory.]`,
   )
 })
+
+test.each([
+  ['markdown-links-shortest'],
+  // TODO(HiDeoo)
+])('returns the correct vault options', async (fixtureName) => {
+  const vault = await getVault(getFixtureConfig(fixtureName))
+
+  const [syntax, , format] = fixtureName.split('-')
+
+  expect(vault.options.linkFormat).toBe(format)
+  expect(vault.options.linkSyntax).toBe(syntax)
+})
+
+test('returns the default vault options', async () => {
+  const vault = await getVault(getFixtureConfig('basics'))
+
+  expect(vault.options.linkFormat).toBe('shortest')
+  expect(vault.options.linkSyntax).toBe('wikilink')
+})

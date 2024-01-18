@@ -7,13 +7,14 @@ import { addObsidianFiles } from '../libs/starlight'
 
 import { getFixtureConfig } from './utils'
 
-const mkdirSpy = vi.spyOn(fs, 'mkdir').mockImplementation(() => Promise.resolve(undefined))
-const readFileSpy = vi.spyOn(fs, 'readFile').mockImplementation(() => Promise.resolve(''))
-const rmSpy = vi.spyOn(fs, 'rm').mockImplementation(() => Promise.resolve())
-const writeFileSpy = vi.spyOn(fs, 'writeFile').mockImplementation(() => Promise.resolve())
+const mkdirSpy = vi.spyOn(fs, 'mkdir').mockResolvedValue(undefined)
+let readFileSpy = vi.spyOn(fs, 'readFile').mockResolvedValueOnce(`{}`).mockResolvedValue(``)
+const rmSpy = vi.spyOn(fs, 'rm').mockResolvedValue()
+const writeFileSpy = vi.spyOn(fs, 'writeFile').mockResolvedValue()
 
 afterEach(() => {
   vi.clearAllMocks()
+  readFileSpy = vi.spyOn(fs, 'readFile').mockResolvedValueOnce(`{}`).mockResolvedValue(``)
 })
 
 afterAll(() => {
@@ -28,11 +29,11 @@ test('copies Obsidian files to the default output directory', async () => {
 
   await addObsidianFiles(config, vault, obsidianPaths)
 
-  expect(readFileSpy).toHaveBeenNthCalledWith(1, obsidianPaths[0], 'utf8')
+  expect(readFileSpy).toHaveBeenNthCalledWith(2, obsidianPaths[0], 'utf8')
   expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes', { recursive: true })
   expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/foo.md', expect.any(String))
 
-  expect(readFileSpy).toHaveBeenNthCalledWith(2, obsidianPaths[1], 'utf8')
+  expect(readFileSpy).toHaveBeenNthCalledWith(3, obsidianPaths[1], 'utf8')
   expect(mkdirSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes/nested', { recursive: true })
   expect(writeFileSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes/nested/bar.md', expect.any(String))
 })
