@@ -34,6 +34,8 @@ _Italic text alternative_
 
 [External link to another vault file](obsidian://open?vault=MainVault&file=Note.md)
 
+[External link to another vault file with blank spaces](<obsidian://open?vault=MainVault&file=My Note.md>)
+
 ![External image](https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg)
 
 > Human beings face ever more complex and urgent problems, and their effectiveness in dealing with these problems is a matter that is critical to the stability and continued progress of society.
