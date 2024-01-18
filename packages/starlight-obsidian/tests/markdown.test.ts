@@ -21,6 +21,18 @@ test('highlights text', async () => {
   `)
 })
 
+test('strips out comments', async () => {
+  const md = await transformFixtureMdFile('basics', 'Basic syntax (comments).md')
+
+  expect(md).toMatchInlineSnapshot(`
+    "This is an  comment.
+
+    This is an  comment and another  comment.
+
+    "
+  `)
+})
+
 async function transformFixtureMdFile(fixtureName: string, filePath: string): ReturnType<typeof transformMarkdown> {
   const md = await getFixtureFile(fixtureName, filePath)
   const transformedMd = await transformMarkdown(md)

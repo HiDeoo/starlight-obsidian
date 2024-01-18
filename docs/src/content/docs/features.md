@@ -23,4 +23,4 @@ description: // TODO(HiDeoo)
 | [Inline code](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Inline%20code)                                             |    ✅     |
 | [Code blocks](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Code%20blocks)                                             |    ✅     |
 | [Footnotes](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Footnotes)                                                   |    ✅     |
-| [Comments](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Comments)                                                     |    ❌     |
+| [Comments](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Comments)                                                     |    ✅     |

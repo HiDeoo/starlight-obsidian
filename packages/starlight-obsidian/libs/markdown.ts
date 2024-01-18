@@ -6,7 +6,8 @@ import remarkGfm from 'remark-gfm'
 
 const parser = remark().use(remarkGfm).use(remarkFrontmatter).use(remarkEnsureFrontmatter).use(remarkReplacements)
 
-const highlightReplacementRegex = /==((?:(?!==).)*)==/g
+const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)*)==/g
+const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)*)%%/gs
 
 export async function transformMarkdown(markdown: string) {
   const file = await parser.process(markdown)
@@ -40,8 +41,12 @@ function remarkReplacements() {
     findAndReplace(tree, [
       [
         highlightReplacementRegex,
-        (_match: string, text: string) => ({ type: 'html', value: `<mark class="sl-obs-highlight">${text}</mark>` }),
+        (_match: string, highlight: string) => ({
+          type: 'html',
+          value: `<mark class="sl-obs-highlight">${highlight}</mark>`,
+        }),
       ],
+      [commentReplacementRegex, null],
     ])
   }
 }
