@@ -4,7 +4,7 @@ import path from 'node:path'
 import type { StarlightObsidianConfig } from '..'
 
 import { transformMarkdown } from './markdown'
-import { getObsidianVaultFiles, type Vault } from './obsidian'
+import { getObsidianRelativePath, getObsidianVaultFiles, type Vault } from './obsidian'
 
 const docsPath = 'src/content/docs'
 
@@ -25,7 +25,10 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
         vault,
       })
 
-      const starlightPath = path.join(outputPath, vaultFiles[index]?.path ?? obsidianPath.replace(vault.path, ''))
+      const starlightPath = path.join(
+        outputPath,
+        vaultFiles[index]?.path ?? getObsidianRelativePath(vault, obsidianPath),
+      )
       const starlightDirPath = path.dirname(starlightPath)
 
       await fs.mkdir(starlightDirPath, { recursive: true })

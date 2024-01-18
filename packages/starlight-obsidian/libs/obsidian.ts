@@ -2,12 +2,12 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { z } from 'astro/zod'
+import { slug } from 'github-slugger'
 import { globby } from 'globby'
 
 import type { StarlightObsidianConfig } from '..'
 
 import { isDirectory, isFile } from './fs'
-import { slugifyPath } from './path'
 import { throwUserError } from './plugin'
 
 const obsidianAppConfigSchema = z.object({
@@ -43,15 +43,29 @@ export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): Va
 
   return obsidianPaths.map((obsidianPath, index) => {
     const fileName = allFileNames[index] as string
-    const filePath = obsidianPath.replace(vault.path, '')
+    const filePath = getObsidianRelativePath(vault, obsidianPath)
 
     return {
       fileName,
       path: filePath,
-      slug: slugifyPath(filePath),
+      slug: slugifyObsidianPath(filePath),
       uniqueFileName: allFileNames.filter((currentFileName) => currentFileName === fileName).length === 1,
     }
   })
+}
+
+export function getObsidianRelativePath(vault: Vault, obsidianPath: string) {
+  return obsidianPath.replace(vault.path, '')
+}
+
+export function slugifyObsidianPath(obsidianPath: string) {
+  const segments = obsidianPath.split('/')
+
+  return segments
+    .map((segment, index) =>
+      slug(decodeURIComponent(index === segments.length - 1 ? path.parse(segment).name : segment)),
+    )
+    .join('/')
 }
 
 async function isVaultDirectory(vaultPath: string) {

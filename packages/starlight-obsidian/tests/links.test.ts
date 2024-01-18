@@ -4,65 +4,73 @@ import { getObsidianPaths, getObsidianVaultFiles, getVault } from '../libs/obsid
 
 import { getFixtureConfig, transformFixtureMdFile } from './utils'
 
-test('support Markdown links using the shortest format', async () => {
-  const fixtureName = 'markdown-links-shortest'
+const linkSyntaxAndFormats = [
+  ['markdown', 'shortest'],
+  ['markdown', 'relative'],
+  // TODO(HiDeoo)
+]
 
-  const vault = await getVault(getFixtureConfig(fixtureName))
-  const paths = await getObsidianPaths(vault)
-  const files = getObsidianVaultFiles(vault, paths)
+test('formats link URLs', async () => {
+  for (const [syntax, format] of linkSyntaxAndFormats) {
+    const fixtureName = `${syntax}-links-${format}`
 
-  let md = await transformFixtureMdFile(fixtureName, 'root 1.md', { context: { files, output: 'notes', vault } })
+    const vault = await getVault(getFixtureConfig(fixtureName))
+    const paths = await getObsidianPaths(vault)
+    const files = getObsidianVaultFiles(vault, paths)
 
-  expect(md).toMatchInlineSnapshot(`
-    "[root 2](/notes/root-2)
+    let md = await transformFixtureMdFile(fixtureName, 'root 1.md', { context: { files, output: 'notes', vault } })
 
-    [file in folder 1](/notes/folder/file-in-folder-1)
+    expect(md).toMatchInlineSnapshot(`
+      "[root 2](/notes/root-2)
 
-    [file in nested folder 1](/notes/folder/nested-folder/file-in-nested-folder-1)
+      [file in folder 1](/notes/folder/file-in-folder-1)
 
-    [duplicate file name](/notes/duplicate-file-name)
+      [file in nested folder 1](/notes/folder/nested-folder/file-in-nested-folder-1)
 
-    [duplicate file name](/notes/folder/duplicate-file-name)
+      [duplicate file name](/notes/duplicate-file-name)
 
-    [duplicate file name](/notes/folder/nested-folder/duplicate-file-name)
-    "
-  `)
+      [duplicate file name](/notes/folder/duplicate-file-name)
 
-  md = await transformFixtureMdFile(fixtureName, 'folder/file in folder 1.md', {
-    context: { files, output: 'notes', vault },
-  })
+      [duplicate file name](/notes/folder/nested-folder/duplicate-file-name)
+      "
+    `)
 
-  expect(md).toMatchInlineSnapshot(`
-    "[root 1](/notes/root-1)
+    md = await transformFixtureMdFile(fixtureName, 'folder/file in folder 1.md', {
+      context: { files, output: 'notes', vault },
+    })
 
-    [file in folder 2](/notes/folder/file-in-folder-2)
+    expect(md).toMatchInlineSnapshot(`
+      "[root 1](/notes/root-1)
 
-    [file in nested folder 1](/notes/folder/nested-folder/file-in-nested-folder-1)
+      [file in folder 2](/notes/folder/file-in-folder-2)
 
-    [duplicate file name](/notes/duplicate-file-name)
+      [file in nested folder 1](/notes/folder/nested-folder/file-in-nested-folder-1)
 
-    [duplicate file name](/notes/folder/duplicate-file-name)
+      [duplicate file name](/notes/duplicate-file-name)
 
-    [duplicate file name](/notes/folder/nested-folder/duplicate-file-name)
-    "
-  `)
+      [duplicate file name](/notes/folder/duplicate-file-name)
 
-  md = await transformFixtureMdFile(fixtureName, 'folder/nested folder/file in nested folder 1.md', {
-    context: { files, output: 'notes', vault },
-  })
+      [duplicate file name](/notes/folder/nested-folder/duplicate-file-name)
+      "
+    `)
 
-  expect(md).toMatchInlineSnapshot(`
-    "[root 1](/notes/root-1)
+    md = await transformFixtureMdFile(fixtureName, 'folder/nested folder/file in nested folder 1.md', {
+      context: { files, output: 'notes', vault },
+    })
 
-    [file in folder 1](/notes/folder/file-in-folder-1)
+    expect(md).toMatchInlineSnapshot(`
+      "[root 1](/notes/root-1)
 
-    [file in nested folder 2](/notes/folder/nested-folder/file-in-nested-folder-2)
+      [file in folder 1](/notes/folder/file-in-folder-1)
 
-    [duplicate file name](/notes/duplicate-file-name)
+      [file in nested folder 2](/notes/folder/nested-folder/file-in-nested-folder-2)
 
-    [duplicate file name](/notes/folder/duplicate-file-name)
+      [duplicate file name](/notes/duplicate-file-name)
 
-    [duplicate file name](/notes/folder/nested-folder/duplicate-file-name)
-    "
-  `)
+      [duplicate file name](/notes/folder/duplicate-file-name)
+
+      [duplicate file name](/notes/folder/nested-folder/duplicate-file-name)
+      "
+    `)
+  }
 })

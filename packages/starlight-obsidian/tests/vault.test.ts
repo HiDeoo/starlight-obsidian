@@ -26,12 +26,11 @@ test('throws if the specified vault path is not a valid vault directory', async 
 })
 
 test.each([
-  ['markdown-links-shortest'],
+  ['markdown', 'shortest'],
+  ['markdown', 'relative'],
   // TODO(HiDeoo)
-])('returns the correct vault options', async (fixtureName) => {
-  const vault = await getVault(getFixtureConfig(fixtureName))
-
-  const [syntax, , format] = fixtureName.split('-')
+])('returns the correct vault options', async (syntax, format) => {
+  const vault = await getVault(getFixtureConfig(`${syntax}-links-${format}`))
 
   expect(vault.options.linkFormat).toBe(format)
   expect(vault.options.linkSyntax).toBe(syntax)

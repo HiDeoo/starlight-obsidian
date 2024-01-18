@@ -11,8 +11,7 @@ import { VFile } from 'vfile'
 
 import type { StarlightObsidianConfig } from '..'
 
-import type { Vault, VaultFile } from './obsidian'
-import { slugifyPath } from './path'
+import { getObsidianRelativePath, slugifyObsidianPath, type Vault, type VaultFile } from './obsidian'
 
 const parser = remark()
   .use(remarkGfm)
@@ -75,7 +74,7 @@ function remarkReplacements() {
 function remarkLinks() {
   return function transformer(tree: Root, file: VFile) {
     visit(tree, 'link', (node) => {
-      if (isAbsoluteUrl(node.url) || !file.data.output) {
+      if (isAbsoluteUrl(node.url) || !file.dirname || !file.data.output) {
         return SKIP
       }
 
@@ -86,11 +85,25 @@ function remarkLinks() {
         return SKIP
       }
 
-      node.url = path.posix.join(
-        '/',
-        file.data.output,
-        matchingFile.uniqueFileName ? matchingFile.slug : slugifyPath(node.url),
-      )
+      switch (file.data.vault?.options.linkFormat) {
+        case 'relative': {
+          node.url = getFileUrl(
+            file.data.output,
+            path.posix.join(getObsidianRelativePath(file.data.vault, file.dirname), node.url),
+          )
+          break
+        }
+        case 'shortest': {
+          node.url = getFileUrl(
+            file.data.output,
+            matchingFile.uniqueFileName ? matchingFile.slug : slugifyObsidianPath(node.url),
+          )
+          break
+        }
+        default: {
+          throw new Error(`Unsupported link format: ${file.data.vault?.options.linkFormat}`)
+        }
+      }
 
       return SKIP
     })
@@ -105,6 +118,10 @@ function getFrontmatterNodeValue(file: VFile) {
   const title = path.parse(file.path).name
 
   return `title: ${title}`
+}
+
+function getFileUrl(output: StarlightObsidianConfig['output'], filePath: string) {
+  return path.posix.join('/', output, slugifyObsidianPath(filePath))
 }
 
 export interface TransformContext {
