@@ -12,7 +12,6 @@ import { VFile } from 'vfile'
 import type { StarlightObsidianConfig } from '..'
 
 import { getObsidianRelativePath, slugifyObsidianPath, type Vault, type VaultFile } from './obsidian'
-import { stripExtension } from './path'
 
 const parser = remark()
   .use(remarkGfm)
@@ -131,13 +130,7 @@ function remarkLinks() {
 }
 
 function getFrontmatterNodeValue(file: VFile) {
-  if (!file.path) {
-    throw new Error('Could not find virtual file path.')
-  }
-
-  const title = stripExtension(file.path)
-
-  return `title: ${title}`
+  return `title: ${file.stem}`
 }
 
 function getFileUrl(output: StarlightObsidianConfig['output'], filePath: string) {
