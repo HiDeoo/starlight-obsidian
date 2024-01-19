@@ -12,7 +12,7 @@ const linkSyntaxAndFormats = [
 
 test('formats link URLs', async () => {
   for (const [syntax, format] of linkSyntaxAndFormats) {
-    const fixtureName = `${syntax}-links-${format}`
+    const fixtureName = `links-${syntax}-${format}`
 
     const vault = await getVault(getFixtureConfig(fixtureName))
     const paths = await getObsidianPaths(vault)

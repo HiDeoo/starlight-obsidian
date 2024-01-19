@@ -30,7 +30,7 @@ test.each([
   ['markdown', 'relative'],
   // TODO(HiDeoo)
 ])('returns the correct vault options', async (syntax, format) => {
-  const vault = await getVault(getFixtureConfig(`${syntax}-links-${format}`))
+  const vault = await getVault(getFixtureConfig(`links-${syntax}-${format}`))
 
   expect(vault.options.linkFormat).toBe(format)
   expect(vault.options.linkSyntax).toBe(syntax)
