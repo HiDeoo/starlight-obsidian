@@ -12,6 +12,7 @@ import { VFile } from 'vfile'
 import type { StarlightObsidianConfig } from '..'
 
 import { getObsidianRelativePath, slugifyObsidianPath, type Vault, type VaultFile } from './obsidian'
+import { stripExtension } from './path'
 
 const parser = remark()
   .use(remarkGfm)
@@ -22,6 +23,7 @@ const parser = remark()
 
 const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)+)==/g
 const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)+)%%/gs
+const wikilinkReplacementRegex = /\[\[(?<urlOrText>(?:(?![[\]|]).)+)(?:\|(?<text>(?:(?![[\]|]).)+))?]]/g
 
 export async function transformMarkdown(filePath: string, markdown: string, context: TransformContext) {
   const file = new VFile({
@@ -57,7 +59,7 @@ function remarkEnsureFrontmatter() {
 }
 
 function remarkReplacements() {
-  return function transformer(tree: Root) {
+  return function transformer(tree: Root, file: VFile) {
     findAndReplace(tree, [
       [
         highlightReplacementRegex,
@@ -67,6 +69,18 @@ function remarkReplacements() {
         }),
       ],
       [commentReplacementRegex, null],
+      [
+        wikilinkReplacementRegex,
+        (_match: string, urlOrText: string, text?: string) => {
+          const matchingFile = file.data.files?.find((vaultFile) => vaultFile.stem === urlOrText)
+
+          return {
+            children: [{ type: 'text', value: text ?? urlOrText }],
+            type: 'link',
+            url: getFileUrl(file.data.output ?? 'notes', matchingFile ? matchingFile.slug : urlOrText),
+          }
+        },
+      ],
     ])
   }
 }
@@ -74,7 +88,12 @@ function remarkReplacements() {
 function remarkLinks() {
   return function transformer(tree: Root, file: VFile) {
     visit(tree, 'link', (node) => {
-      if (isAbsoluteUrl(node.url) || !file.dirname || !file.data.output) {
+      if (
+        file.data.vault?.options.linkSyntax === 'wikilink' ||
+        isAbsoluteUrl(node.url) ||
+        !file.dirname ||
+        !file.data.output
+      ) {
         return SKIP
       }
 
@@ -116,7 +135,7 @@ function getFrontmatterNodeValue(file: VFile) {
     throw new Error('Could not find virtual file path.')
   }
 
-  const title = path.parse(file.path).name
+  const title = stripExtension(file.path)
 
   return `title: ${title}`
 }

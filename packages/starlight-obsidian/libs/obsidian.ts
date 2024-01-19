@@ -8,6 +8,7 @@ import { globby } from 'globby'
 import type { StarlightObsidianConfig } from '..'
 
 import { isDirectory, isFile } from './fs'
+import { stripExtension } from './path'
 import { throwUserError } from './plugin'
 
 const obsidianAppConfigSchema = z.object({
@@ -49,6 +50,7 @@ export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): Va
       fileName,
       path: filePath,
       slug: slugifyObsidianPath(filePath),
+      stem: stripExtension(fileName),
       uniqueFileName: allFileNames.filter((currentFileName) => currentFileName === fileName).length === 1,
     }
   })
@@ -63,7 +65,7 @@ export function slugifyObsidianPath(obsidianPath: string) {
 
   return segments
     .map((segment, index) =>
-      slug(decodeURIComponent(index === segments.length - 1 ? path.parse(segment).name : segment)),
+      slug(decodeURIComponent(index === segments.length - 1 ? stripExtension(segment) : segment)),
     )
     .join('/')
 }
@@ -105,5 +107,7 @@ export interface VaultFile {
   // The path is relative to the vault root.
   path: string
   slug: string
+  // This represent the file name without the extension.
+  stem: string
   uniqueFileName: boolean
 }

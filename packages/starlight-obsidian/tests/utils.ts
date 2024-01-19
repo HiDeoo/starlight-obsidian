@@ -5,6 +5,7 @@ import { slug } from 'github-slugger'
 
 import type { StarlightObsidianConfig } from '..'
 import { transformMarkdown, type TransformContext } from '../libs/markdown'
+import { stripExtension } from '../libs/path'
 
 const fixturesPath = '../../fixtures'
 
@@ -35,12 +36,14 @@ export async function transformFixtureMdFile(
   options: { context?: TransformContext; includeFrontmatter?: boolean } = {},
 ): ReturnType<typeof transformMarkdown> {
   const md = await getFixtureFile(fixtureName, filePath)
+  const fileName = path.basename(filePath)
   const transformedMd = await transformMarkdown(filePath, md, {
     files: options.context?.files ?? [
       {
-        fileName: path.basename(filePath),
+        fileName,
         path: filePath,
-        slug: slug(path.parse(filePath).name),
+        slug: slug(stripExtension(filePath)),
+        stem: stripExtension(fileName),
         uniqueFileName: true,
       },
     ],
