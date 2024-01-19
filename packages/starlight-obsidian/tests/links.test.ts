@@ -35,6 +35,12 @@ test('formats link URLs', async () => {
       [duplicate file name](/notes/folder/duplicate-file-name)
 
       [duplicate file name](/notes/folder/nested-folder/duplicate-file-name)
+
+      [root 2 with custom text](/notes/root-2)
+
+      [file in folder 1 with custom text](/notes/folder/file-in-folder-1)
+
+      [file in nested folder 1 with custom text](/notes/folder/nested-folder/file-in-nested-folder-1)
       "
     `)
 
@@ -54,6 +60,12 @@ test('formats link URLs', async () => {
       [duplicate file name](/notes/folder/duplicate-file-name)
 
       [duplicate file name](/notes/folder/nested-folder/duplicate-file-name)
+
+      [root 1 with custom text](/notes/root-1)
+
+      [file in folder 2 with custom text](/notes/folder/file-in-folder-2)
+
+      [file in nested folder 1 with custom text](/notes/folder/nested-folder/file-in-nested-folder-1)
       "
     `)
 
@@ -73,6 +85,12 @@ test('formats link URLs', async () => {
       [duplicate file name](/notes/folder/duplicate-file-name)
 
       [duplicate file name](/notes/folder/nested-folder/duplicate-file-name)
+
+      [root 1 with custom text](/notes/root-1)
+
+      [file in folder 1 with custom text](/notes/folder/file-in-folder-1)
+
+      [file in nested folder 2 with custom text](/notes/folder/nested-folder/file-in-nested-folder-2)
       "
     `)
   }
