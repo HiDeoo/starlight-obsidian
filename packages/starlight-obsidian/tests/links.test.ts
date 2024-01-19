@@ -5,12 +5,12 @@ import { getObsidianPaths, getObsidianVaultFiles, getVault } from '../libs/obsid
 import { getFixtureConfig, transformFixtureMdFile } from './utils'
 
 const linkSyntaxAndFormats = [
-  ['markdown', 'shortest'],
-  ['markdown', 'relative'],
   ['markdown', 'absolute'],
-  ['wikilink', 'shortest'],
-  ['wikilink', 'relative'],
+  ['markdown', 'relative'],
+  ['markdown', 'shortest'],
   ['wikilink', 'absolute'],
+  ['wikilink', 'relative'],
+  ['wikilink', 'shortest'],
 ]
 
 test('formats link URLs', async () => {
@@ -41,6 +41,14 @@ test('formats link URLs', async () => {
       [file in folder 1 with custom text](/notes/folder/file-in-folder-1)
 
       [file in nested folder 1 with custom text](/notes/folder/nested-folder/file-in-nested-folder-1)
+
+      ## Random heading
+
+      [Random heading](#random-heading)
+
+      [Random heading](/notes/folder/file-in-folder-1#random-heading)
+
+      [Random heading](/notes/folder/nested-folder/file-in-nested-folder-1#random-heading)
       "
     `)
 
@@ -66,6 +74,14 @@ test('formats link URLs', async () => {
       [file in folder 2 with custom text](/notes/folder/file-in-folder-2)
 
       [file in nested folder 1 with custom text](/notes/folder/nested-folder/file-in-nested-folder-1)
+
+      ## Random heading
+
+      [Random heading](/notes/root-1#random-heading)
+
+      [Random heading](#random-heading)
+
+      [Random heading](/notes/folder/nested-folder/file-in-nested-folder-1#random-heading)
       "
     `)
 
@@ -91,6 +107,14 @@ test('formats link URLs', async () => {
       [file in folder 1 with custom text](/notes/folder/file-in-folder-1)
 
       [file in nested folder 2 with custom text](/notes/folder/nested-folder/file-in-nested-folder-2)
+
+      ## Random heading
+
+      [Random heading](/notes/root-1#random-heading)
+
+      [Random heading](/notes/folder/file-in-folder-1#random-heading)
+
+      [Random heading](#random-heading)
       "
     `)
   }

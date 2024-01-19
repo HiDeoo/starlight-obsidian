@@ -15,3 +15,11 @@
 [file in folder 2 with custom text](file%20in%20folder%202.md)
 
 [file in nested folder 1 with custom text](file%20in%20nested%20folder%201.md)
+
+## Random heading
+
+[Random heading](root%201.md#Random%20heading)
+
+[Random heading](#Random%20heading)
+
+[Random heading](file%20in%20nested%20folder%201.md#Random%20heading)

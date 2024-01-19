@@ -15,3 +15,11 @@
 [[file in folder 1|file in folder 1 with custom text]]
 
 [[file in nested folder 1|file in nested folder 1 with custom text]]
+
+## Random heading
+
+[[#Random heading]]
+
+[[file in folder 1#Random heading|Random heading]]
+
+[[file in nested folder 1#Random heading|Random heading]]

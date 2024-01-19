@@ -8,7 +8,7 @@ import { globby } from 'globby'
 import type { StarlightObsidianConfig } from '..'
 
 import { isDirectory, isFile } from './fs'
-import { stripExtension } from './path'
+import { isAnchor, stripExtension } from './path'
 import { throwUserError } from './plugin'
 
 const obsidianAppConfigSchema = z.object({
@@ -68,6 +68,14 @@ export function slugifyObsidianPath(obsidianPath: string) {
       slug(decodeURIComponent(index === segments.length - 1 ? stripExtension(segment) : segment)),
     )
     .join('/')
+}
+
+export function slugifyObsidianAnchor(anchor: string) {
+  if (anchor.length === 0) {
+    return ''
+  }
+
+  return `#${slug(decodeURIComponent(isAnchor(anchor) ? anchor.slice(1) : anchor))}`
 }
 
 async function isVaultDirectory(vaultPath: string) {

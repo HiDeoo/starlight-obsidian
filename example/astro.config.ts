@@ -12,12 +12,12 @@ export default defineConfig({
         starlightObsidian({
           // vault: '../fixtures/basics',
           // vault: '../fixtures/not-a-vault',
-          // vault: '../fixtures/links-markdown-shortest',
-          // vault: '../fixtures/links-markdown-relative',
           // vault: '../fixtures/links-markdown-absolute',
-          // vault: '../fixtures/links-wikilink-shortest',
+          // vault: '../fixtures/links-markdown-relative',
+          // vault: '../fixtures/links-markdown-shortest',
+          // vault: '../fixtures/links-wikilink-absolute',
           // vault: '../fixtures/links-wikilink-relative',
-          vault: '../fixtures/links-wikilink-absolute',
+          vault: '../fixtures/links-wikilink-shortest',
         }),
       ],
       // TODO(HiDeoo)
