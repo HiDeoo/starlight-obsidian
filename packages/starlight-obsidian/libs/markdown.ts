@@ -93,6 +93,7 @@ function remarkLinks() {
           )
           break
         }
+        case 'absolute':
         case 'shortest': {
           node.url = getFileUrl(
             file.data.output,

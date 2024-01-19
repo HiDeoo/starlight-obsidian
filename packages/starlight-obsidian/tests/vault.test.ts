@@ -28,6 +28,7 @@ test('throws if the specified vault path is not a valid vault directory', async 
 test.each([
   ['markdown', 'shortest'],
   ['markdown', 'relative'],
+  ['markdown', 'absolute'],
   // TODO(HiDeoo)
 ])('returns the correct vault options', async (syntax, format) => {
   const vault = await getVault(getFixtureConfig(`links-${syntax}-${format}`))

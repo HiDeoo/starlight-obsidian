@@ -7,6 +7,7 @@ import { getFixtureConfig, transformFixtureMdFile } from './utils'
 const linkSyntaxAndFormats = [
   ['markdown', 'shortest'],
   ['markdown', 'relative'],
+  ['markdown', 'absolute'],
   // TODO(HiDeoo)
 ]
 
