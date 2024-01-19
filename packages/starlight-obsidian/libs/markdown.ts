@@ -85,13 +85,10 @@ function remarkReplacements() {
               )
               break
             }
+            case 'absolute':
             case 'shortest': {
               url = getFileUrl(file.data.output, matchingFile ? matchingFile.slug : urlOrText)
               break
-            }
-            default: {
-              // TODO(HiDeoo) This should be removed once the `absolute` format is supported.
-              throw new Error(`Unsupported link format: ${file.data.vault.options.linkFormat}`)
             }
           }
 

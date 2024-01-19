@@ -10,7 +10,7 @@ const linkSyntaxAndFormats = [
   ['markdown', 'absolute'],
   ['wikilink', 'shortest'],
   ['wikilink', 'relative'],
-  // TODO(HiDeoo)
+  ['wikilink', 'absolute'],
 ]
 
 test('formats link URLs', async () => {
