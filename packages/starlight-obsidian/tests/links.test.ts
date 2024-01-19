@@ -9,6 +9,7 @@ const linkSyntaxAndFormats = [
   ['markdown', 'relative'],
   ['markdown', 'absolute'],
   ['wikilink', 'shortest'],
+  ['wikilink', 'relative'],
   // TODO(HiDeoo)
 ]
 

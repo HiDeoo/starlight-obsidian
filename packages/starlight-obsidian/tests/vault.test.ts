@@ -30,6 +30,7 @@ test.each([
   ['markdown', 'relative'],
   ['markdown', 'absolute'],
   ['wikilink', 'shortest'],
+  ['wikilink', 'relative'],
   // TODO(HiDeoo)
 ])('returns the correct vault options', async (syntax, format) => {
   const vault = await getVault(getFixtureConfig(`links-${syntax}-${format}`))

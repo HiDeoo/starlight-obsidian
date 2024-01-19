@@ -7,7 +7,7 @@ import { remark } from 'remark'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
 import { SKIP, visit } from 'unist-util-visit'
-import { VFile } from 'vfile'
+import { VFile, type DataMap } from 'vfile'
 
 import type { StarlightObsidianConfig } from '..'
 
@@ -71,12 +71,34 @@ function remarkReplacements() {
       [
         wikilinkReplacementRegex,
         (_match: string, urlOrText: string, text?: string) => {
-          const matchingFile = file.data.files?.find((vaultFile) => vaultFile.stem === urlOrText)
+          ensureTransformContext(file.data)
+
+          const matchingFile = file.data.files.find((vaultFile) => vaultFile.stem === urlOrText)
+
+          let url: string
+
+          switch (file.data.vault.options.linkFormat) {
+            case 'relative': {
+              url = getFileUrl(
+                file.data.output,
+                path.posix.join(getObsidianRelativePath(file.data.vault, file.dirname ?? ''), urlOrText),
+              )
+              break
+            }
+            case 'shortest': {
+              url = getFileUrl(file.data.output, matchingFile ? matchingFile.slug : urlOrText)
+              break
+            }
+            default: {
+              // TODO(HiDeoo) This should be removed once the `absolute` format is supported.
+              throw new Error(`Unsupported link format: ${file.data.vault.options.linkFormat}`)
+            }
+          }
 
           return {
             children: [{ type: 'text', value: text ?? urlOrText }],
             type: 'link',
-            url: getFileUrl(file.data.output ?? 'notes', matchingFile ? matchingFile.slug : urlOrText),
+            url,
           }
         },
       ],
@@ -87,8 +109,10 @@ function remarkReplacements() {
 function remarkLinks() {
   return function transformer(tree: Root, file: VFile) {
     visit(tree, 'link', (node) => {
+      ensureTransformContext(file.data)
+
       if (
-        file.data.vault?.options.linkSyntax === 'wikilink' ||
+        file.data.vault.options.linkSyntax === 'wikilink' ||
         isAbsoluteUrl(node.url) ||
         !file.dirname ||
         !file.data.output
@@ -97,13 +121,13 @@ function remarkLinks() {
       }
 
       const url = path.basename(decodeURIComponent(node.url))
-      const matchingFile = file.data.files?.find((vaultFile) => vaultFile.fileName === url)
+      const matchingFile = file.data.files.find((vaultFile) => vaultFile.fileName === url)
 
       if (!matchingFile) {
         return SKIP
       }
 
-      switch (file.data.vault?.options.linkFormat) {
+      switch (file.data.vault.options.linkFormat) {
         case 'relative': {
           node.url = getFileUrl(
             file.data.output,
@@ -119,9 +143,6 @@ function remarkLinks() {
           )
           break
         }
-        default: {
-          throw new Error(`Unsupported link format: ${file.data.vault?.options.linkFormat}`)
-        }
       }
 
       return SKIP
@@ -135,6 +156,12 @@ function getFrontmatterNodeValue(file: VFile) {
 
 function getFileUrl(output: StarlightObsidianConfig['output'], filePath: string) {
   return path.posix.join('/', output, slugifyObsidianPath(filePath))
+}
+
+function ensureTransformContext(maybeContext: Partial<DataMap>): asserts maybeContext is TransformContext {
+  if (!maybeContext.files || maybeContext.output === undefined || !maybeContext.vault) {
+    throw new Error('Invalid transform context.')
+  }
 }
 
 export interface TransformContext {
