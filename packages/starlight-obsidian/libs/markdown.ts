@@ -20,8 +20,8 @@ const parser = remark()
   .use(remarkReplacements)
   .use(remarkLinks)
 
-const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)*)==/g
-const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)*)%%/gs
+const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)+)==/g
+const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)+)%%/gs
 
 export async function transformMarkdown(filePath: string, markdown: string, context: TransformContext) {
   const file = new VFile({
