@@ -70,12 +70,22 @@ export function slugifyObsidianPath(obsidianPath: string) {
     .join('/')
 }
 
-export function slugifyObsidianAnchor(anchor: string) {
-  if (anchor.length === 0) {
+export function slugifyObsidianAnchor(obsidianAnchor: string) {
+  if (obsidianAnchor.length === 0) {
     return ''
   }
 
-  return `#${slug(decodeURIComponent(isAnchor(anchor) ? anchor.slice(1) : anchor))}`
+  let anchor = isAnchor(obsidianAnchor) ? obsidianAnchor.slice(1) : obsidianAnchor
+
+  if (isObsidianBlockAnchor(anchor)) {
+    anchor = anchor.replace('^', 'block-')
+  }
+
+  return `#${slug(decodeURIComponent(anchor))}`
+}
+
+export function isObsidianBlockAnchor(anchor: string) {
+  return anchor.startsWith('#^') || anchor.startsWith('^')
 }
 
 async function isVaultDirectory(vaultPath: string) {

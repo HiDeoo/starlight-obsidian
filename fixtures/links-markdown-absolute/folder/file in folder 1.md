@@ -23,3 +23,13 @@
 [Random heading](#Random%20heading)
 
 [Random heading](folder/nested%20folder/file%20in%20nested%20folder%201.md#Random%20heading)
+
+- Random list item ^folder-list-item
+
+[folder-list-item](#^folder-list-item)
+
+[Link to block in root 1](root%201.md#^root-list-item)
+
+[Link to block in file in folder 1](#^folder-list-item)
+
+[Link to block in file in nested folder 1](folder/nested%20folder/file%20in%20nested%20folder%201.md#^nested-folder-list-item)

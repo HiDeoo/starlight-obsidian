@@ -49,6 +49,16 @@ test('formats link URLs', async () => {
       [Random heading](/notes/folder/file-in-folder-1#random-heading)
 
       [Random heading](/notes/folder/nested-folder/file-in-nested-folder-1#random-heading)
+
+      * Random list item ^root-list-item
+
+      [root-list-item](#block-root-list-item)
+
+      [Link to block in root 1](#block-root-list-item)
+
+      [Link to block in file in folder 1](/notes/folder/file-in-folder-1#block-folder-list-item)
+
+      [Link to block in file in nested folder 1](/notes/folder/nested-folder/file-in-nested-folder-1#block-nested-folder-list-item)
       "
     `)
 
@@ -82,6 +92,16 @@ test('formats link URLs', async () => {
       [Random heading](#random-heading)
 
       [Random heading](/notes/folder/nested-folder/file-in-nested-folder-1#random-heading)
+
+      * Random list item ^folder-list-item
+
+      [folder-list-item](#block-folder-list-item)
+
+      [Link to block in root 1](/notes/root-1#block-root-list-item)
+
+      [Link to block in file in folder 1](#block-folder-list-item)
+
+      [Link to block in file in nested folder 1](/notes/folder/nested-folder/file-in-nested-folder-1#block-nested-folder-list-item)
       "
     `)
 
@@ -115,7 +135,20 @@ test('formats link URLs', async () => {
       [Random heading](/notes/folder/file-in-folder-1#random-heading)
 
       [Random heading](#random-heading)
+
+      * Random list item ^nested-folder-list-item
+
+      [nested-folder-list-item](#block-nested-folder-list-item)
+
+      [Link to block in root 1](/notes/root-1#block-root-list-item)
+
+      [Link to block in file in folder 1](/notes/folder/file-in-folder-1#block-folder-list-item)
+
+      [Link to block in file in nested folder 1](#block-nested-folder-list-item)
       "
     `)
   }
 })
+
+// TODO(HiDeoo) Implement a new remark plugin to add IDs
+// TODO(HiDeoo) Test in the example it works for all formats and syntaxes

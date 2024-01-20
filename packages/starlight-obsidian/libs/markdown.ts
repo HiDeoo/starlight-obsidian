@@ -13,6 +13,7 @@ import type { StarlightObsidianConfig } from '..'
 
 import {
   getObsidianRelativePath,
+  isObsidianBlockAnchor,
   slugifyObsidianAnchor,
   slugifyObsidianPath,
   type Vault,
@@ -88,7 +89,7 @@ function remarkReplacements() {
 
           if (isAnchor(url)) {
             fileUrl = slugifyObsidianAnchor(url)
-            text = url.slice(1)
+            text = maybeText ?? url.slice(isObsidianBlockAnchor(url) ? 2 : 1)
           } else {
             switch (file.data.vault.options.linkFormat) {
               case 'relative': {
