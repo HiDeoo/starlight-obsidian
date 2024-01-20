@@ -18,6 +18,7 @@
 *.tsbuildinfo
 build
 coverage
+docs/src/content/docs/notes
 dist
 dist-ssr
 example/src/content/docs/notes

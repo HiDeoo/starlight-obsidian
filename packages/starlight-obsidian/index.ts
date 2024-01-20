@@ -1,6 +1,7 @@
 import type { StarlightPlugin } from '@astrojs/starlight/types'
 import { z } from 'astro/zod'
 
+import { starlightObsidianIntegration } from './libs/integration'
 import { getObsidianPaths, getVault } from './libs/obsidian'
 import { throwUserError } from './libs/plugin'
 import { addObsidianFiles } from './libs/starlight'
@@ -27,10 +28,12 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
   return {
     name: 'starlight-obsidian-plugin',
     hooks: {
-      async setup({ config: starlightConfig, updateConfig }) {
+      async setup({ addIntegration, config: starlightConfig, updateConfig }) {
         const vault = await getVault(config)
         const obsidianPaths = await getObsidianPaths(vault)
         await addObsidianFiles(config, vault, obsidianPaths)
+
+        addIntegration(starlightObsidianIntegration())
 
         updateConfig({
           customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles'],

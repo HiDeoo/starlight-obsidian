@@ -4,8 +4,9 @@ import path from 'node:path'
 import { slug } from 'github-slugger'
 
 import type { StarlightObsidianConfig } from '..'
-import { transformMarkdown, type TransformContext } from '../libs/markdown'
+import { transformMarkdown } from '../libs/markdown'
 import { stripExtension } from '../libs/path'
+import type { TransformContext } from '../libs/remark'
 
 const fixturesPath = '../../fixtures'
 
