@@ -1,6 +1,9 @@
 ---
 title: Features
 description: // TODO(HiDeoo)
+head:
+  - tag: style
+    content: 'th:first-of-type { width: 100%; }'
 ---
 
 ## Basic formatting syntax
@@ -36,11 +39,12 @@ description: // TODO(HiDeoo)
 
 ## Embeds
 
-| Name                                                                                                                 | Supported |
-| :------------------------------------------------------------------------------------------------------------------- | :-------: |
-| [Note](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20note%20in%20another%20note)          |    ❌     |
-| [Image](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20image%20in%20a%20note)             |    ✅     |
-| [Audio file](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20audio%20file%20in%20a%20note) |    ❌     |
-| [PDF](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20PDF%20in%20a%20note)                  |    ❌     |
-| [List](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20list%20in%20a%20note)                |    ❌     |
-| [Search results](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20search%20results)              |    ❌     |
+| Name                                                                                                                     | Supported |
+| :----------------------------------------------------------------------------------------------------------------------- | :-------: |
+| [Note](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20note%20in%20another%20note)              |    ❌     |
+| [Image](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20image%20in%20a%20note)                 |    ✅     |
+| [Image with dimensions](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20image%20in%20a%20note) |    ❌     |
+| [Audio file](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20audio%20file%20in%20a%20note)     |    ❌     |
+| [PDF](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20PDF%20in%20a%20note)                      |    ❌     |
+| [List](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20list%20in%20a%20note)                    |    ❌     |
+| [Search results](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20search%20results)                  |    ❌     |
