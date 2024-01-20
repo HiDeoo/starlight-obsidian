@@ -19,3 +19,11 @@ export async function isFile(path: string) {
     return false
   }
 }
+
+export function ensureDirectory(path: string) {
+  return fs.mkdir(path, { recursive: true })
+}
+
+export function removeDirectory(path: string) {
+  return fs.rm(path, { force: true, recursive: true })
+}

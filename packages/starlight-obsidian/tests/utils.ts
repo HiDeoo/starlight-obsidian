@@ -42,9 +42,11 @@ export async function transformFixtureMdFile(
     files: options.context?.files ?? [
       {
         fileName,
+        fsPath: filePath,
         path: filePath,
         slug: slug(stripExtension(filePath)),
         stem: stripExtension(fileName),
+        type: 'content',
         uniqueFileName: true,
       },
     ],

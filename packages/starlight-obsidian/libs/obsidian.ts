@@ -75,6 +75,7 @@ export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): Va
 
     return {
       fileName,
+      fsPath: obsidianPath,
       path: filePath,
       slug: slugifyObsidianPath(filePath),
       stem: stripExtension(fileName),
@@ -162,6 +163,7 @@ interface VaultOptions {
 
 export interface VaultFile {
   fileName: string
+  fsPath: string
   // The path is relative to the vault root.
   path: string
   slug: string
