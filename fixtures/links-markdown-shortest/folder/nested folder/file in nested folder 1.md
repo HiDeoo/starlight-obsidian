@@ -33,3 +33,9 @@
 [Link to block in file in folder 1](file%20in%20folder%201.md#^folder-list-item)
 
 [Link to block in file in nested folder 1](#^nested-folder-list-item)
+
+[A link to a file](An%20image.png)
+
+[A link to a file in folder](An%20image%20in%20folder.png)
+
+[A link to a file in nested folder](An%20image%20in%20nested%20folder.png)

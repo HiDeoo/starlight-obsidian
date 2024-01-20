@@ -60,7 +60,9 @@ export function remarkReplacements() {
           ensureTransformContext(file.data)
 
           const [urlPath, urlAnchor] = extractPathAndAnchor(url)
-          const matchingFile = file.data.files.find((vaultFile) => vaultFile.stem === urlPath)
+          const matchingFile = file.data.files.find(
+            (vaultFile) => vaultFile.stem === urlPath || vaultFile.fileName === urlPath,
+          )
 
           let fileUrl: string
           let text = maybeText ?? url

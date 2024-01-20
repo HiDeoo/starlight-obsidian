@@ -59,6 +59,12 @@ test('formats link URLs', async () => {
       [Link to block in file in folder 1](/notes/folder/file-in-folder-1#block-folder-list-item)
 
       [Link to block in file in nested folder 1](/notes/folder/nested-folder/file-in-nested-folder-1#block-nested-folder-list-item)
+
+      [A link to a file](</notes/An image.png>)
+
+      [A link to a file in folder](</notes/folder/An image in folder.png>)
+
+      [A link to a file in nested folder](</notes/folder/nested-folder/An image in nested folder.png>)
       "
     `)
 
@@ -102,6 +108,12 @@ test('formats link URLs', async () => {
       [Link to block in file in folder 1](#block-folder-list-item)
 
       [Link to block in file in nested folder 1](/notes/folder/nested-folder/file-in-nested-folder-1#block-nested-folder-list-item)
+
+      [A link to a file](</notes/An image.png>)
+
+      [A link to a file in folder](</notes/folder/An image in folder.png>)
+
+      [A link to a file in nested folder](</notes/folder/nested-folder/An image in nested folder.png>)
       "
     `)
 
@@ -145,10 +157,13 @@ test('formats link URLs', async () => {
       [Link to block in file in folder 1](/notes/folder/file-in-folder-1#block-folder-list-item)
 
       [Link to block in file in nested folder 1](#block-nested-folder-list-item)
+
+      [A link to a file](</notes/An image.png>)
+
+      [A link to a file in folder](</notes/folder/An image in folder.png>)
+
+      [A link to a file in nested folder](</notes/folder/nested-folder/An image in nested folder.png>)
       "
     `)
   }
 })
-
-// TODO(HiDeoo) Implement a new remark plugin to add IDs
-// TODO(HiDeoo) Test in the example it works for all formats and syntaxes

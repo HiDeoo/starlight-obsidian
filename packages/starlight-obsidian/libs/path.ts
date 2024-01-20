@@ -1,5 +1,9 @@
 import path from 'node:path'
 
+export function getExtension(filePath: string) {
+  return path.parse(filePath).ext
+}
+
 export function stripExtension(filePath: string) {
   return path.parse(filePath).name
 }

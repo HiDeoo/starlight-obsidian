@@ -18,6 +18,12 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
   // TODO(HiDeoo) worker? queue? parallel?
   await Promise.all(
     obsidianPaths.map(async (obsidianPath, index) => {
+      const vaultFile = vaultFiles[index]
+
+      if (vaultFile?.type === 'asset') {
+        return
+      }
+
       const obsidianContent = await fs.readFile(obsidianPath, 'utf8')
       const starlightContent = await transformMarkdown(obsidianPath, obsidianContent, {
         files: vaultFiles,

@@ -8,13 +8,37 @@ import { globby } from 'globby'
 import type { StarlightObsidianConfig } from '..'
 
 import { isDirectory, isFile } from './fs'
-import { isAnchor, stripExtension } from './path'
+import { getExtension, isAnchor, stripExtension } from './path'
 import { throwUserError } from './plugin'
 
 const obsidianAppConfigSchema = z.object({
   newLinkFormat: z.union([z.literal('absolute'), z.literal('relative'), z.literal('shortest')]).default('shortest'),
   useMarkdownLinks: z.boolean().default(false),
 })
+
+const assetsFileFormats = new Set([
+  '.avif',
+  '.bmp',
+  '.gif',
+  '.jpeg',
+  '.jpg',
+  '.png',
+  '.svg',
+  '.webp',
+  '.flac',
+  '.m4a',
+  '.mp3',
+  '.wav',
+  '.ogg',
+  '.wav',
+  '.3gp',
+  '.mkv',
+  '.mov',
+  '.mp4',
+  '.ogv',
+  '.webm',
+  '.pdf',
+])
 
 export async function getVault(config: StarlightObsidianConfig): Promise<Vault> {
   const vaultPath = path.resolve(config.vault)
@@ -36,7 +60,10 @@ export async function getVault(config: StarlightObsidianConfig): Promise<Vault> 
 }
 
 export function getObsidianPaths(vault: Vault) {
-  return globby('**/*.md', { absolute: true, cwd: vault.path })
+  return globby(['**/*.md', ...[...assetsFileFormats].map((fileFormat) => `**/*${fileFormat}`)], {
+    absolute: true,
+    cwd: vault.path,
+  })
 }
 
 export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): VaultFile[] {
@@ -51,6 +78,7 @@ export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): Va
       path: filePath,
       slug: slugifyObsidianPath(filePath),
       stem: stripExtension(fileName),
+      type: isObsidianAsset(fileName) ? 'asset' : 'content',
       uniqueFileName: allFileNames.filter((currentFileName) => currentFileName === fileName).length === 1,
     }
   })
@@ -64,9 +92,17 @@ export function slugifyObsidianPath(obsidianPath: string) {
   const segments = obsidianPath.split('/')
 
   return segments
-    .map((segment, index) =>
-      slug(decodeURIComponent(index === segments.length - 1 ? stripExtension(segment) : segment)),
-    )
+    .map((segment, index) => {
+      const isLastSegment = index === segments.length - 1
+
+      if (!isLastSegment) {
+        return slug(decodeURIComponent(segment))
+      } else if (isObsidianAsset(segment)) {
+        return decodeURIComponent(segment)
+      }
+
+      return slug(decodeURIComponent(stripExtension(segment)))
+    })
     .join('/')
 }
 
@@ -110,6 +146,10 @@ async function getVaultOptions(vaultPath: string): Promise<VaultOptions> {
   }
 }
 
+function isObsidianAsset(filePath: string) {
+  return assetsFileFormats.has(getExtension(filePath))
+}
+
 export interface Vault {
   options: VaultOptions
   path: string
@@ -127,5 +167,6 @@ export interface VaultFile {
   slug: string
   // This represent the file name without the extension.
   stem: string
+  type: 'content' | 'asset'
   uniqueFileName: boolean
 }

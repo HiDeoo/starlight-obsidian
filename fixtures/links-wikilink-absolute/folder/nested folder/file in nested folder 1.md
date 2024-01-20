@@ -33,3 +33,9 @@
 [[folder/file in folder 1#^folder-list-item|Link to block in file in folder 1]]
 
 [[#^nested-folder-list-item|Link to block in file in nested folder 1]]
+
+[[An image.png|A link to a file]]
+
+[[folder/An image in folder.png|A link to a file in folder]]
+
+[[folder/nested folder/An image in nested folder.png|A link to a file in nested folder]]
