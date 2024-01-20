@@ -8,6 +8,15 @@ import { transformMarkdown } from '../libs/markdown'
 import { stripExtension } from '../libs/path'
 import type { TransformContext } from '../libs/remark'
 
+export const linkSyntaxAndFormats = [
+  ['markdown', 'absolute'],
+  ['markdown', 'relative'],
+  ['markdown', 'shortest'],
+  ['wikilink', 'absolute'],
+  ['wikilink', 'relative'],
+  ['wikilink', 'shortest'],
+]
+
 const fixturesPath = '../../fixtures'
 
 export function getFixtureConfig(

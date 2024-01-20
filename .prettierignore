@@ -8,5 +8,6 @@ build
 coverage
 dist
 dist-ssr
+fixtures/**/*.json
 out
 pnpm-lock.yaml

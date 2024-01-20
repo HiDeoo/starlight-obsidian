@@ -4,7 +4,7 @@ import isAbsoluteUrl from 'is-absolute-url'
 import type { Root } from 'mdast'
 import { findAndReplace } from 'mdast-util-find-and-replace'
 import { SKIP, visit } from 'unist-util-visit'
-import type { VFile, DataMap } from 'vfile'
+import type { VFile } from 'vfile'
 
 import type { StarlightObsidianConfig } from '..'
 
@@ -20,7 +20,7 @@ import { extractPathAndAnchor, isAnchor } from './path'
 
 const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)+)==/g
 const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)+)%%/gs
-const wikilinkReplacementRegex = /\[\[(?<url>(?:(?![[\]|]).)+)(?:\|(?<maybeText>(?:(?![[\]|]).)+))?]]/g
+const wikilinkReplacementRegex = /!?\[\[(?<url>(?:(?![[\]|]).)+)(?:\|(?<maybeText>(?:(?![[\]|]).)+))?]]/g
 
 export function remarkEnsureFrontmatter() {
   return function transformer(tree: Root, file: VFile) {
@@ -56,13 +56,8 @@ export function remarkReplacements() {
       [commentReplacementRegex, null],
       [
         wikilinkReplacementRegex,
-        (_match: string, url: string, maybeText?: string) => {
-          ensureTransformContext(file.data)
-
-          const [urlPath, urlAnchor] = extractPathAndAnchor(url)
-          const matchingFile = file.data.files.find(
-            (vaultFile) => vaultFile.stem === urlPath || vaultFile.fileName === urlPath,
-          )
+        (match: string, url: string, maybeText?: string) => {
+          ensureTransformContext(file)
 
           let fileUrl: string
           let text = maybeText ?? url
@@ -71,13 +66,14 @@ export function remarkReplacements() {
             fileUrl = slugifyObsidianAnchor(url)
             text = maybeText ?? url.slice(isObsidianBlockAnchor(url) ? 2 : 1)
           } else {
+            const [urlPath, urlAnchor] = extractPathAndAnchor(url)
+            const matchingFile = file.data.files.find(
+              (vaultFile) => vaultFile.stem === urlPath || vaultFile.fileName === urlPath,
+            )
+
             switch (file.data.vault.options.linkFormat) {
               case 'relative': {
-                fileUrl = getFileUrl(
-                  file.data.output,
-                  path.posix.join(getObsidianRelativePath(file.data.vault, file.dirname ?? ''), urlPath),
-                  urlAnchor,
-                )
+                fileUrl = getFileUrl(file.data.output, getRelativeFilePath(file, urlPath), urlAnchor)
                 break
               }
               case 'absolute':
@@ -85,6 +81,14 @@ export function remarkReplacements() {
                 fileUrl = getFileUrl(file.data.output, matchingFile ? matchingFile.slug : urlPath, urlAnchor)
                 break
               }
+            }
+          }
+
+          if (match.startsWith('!')) {
+            return {
+              type: 'image',
+              url: fileUrl,
+              alt: text,
             }
           }
 
@@ -102,7 +106,7 @@ export function remarkReplacements() {
 export function remarkMarkdownLinks() {
   return function transformer(tree: Root, file: VFile) {
     visit(tree, 'link', (node) => {
-      ensureTransformContext(file.data)
+      ensureTransformContext(file)
 
       if (file.data.vault.options.linkSyntax === 'wikilink' || isAbsoluteUrl(node.url) || !file.dirname) {
         return SKIP
@@ -123,11 +127,7 @@ export function remarkMarkdownLinks() {
 
       switch (file.data.vault.options.linkFormat) {
         case 'relative': {
-          node.url = getFileUrl(
-            file.data.output,
-            path.posix.join(getObsidianRelativePath(file.data.vault, file.dirname), node.url),
-            urlAnchor,
-          )
+          node.url = getFileUrl(file.data.output, getRelativeFilePath(file, node.url), urlAnchor)
           break
         }
         case 'absolute':
@@ -146,6 +146,43 @@ export function remarkMarkdownLinks() {
   }
 }
 
+export function remarkMarkdownImages() {
+  return function transformer(tree: Root, file: VFile) {
+    visit(tree, 'image', (node) => {
+      ensureTransformContext(file)
+
+      if (file.data.vault.options.linkSyntax === 'wikilink' || isAbsoluteUrl(node.url) || !file.dirname) {
+        return SKIP
+      }
+
+      switch (file.data.vault.options.linkFormat) {
+        case 'relative': {
+          node.url = getFileUrl(file.data.output, getRelativeFilePath(file, node.url))
+          break
+        }
+        case 'absolute': {
+          node.url = getFileUrl(file.data.output, slugifyObsidianPath(node.url))
+          break
+        }
+        case 'shortest': {
+          const url = path.basename(decodeURIComponent(node.url))
+          const [urlPath] = extractPathAndAnchor(url)
+          const matchingFile = file.data.files.find((vaultFile) => vaultFile.fileName === urlPath)
+
+          if (!matchingFile) {
+            break
+          }
+
+          node.url = getFileUrl(file.data.output, matchingFile.slug)
+          break
+        }
+      }
+
+      return SKIP
+    })
+  }
+}
+
 function getFrontmatterNodeValue(file: VFile) {
   return `title: ${file.stem}`
 }
@@ -154,8 +191,14 @@ function getFileUrl(output: StarlightObsidianConfig['output'], filePath: string,
   return `${path.posix.join('/', output, slugifyObsidianPath(filePath))}${slugifyObsidianAnchor(anchor ?? '')}`
 }
 
-function ensureTransformContext(maybeContext: Partial<DataMap>): asserts maybeContext is TransformContext {
-  if (!maybeContext.files || maybeContext.output === undefined || !maybeContext.vault) {
+function getRelativeFilePath(file: VFile, relativePath: string) {
+  ensureTransformContext(file)
+
+  return path.posix.join(getObsidianRelativePath(file.data.vault, file.dirname), relativePath)
+}
+
+function ensureTransformContext(file: VFile): asserts file is VFile & { data: TransformContext; dirname: string } {
+  if (!file.dirname || !file.data.files || file.data.output === undefined || !file.data.vault) {
     throw new Error('Invalid transform context.')
   }
 }

@@ -4,7 +4,7 @@ import { expect, test } from 'vitest'
 
 import { getVault } from '../libs/obsidian'
 
-import { getFixtureConfig } from './utils'
+import { getFixtureConfig, linkSyntaxAndFormats } from './utils'
 
 test('returns a vault with an absolute path', async () => {
   const vault = await getVault(getFixtureConfig('basics'))
@@ -25,19 +25,15 @@ test('throws if the specified vault path is not a valid vault directory', async 
   )
 })
 
-test.each([
-  ['markdown', 'shortest'],
-  ['markdown', 'relative'],
-  ['markdown', 'absolute'],
-  ['wikilink', 'shortest'],
-  ['wikilink', 'relative'],
-  ['wikilink', 'absolute'],
-])('returns the correct vault options', async (syntax, format) => {
-  const vault = await getVault(getFixtureConfig(`links-${syntax}-${format}`))
+test.each(linkSyntaxAndFormats)(
+  'returns the correct vault options in %s with the %s format',
+  async (syntax, format) => {
+    const vault = await getVault(getFixtureConfig(`links-${syntax}-${format}`))
 
-  expect(vault.options.linkFormat).toBe(format)
-  expect(vault.options.linkSyntax).toBe(syntax)
-})
+    expect(vault.options.linkFormat).toBe(format)
+    expect(vault.options.linkSyntax).toBe(syntax)
+  },
+)
 
 test('returns the default vault options', async () => {
   const vault = await getVault(getFixtureConfig('basics'))

@@ -33,3 +33,14 @@ description: // TODO(HiDeoo)
 | [Internal block links](https://help.obsidian.md/Linking+notes+and+files/Internal+links#Link%20to%20a%20block%20in%20a%20note)                   |    ✅     |
 | [Internal links with custom display text](https://help.obsidian.md/Linking+notes+and+files/Internal+links#Change%20the%20link%20display%20text) |    ✅     |
 | [External links](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#External%20links)                                      |    ✅     |
+
+## Embeds
+
+| Name                                                                                                                 | Supported |
+| :------------------------------------------------------------------------------------------------------------------- | :-------: |
+| [Note](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20note%20in%20another%20note)          |    ❌     |
+| [Image](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20image%20in%20a%20note)             |    ✅     |
+| [Audio file](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20audio%20file%20in%20a%20note) |    ❌     |
+| [PDF](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20PDF%20in%20a%20note)                  |    ❌     |
+| [List](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20list%20in%20a%20note)                |    ❌     |
+| [Search results](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20search%20results)              |    ❌     |

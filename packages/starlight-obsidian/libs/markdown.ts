@@ -3,7 +3,13 @@ import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
 import { VFile } from 'vfile'
 
-import { remarkEnsureFrontmatter, remarkMarkdownLinks, remarkReplacements, type TransformContext } from './remark'
+import {
+  remarkEnsureFrontmatter,
+  remarkMarkdownImages,
+  remarkMarkdownLinks,
+  remarkReplacements,
+  type TransformContext,
+} from './remark'
 
 const processor = remark()
   .use(remarkGfm)
@@ -11,6 +17,7 @@ const processor = remark()
   .use(remarkEnsureFrontmatter)
   .use(remarkReplacements)
   .use(remarkMarkdownLinks)
+  .use(remarkMarkdownImages)
 
 export async function transformMarkdown(filePath: string, markdown: string, context: TransformContext) {
   const file = new VFile({
