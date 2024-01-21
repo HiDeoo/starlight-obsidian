@@ -7,7 +7,6 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
-    "./katex": "./katex.css",
     "./styles": "./styles.css",
     "./package.json": "./package.json"
   },
