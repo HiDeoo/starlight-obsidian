@@ -11,3 +11,13 @@
 .sl-obs-highlight {
   background-color: var(--sl-obs-highlight);
 }
+
+.sl-markdown-content .sl-obs-embed-audio {
+  width: 100%;
+}
+
+.sl-markdown-content .sl-obs-embed-pdf {
+  border: none;
+  height: 600px;
+  width: 100%;
+}

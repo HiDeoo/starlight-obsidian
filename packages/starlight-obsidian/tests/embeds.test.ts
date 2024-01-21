@@ -10,11 +10,11 @@ const expectedMd = `![An image](</notes/An image.png>)
 
 ![An image in nested folder](</notes/folder/nested-folder/An image in nested folder.png>)
 
-<audio controls src="/notes/A sound.mp3"></audio>
+<audio class="sl-obs-embed-audio" controls src="/notes/A sound.mp3"></audio>
 
-<audio controls src="/notes/folder/A sound.mp3"></audio>
+<audio class="sl-obs-embed-audio" controls src="/notes/folder/A sound.mp3"></audio>
 
-<audio controls src="/notes/folder/nested-folder/A sound.mp3"></audio>
+<audio class="sl-obs-embed-audio" controls src="/notes/folder/nested-folder/A sound.mp3"></audio>
 `
 
 // This only tests image and audio embeds as the URL processing is the same for all embeds.
@@ -46,9 +46,11 @@ test('transforms supported embeds', async () => {
   expect(md).toMatchInlineSnapshot(`
     "![An image.png](</notes/An image.png>)
 
-    <audio controls src="/notes/A sound.mp3"></audio>
+    <audio class="sl-obs-embed-audio" controls src="/notes/A sound.mp3"></audio>
 
-    <video controls src="/notes/A Video.webm"></video>
+    <video class="sl-obs-embed-video" controls src="/notes/A Video.webm"></video>
+
+    <iframe class="sl-obs-embed-pdf" src="/notes/A PDF.pdf"></iframe>
     "
   `)
 })

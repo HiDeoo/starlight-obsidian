@@ -225,19 +225,18 @@ function getCustomAssetNode(filePath: string): RootContent {
   if (isObsidianAsset(filePath, 'audio')) {
     return {
       type: 'html',
-      value: `<audio controls src="${filePath}"></audio>`,
+      value: `<audio class="sl-obs-embed-audio" controls src="${filePath}"></audio>`,
     }
   } else if (isObsidianAsset(filePath, 'video')) {
     return {
       type: 'html',
-      value: `<video controls src="${filePath}"></video>`,
+      value: `<video class="sl-obs-embed-video" controls src="${filePath}"></video>`,
     }
   }
 
-  // FIXME(HiDeoo)
   return {
-    type: 'text',
-    value: `// TODO(HiDeoo) `,
+    type: 'html',
+    value: `<iframe class="sl-obs-embed-pdf" src="${filePath}"></iframe>`,
   }
 }
 
