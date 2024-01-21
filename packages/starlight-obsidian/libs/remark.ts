@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import isAbsoluteUrl from 'is-absolute-url'
-import type { Root } from 'mdast'
+import type { Root, RootContent } from 'mdast'
 import { findAndReplace } from 'mdast-util-find-and-replace'
 import { SKIP, visit } from 'unist-util-visit'
 import type { VFile } from 'vfile'
@@ -10,6 +10,7 @@ import type { StarlightObsidianConfig } from '..'
 
 import {
   getObsidianRelativePath,
+  isObsidianAsset,
   isObsidianBlockAnchor,
   slugifyObsidianAnchor,
   slugifyObsidianPath,
@@ -78,7 +79,11 @@ export function remarkReplacements() {
               }
               case 'absolute':
               case 'shortest': {
-                fileUrl = getFileUrl(file.data.output, matchingFile ? matchingFile.slug : urlPath, urlAnchor)
+                fileUrl = getFileUrl(
+                  file.data.output,
+                  matchingFile ? getFilePathFromVaultFile(matchingFile, urlPath) : urlPath,
+                  urlAnchor,
+                )
                 break
               }
             }
@@ -132,11 +137,7 @@ export function remarkMarkdownLinks() {
         }
         case 'absolute':
         case 'shortest': {
-          node.url = getFileUrl(
-            file.data.output,
-            matchingFile.uniqueFileName ? matchingFile.slug : slugifyObsidianPath(node.url),
-            urlAnchor,
-          )
+          node.url = getFileUrl(file.data.output, getFilePathFromVaultFile(matchingFile, node.url), urlAnchor)
           break
         }
       }
@@ -148,35 +149,49 @@ export function remarkMarkdownLinks() {
 
 export function remarkMarkdownImages() {
   return function transformer(tree: Root, file: VFile) {
-    visit(tree, 'image', (node) => {
+    visit(tree, 'image', (node, index, parent) => {
       ensureTransformContext(file)
 
-      if (file.data.vault.options.linkSyntax === 'wikilink' || isAbsoluteUrl(node.url) || !file.dirname) {
+      if (isAbsoluteUrl(node.url) || !file.dirname) {
         return SKIP
       }
 
-      switch (file.data.vault.options.linkFormat) {
-        case 'relative': {
-          node.url = getFileUrl(file.data.output, getRelativeFilePath(file, node.url))
-          break
-        }
-        case 'absolute': {
-          node.url = getFileUrl(file.data.output, slugifyObsidianPath(node.url))
-          break
-        }
-        case 'shortest': {
-          const url = path.basename(decodeURIComponent(node.url))
-          const [urlPath] = extractPathAndAnchor(url)
-          const matchingFile = file.data.files.find((vaultFile) => vaultFile.fileName === urlPath)
+      let fileUrl = node.url
 
-          if (!matchingFile) {
+      if (file.data.vault.options.linkSyntax !== 'wikilink') {
+        switch (file.data.vault.options.linkFormat) {
+          case 'relative': {
+            fileUrl = getFileUrl(file.data.output, getRelativeFilePath(file, node.url))
             break
           }
+          case 'absolute': {
+            fileUrl = getFileUrl(file.data.output, slugifyObsidianPath(node.url))
+            break
+          }
+          case 'shortest': {
+            const url = path.basename(decodeURIComponent(node.url))
+            const [urlPath] = extractPathAndAnchor(url)
+            const matchingFile = file.data.files.find((vaultFile) => vaultFile.fileName === urlPath)
 
-          node.url = getFileUrl(file.data.output, matchingFile.slug)
-          break
+            if (!matchingFile) {
+              break
+            }
+
+            fileUrl = getFileUrl(file.data.output, getFilePathFromVaultFile(matchingFile, node.url))
+            break
+          }
         }
       }
+
+      const isCustom = isCustonAsset(node.url)
+
+      if (isCustom && parent && index !== undefined) {
+        parent.children[index] = getCustomAssetNode(fileUrl)
+
+        return SKIP
+      }
+
+      node.url = fileUrl
 
       return SKIP
     })
@@ -195,6 +210,30 @@ function getRelativeFilePath(file: VFile, relativePath: string) {
   ensureTransformContext(file)
 
   return path.posix.join(getObsidianRelativePath(file.data.vault, file.dirname), relativePath)
+}
+
+function getFilePathFromVaultFile(vaultFile: VaultFile, url: string) {
+  return vaultFile.uniqueFileName ? vaultFile.slug : slugifyObsidianPath(url)
+}
+
+// Custom asset nodes are replaced by a custom HTML node, e.g. an audio player for audio files, etc.
+function isCustonAsset(filePath: string) {
+  return isObsidianAsset(filePath) && !isObsidianAsset(filePath, 'image')
+}
+
+function getCustomAssetNode(filePath: string): RootContent {
+  if (isObsidianAsset(filePath, 'audio')) {
+    return {
+      type: 'html',
+      value: `<audio controls src="${filePath}"></audio>`,
+    }
+  }
+
+  // FIXME(HiDeoo)
+  return {
+    type: 'text',
+    value: `// TODO(HiDeoo) `,
+  }
 }
 
 function ensureTransformContext(file: VFile): asserts file is VFile & { data: TransformContext; dirname: string } {

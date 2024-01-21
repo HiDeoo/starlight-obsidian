@@ -16,28 +16,16 @@ const obsidianAppConfigSchema = z.object({
   useMarkdownLinks: z.boolean().default(false),
 })
 
+const imageAssetsFileFormats = new Set(['.avif', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
+const audioAssetsFileFormats = new Set(['.flac', '.m4a', '.mp3', '.wav', '.ogg', '.wav', '.3gp'])
+const videoASsetsFileFormats = new Set(['.mkv', '.mov', '.mp4', '.ogv', '.webm'])
+const otherAssetsFileFormats = new Set(['.pdf'])
+
 const assetsFileFormats = new Set([
-  '.avif',
-  '.bmp',
-  '.gif',
-  '.jpeg',
-  '.jpg',
-  '.png',
-  '.svg',
-  '.webp',
-  '.flac',
-  '.m4a',
-  '.mp3',
-  '.wav',
-  '.ogg',
-  '.wav',
-  '.3gp',
-  '.mkv',
-  '.mov',
-  '.mp4',
-  '.ogv',
-  '.webm',
-  '.pdf',
+  ...imageAssetsFileFormats,
+  ...audioAssetsFileFormats,
+  ...videoASsetsFileFormats,
+  ...otherAssetsFileFormats,
 ])
 
 export async function getVault(config: StarlightObsidianConfig): Promise<Vault> {
@@ -125,6 +113,21 @@ export function isObsidianBlockAnchor(anchor: string) {
   return anchor.startsWith('#^') || anchor.startsWith('^')
 }
 
+export function isObsidianAsset(filePath: string, type?: 'image' | 'audio' | 'video' | 'other') {
+  const formats: Set<string> =
+    type === undefined
+      ? assetsFileFormats
+      : type === 'image'
+        ? imageAssetsFileFormats
+        : type === 'audio'
+          ? audioAssetsFileFormats
+          : type === 'video'
+            ? videoASsetsFileFormats
+            : otherAssetsFileFormats
+
+  return formats.has(getExtension(filePath))
+}
+
 async function isVaultDirectory(vaultPath: string) {
   const configPath = path.join(vaultPath, '.obsidian')
 
@@ -145,10 +148,6 @@ async function getVaultOptions(vaultPath: string): Promise<VaultOptions> {
   } catch (error) {
     throw new Error('Failed to read Obsidian vault app configuration.', { cause: error })
   }
-}
-
-function isObsidianAsset(filePath: string) {
-  return assetsFileFormats.has(getExtension(filePath))
 }
 
 export interface Vault {
