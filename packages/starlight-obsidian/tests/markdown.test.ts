@@ -40,3 +40,28 @@ test('sets the proper title', async () => {
 
   expect(md).toMatch(/^title: Basic syntax \(comments\)$/m)
 })
+
+test('renders tables', async () => {
+  const md = await transformFixtureMdFile('basics', 'Tables.md')
+
+  expect(md).toMatchInlineSnapshot(`
+    "| First name | Last name |
+    | ---------- | --------- |
+    | Max        | Planck    |
+    | Marie      | Curie     |
+
+    | First name | Last name |
+    | ---------- | --------- |
+    | Max        | Planck    |
+    | Marie      | Curie     |
+
+    | First column                        | Second column                          |
+    | ----------------------------------- | -------------------------------------- |
+    | [Link to file](/notes/basic-syntax) | ![An image.png](</notes/An image.png>) |
+
+    | Left-aligned text | Center-aligned text | Right-aligned text |
+    | :---------------- | :-----------------: | -----------------: |
+    | Content           |       Content       |            Content |
+    "
+  `)
+})

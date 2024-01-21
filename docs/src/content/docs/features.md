@@ -25,6 +25,14 @@ head:
 | [Footnotes](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Footnotes)                                     |    ✅     |
 | [Comments](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Comments)                                       |    ✅     |
 
+## Advanced formatting syntax
+
+| Name                                                                                          | Supported |
+| :-------------------------------------------------------------------------------------------- | :-------: |
+| [Tables](https://help.obsidian.md/Editing+and+formatting/Advanced+formatting+syntax#Tables)   |    ✅     |
+| [Diagram](https://help.obsidian.md/Editing+and+formatting/Advanced+formatting+syntax#Diagram) |    ❌     |
+| [Math](https://help.obsidian.md/Editing+and+formatting/Advanced+formatting+syntax#Math)       |    ❌     |
+
 ## Links
 
 | Name                                                                                                                                            | Supported |
