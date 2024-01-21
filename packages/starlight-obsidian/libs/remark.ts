@@ -1,13 +1,15 @@
+import fs from 'node:fs'
 import path from 'node:path'
 
 import isAbsoluteUrl from 'is-absolute-url'
-import type { Root, RootContent } from 'mdast'
+import type { BlockContent, Parent, Root, RootContent } from 'mdast'
 import { findAndReplace } from 'mdast-util-find-and-replace'
 import { SKIP, visit } from 'unist-util-visit'
 import type { VFile } from 'vfile'
 
 import type { StarlightObsidianConfig } from '..'
 
+import { transformMarkdownToAST } from './markdown'
 import {
   getObsidianRelativePath,
   isObsidianAsset,
@@ -17,7 +19,7 @@ import {
   type Vault,
   type VaultFile,
 } from './obsidian'
-import { extractPathAndAnchor, isAnchor } from './path'
+import { extractPathAndAnchor, getExtension, isAnchor } from './path'
 
 const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)+)==/g
 const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)+)%%/gs
@@ -92,7 +94,7 @@ export function remarkReplacements() {
           if (match.startsWith('!')) {
             return {
               type: 'image',
-              url: fileUrl,
+              url: isMarkdownAsset(url, file) ? url : fileUrl,
               alt: text,
             }
           }
@@ -147,12 +149,17 @@ export function remarkMarkdownLinks() {
   }
 }
 
-export function remarkMarkdownImages() {
+export function remarkMarkdownAssets() {
   return function transformer(tree: Root, file: VFile) {
     visit(tree, 'image', (node, index, parent) => {
       ensureTransformContext(file)
 
       if (isAbsoluteUrl(node.url) || !file.dirname) {
+        return SKIP
+      }
+
+      if (isMarkdownAsset(node.url, file)) {
+        replaceNode(parent, index, getMarkdownAssetNode(file, node.url))
         return SKIP
       }
 
@@ -183,10 +190,8 @@ export function remarkMarkdownImages() {
         }
       }
 
-      const isCustom = isCustonAsset(node.url)
-
-      if (isCustom && parent && index !== undefined) {
-        parent.children[index] = getCustomAssetNode(fileUrl)
+      if (isCustomAsset(node.url)) {
+        replaceNode(parent, index, getCustomAssetNode(fileUrl))
 
         return SKIP
       }
@@ -216,8 +221,15 @@ function getFilePathFromVaultFile(vaultFile: VaultFile, url: string) {
   return vaultFile.uniqueFileName ? vaultFile.slug : slugifyObsidianPath(url)
 }
 
+function isMarkdownAsset(filePath: string, file: VFile) {
+  return (
+    (file.data.vault?.options.linkSyntax === 'markdown' && filePath.endsWith('.md')) ||
+    getExtension(filePath).length === 0
+  )
+}
+
 // Custom asset nodes are replaced by a custom HTML node, e.g. an audio player for audio files, etc.
-function isCustonAsset(filePath: string) {
+function isCustomAsset(filePath: string) {
   return isObsidianAsset(filePath) && !isObsidianAsset(filePath, 'image')
 }
 
@@ -238,6 +250,44 @@ function getCustomAssetNode(filePath: string): RootContent {
     type: 'html',
     value: `<iframe class="sl-obs-embed-pdf" src="${filePath}"></iframe>`,
   }
+}
+
+function getMarkdownAssetNode(file: VFile, fileUrl: string): RootContent {
+  ensureTransformContext(file)
+
+  const fileExt = file.data.vault.options.linkSyntax === 'wikilink' ? '.md' : ''
+  const filePath = decodeURIComponent(
+    file.data.vault.options.linkFormat === 'relative' ? getRelativeFilePath(file, fileUrl) : fileUrl,
+  )
+  const url = path.join('/', `${filePath}${fileExt}`)
+
+  const matchingFile = file.data.files.find((vaultFile) => vaultFile.path === url)
+
+  if (!matchingFile) {
+    return { type: 'text', value: '' }
+  }
+
+  const content = fs.readFileSync(matchingFile.fsPath, 'utf8')
+  const root = transformMarkdownToAST(matchingFile.fsPath, content, file.data)
+
+  return {
+    type: 'blockquote',
+    children: [
+      {
+        type: 'html',
+        value: `<strong>${matchingFile.stem}</strong>`,
+      },
+      ...(root.children as BlockContent[]),
+    ],
+  }
+}
+
+function replaceNode(parent: Parent | undefined, index: number | undefined, replacement: RootContent) {
+  if (!parent || index === undefined) {
+    return
+  }
+
+  parent.children[index] = replacement
 }
 
 function ensureTransformContext(file: VFile): asserts file is VFile & { data: TransformContext; dirname: string } {

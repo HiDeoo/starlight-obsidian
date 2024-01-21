@@ -4,7 +4,7 @@ import path from 'node:path'
 import type { StarlightObsidianConfig } from '..'
 
 import { ensureDirectory, removeDirectory } from './fs'
-import { transformMarkdown } from './markdown'
+import { transformMarkdownToString } from './markdown'
 import { getObsidianVaultFiles, type Vault, type VaultFile } from './obsidian'
 
 const docsPath = 'src/content/docs'
@@ -35,7 +35,7 @@ async function addContentFIle(
   vaultFile: VaultFile,
 ) {
   const obsidianContent = await fs.readFile(vaultFile.fsPath, 'utf8')
-  const starlightContent = await transformMarkdown(vaultFile.fsPath, obsidianContent, {
+  const starlightContent = transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
     files: vaultFiles,
     output: config.output,
     vault,

@@ -5,7 +5,7 @@ import { VFile } from 'vfile'
 
 import {
   remarkEnsureFrontmatter,
-  remarkMarkdownImages,
+  remarkMarkdownAssets,
   remarkMarkdownLinks,
   remarkReplacements,
   type TransformContext,
@@ -17,16 +17,22 @@ const processor = remark()
   .use(remarkEnsureFrontmatter)
   .use(remarkReplacements)
   .use(remarkMarkdownLinks)
-  .use(remarkMarkdownImages)
+  .use(remarkMarkdownAssets)
 
-export async function transformMarkdown(filePath: string, markdown: string, context: TransformContext) {
-  const file = new VFile({
+export function transformMarkdownToString(filePath: string, markdown: string, context: TransformContext) {
+  const compiled = processor.processSync(getVFile(filePath, markdown, context))
+
+  return String(compiled)
+}
+
+export function transformMarkdownToAST(filePath: string, markdown: string, context: TransformContext) {
+  return processor.parse(getVFile(filePath, markdown, context))
+}
+
+function getVFile(filePath: string, markdown: string, context: TransformContext) {
+  return new VFile({
     data: { ...context },
     path: filePath,
     value: markdown,
   })
-
-  const compiled = await processor.process(file)
-
-  return String(compiled)
 }

@@ -15,6 +15,24 @@ const expectedMd = `![An image](</notes/An image.png>)
 <audio class="sl-obs-embed-audio" controls src="/notes/folder/A sound.mp3"></audio>
 
 <audio class="sl-obs-embed-audio" controls src="/notes/folder/nested-folder/A sound.mp3"></audio>
+
+> <strong>duplicate file name</strong>
+>
+> ## test
+>
+> root content
+
+> <strong>duplicate file name</strong>
+>
+> ## test
+>
+> content in folder
+
+> <strong>duplicate file name</strong>
+>
+> ## test
+>
+> content in nested folder
 `
 
 // This only tests image and audio embeds as the URL processing is the same for all embeds.

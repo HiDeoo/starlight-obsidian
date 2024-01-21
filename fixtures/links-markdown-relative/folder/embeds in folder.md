@@ -9,3 +9,9 @@
 ![A sound in folder](A%20sound.mp3)
 
 ![A sound in nested folder](nested%20folder/A%20sound.mp3)
+
+![duplicate file name](../duplicate%20file%20name.md)
+
+![duplicate file name](duplicate%20file%20name.md)
+
+![duplicate file name](nested%20folder/duplicate%20file%20name.md)

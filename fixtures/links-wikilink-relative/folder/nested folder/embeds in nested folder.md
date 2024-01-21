@@ -9,3 +9,9 @@
 ![[../A sound.mp3|A sound in folder]]
 
 ![[A sound.mp3|A sound in nested folder]]
+
+![[../../duplicate file name|duplicate file name]]
+
+![[../duplicate file name|duplicate file name]]
+
+![[duplicate file name]]
