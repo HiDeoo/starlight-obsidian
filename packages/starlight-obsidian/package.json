@@ -7,6 +7,7 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
+    "./katex": "./katex.css",
     "./styles": "./styles.css",
     "./package.json": "./package.json"
   },
@@ -19,9 +20,11 @@
     "globby": "14.0.0",
     "is-absolute-url": "4.0.1",
     "mdast-util-find-and-replace": "3.0.1",
+    "rehype-katex": "7.0.0",
     "remark": "15.0.1",
     "remark-frontmatter": "5.0.0",
     "remark-gfm": "4.0.0",
+    "remark-math": "6.0.0",
     "unist-util-visit": "5.0.0",
     "vfile": "6.0.1"
   },

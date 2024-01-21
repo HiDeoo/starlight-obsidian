@@ -31,7 +31,7 @@ head:
 | :-------------------------------------------------------------------------------------------- | :-------: |
 | [Tables](https://help.obsidian.md/Editing+and+formatting/Advanced+formatting+syntax#Tables)   |    ✅     |
 | [Diagram](https://help.obsidian.md/Editing+and+formatting/Advanced+formatting+syntax#Diagram) |    ❌     |
-| [Math](https://help.obsidian.md/Editing+and+formatting/Advanced+formatting+syntax#Math)       |    ❌     |
+| [Math](https://help.obsidian.md/Editing+and+formatting/Advanced+formatting+syntax#Math)       |    ✅     |
 
 ## Links
 

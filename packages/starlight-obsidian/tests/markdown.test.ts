@@ -65,3 +65,20 @@ test('renders tables', async () => {
     "
   `)
 })
+
+test('renders math', async () => {
+  const md = await transformFixtureMdFile('basics', 'Math.md')
+
+  expect(md).toMatchInlineSnapshot(`
+    "Test
+
+    $$
+    \\begin{vmatrix}a & b\\\\
+    c & d
+    \\end{vmatrix}=ad-bc
+    $$
+
+    This is an inline math expression $e^{2i\\pi} = 1$.
+    "
+  `)
+})

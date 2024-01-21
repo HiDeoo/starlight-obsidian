@@ -36,7 +36,7 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
         addIntegration(starlightObsidianIntegration())
 
         updateConfig({
-          customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles'],
+          customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles', 'starlight-obsidian/katex'],
         })
       },
     },
