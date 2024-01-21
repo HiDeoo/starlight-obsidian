@@ -227,6 +227,11 @@ function getCustomAssetNode(filePath: string): RootContent {
       type: 'html',
       value: `<audio controls src="${filePath}"></audio>`,
     }
+  } else if (isObsidianAsset(filePath, 'video')) {
+    return {
+      type: 'html',
+      value: `<video controls src="${filePath}"></video>`,
+    }
   }
 
   // FIXME(HiDeoo)

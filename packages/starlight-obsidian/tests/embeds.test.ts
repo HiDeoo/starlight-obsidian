@@ -17,7 +17,9 @@ const expectedMd = `![An image](</notes/An image.png>)
 <audio controls src="/notes/folder/nested-folder/A sound.mp3"></audio>
 `
 
-test.each(linkSyntaxAndFormats)('transforms embeds in %s with the %s format', async (syntax, format) => {
+// This only tests image and audio embeds as the URL processing is the same for all embeds.
+// The next test covers the node replacement logic.
+test.each(linkSyntaxAndFormats)('transforms embed URLs in %s with the %s format', async (syntax, format) => {
   const fixtureName = `links-${syntax}-${format}`
 
   const vault = await getVault(getFixtureConfig(fixtureName))
@@ -36,4 +38,17 @@ test.each(linkSyntaxAndFormats)('transforms embeds in %s with the %s format', as
   md = await transformFixtureMdFile(fixtureName, 'folder/nested folder/embeds in nested folder.md', options)
 
   expect(md).toBe(expectedMd)
+})
+
+test('transforms supported embeds', async () => {
+  const md = await transformFixtureMdFile('basics', 'Embeds.md')
+
+  expect(md).toMatchInlineSnapshot(`
+    "![An image.png](</notes/An image.png>)
+
+    <audio controls src="/notes/A sound.mp3"></audio>
+
+    <video controls src="/notes/A Video.webm"></video>
+    "
+  `)
 })
