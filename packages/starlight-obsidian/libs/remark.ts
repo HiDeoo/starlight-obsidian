@@ -8,6 +8,7 @@ import { findAndReplace } from 'mdast-util-find-and-replace'
 import { toHast } from 'mdast-util-to-hast'
 import { CONTINUE, SKIP, visit } from 'unist-util-visit'
 import type { VFile } from 'vfile'
+import yaml from 'yaml'
 
 import type { StarlightObsidianConfig } from '..'
 
@@ -17,8 +18,10 @@ import {
   getObsidianRelativePath,
   isObsidianAsset,
   isObsidianBlockAnchor,
+  parseObsidianFrontmatter,
   slugifyObsidianAnchor,
   slugifyObsidianPath,
+  type ObsidianFrontmatter,
   type Vault,
   type VaultFile,
 } from './obsidian'
@@ -39,7 +42,7 @@ export function remarkEnsureFrontmatter() {
       }
 
       hasFrontmatter = true
-      node.value = getFrontmatterNodeValue(file)
+      node.value = getFrontmatterNodeValue(file, parseObsidianFrontmatter(node.value))
       break
     }
 
@@ -239,19 +242,28 @@ export function remarkKatexStyles() {
   }
 }
 
-function getFrontmatterNodeValue(file: VFile) {
-  let frontmatter = `title: ${file.stem}`
-
-  if (file.data.includeKatexStyles) {
-    frontmatter = `${frontmatter}
-head:
-  - tag: link
-    attrs:
-      rel: stylesheet
-      href: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css'`
+function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFrontmatter) {
+  const frontmatter: Frontmatter = {
+    title: file.stem,
   }
 
-  return frontmatter
+  if (file.data.includeKatexStyles) {
+    frontmatter.head = [
+      {
+        tag: 'link',
+        attrs: {
+          rel: 'stylesheet',
+          href: 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css',
+        },
+      },
+    ]
+  }
+
+  if (obsidianFrontmatter?.tags && obsidianFrontmatter.tags.length > 0) {
+    frontmatter.tags = obsidianFrontmatter.tags
+  }
+
+  return yaml.stringify(frontmatter)
 }
 
 function getFileUrl(output: StarlightObsidianConfig['output'], filePath: string, anchor?: string) {
@@ -348,6 +360,12 @@ export interface TransformContext {
   includeKatexStyles?: boolean
   output: StarlightObsidianConfig['output']
   vault: Vault
+}
+
+interface Frontmatter {
+  title: string | undefined
+  tags?: string[]
+  head?: { tag: string; attrs: Record<string, string> }[]
 }
 
 declare module 'vfile' {

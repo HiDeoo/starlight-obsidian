@@ -1,0 +1,13 @@
+---
+import type { Props } from '@astrojs/starlight/props'
+import Default from '@astrojs/starlight/components/PageTitle.astro'
+import Tags from './Tags.astro'
+
+const { entry } = Astro.props
+
+const tags = entry['data']['tags']
+const showTags = tags !== undefined && tags.length > 0
+---
+
+<Default {...Astro.props}><slot /></Default>
+{showTags && <Tags {tags} />}

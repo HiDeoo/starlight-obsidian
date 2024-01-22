@@ -7,6 +7,8 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
+    "./PageTitle.astro": "./PageTitle.astro",
+    "./schema": "./schema.ts",
     "./styles": "./styles.css",
     "./package.json": "./package.json"
   },
@@ -29,7 +31,8 @@
     "remark-gfm": "4.0.0",
     "remark-math": "6.0.0",
     "unist-util-visit": "5.0.0",
-    "vfile": "6.0.1"
+    "vfile": "6.0.1",
+    "yaml": "2.3.4"
   },
   "devDependencies": {
     "@astrojs/starlight": "0.16.0",

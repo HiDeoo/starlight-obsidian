@@ -1,4 +1,4 @@
-import type { StarlightPlugin } from '@astrojs/starlight/types'
+import type { StarlightPlugin, StarlightUserConfig } from '@astrojs/starlight/types'
 import { z } from 'astro/zod'
 
 import { starlightObsidianIntegration } from './libs/integration'
@@ -28,16 +28,29 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
   return {
     name: 'starlight-obsidian-plugin',
     hooks: {
-      async setup({ addIntegration, config: starlightConfig, updateConfig }) {
+      async setup({ addIntegration, config: starlightConfig, logger, updateConfig }) {
         const vault = await getVault(config)
         const obsidianPaths = await getObsidianPaths(vault)
         await addObsidianFiles(config, vault, obsidianPaths)
 
         addIntegration(starlightObsidianIntegration())
 
-        updateConfig({
+        const updatedStarlightConfig: Partial<StarlightUserConfig> = {
           customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles'],
-        })
+        }
+
+        if (starlightConfig.components?.PageTitle) {
+          logger.warn(
+            'It looks like you already have a `PageTitle` component override in your Starlight configuration.',
+          )
+          logger.warn('To use `starlight-obsidian`, remove the override for the `PageTitle` component.\n')
+        } else {
+          updatedStarlightConfig.components = {
+            PageTitle: 'starlight-obsidian/PageTitle.astro',
+          }
+        }
+
+        updateConfig(updatedStarlightConfig)
       },
     },
   }

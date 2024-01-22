@@ -4,6 +4,7 @@ import path from 'node:path'
 import { z } from 'astro/zod'
 import { slug } from 'github-slugger'
 import { globby } from 'globby'
+import yaml from 'yaml'
 
 import type { StarlightObsidianConfig } from '..'
 
@@ -14,6 +15,10 @@ import { throwUserError } from './plugin'
 const obsidianAppConfigSchema = z.object({
   newLinkFormat: z.union([z.literal('absolute'), z.literal('relative'), z.literal('shortest')]).default('shortest'),
   useMarkdownLinks: z.boolean().default(false),
+})
+
+const obsidianFrontmatterSchema = z.object({
+  tags: z.array(z.string()).optional(),
 })
 
 const imageAssetsFileFormats = new Set(['.avif', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
@@ -128,6 +133,14 @@ export function isObsidianAsset(filePath: string, type?: 'image' | 'audio' | 'vi
   return formats.has(getExtension(filePath))
 }
 
+export function parseObsidianFrontmatter(content: string): ObsidianFrontmatter | undefined {
+  try {
+    return obsidianFrontmatterSchema.parse(yaml.parse(content))
+  } catch {
+    return
+  }
+}
+
 async function isVaultDirectory(vaultPath: string) {
   const configPath = path.join(vaultPath, '.obsidian')
 
@@ -171,3 +184,5 @@ export interface VaultFile {
   type: 'content' | 'asset'
   uniqueFileName: boolean
 }
+
+export type ObsidianFrontmatter = z.output<typeof obsidianFrontmatterSchema>
