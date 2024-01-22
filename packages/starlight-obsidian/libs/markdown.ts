@@ -1,12 +1,14 @@
 import { remark } from 'remark'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
 import { VFile } from 'vfile'
 
 import {
   remarkEnsureFrontmatter,
   remarkMarkdownAssets,
   remarkMarkdownLinks,
+  remarkKatexStyles,
   remarkMermaid,
   remarkReplacements,
   type TransformContext,
@@ -14,6 +16,8 @@ import {
 
 const processor = remark()
   .use(remarkGfm)
+  .use(remarkMath)
+  .use(remarkKatexStyles)
   .use(remarkFrontmatter)
   .use(remarkEnsureFrontmatter)
   .use(remarkReplacements)

@@ -230,8 +230,28 @@ export function remarkMermaid() {
   }
 }
 
+export function remarkKatexStyles() {
+  return function transformer(tree: Root, file: VFile) {
+    visit(tree, ['math', 'inlineMath'], () => {
+      file.data.includeKatexStyles = true
+      return SKIP
+    })
+  }
+}
+
 function getFrontmatterNodeValue(file: VFile) {
-  return `title: ${file.stem}`
+  let frontmatter = `title: ${file.stem}`
+
+  if (file.data.includeKatexStyles) {
+    frontmatter = `${frontmatter}
+head:
+  - tag: link
+    attrs:
+      rel: stylesheet
+      href: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css'`
+  }
+
+  return frontmatter
 }
 
 function getFileUrl(output: StarlightObsidianConfig['output'], filePath: string, anchor?: string) {
@@ -325,6 +345,7 @@ function ensureTransformContext(file: VFile): asserts file is VFile & { data: Tr
 
 export interface TransformContext {
   files: VaultFile[]
+  includeKatexStyles?: boolean
   output: StarlightObsidianConfig['output']
   vault: Vault
 }

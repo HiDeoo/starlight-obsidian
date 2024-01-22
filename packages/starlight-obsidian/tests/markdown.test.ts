@@ -67,10 +67,19 @@ test('renders tables', async () => {
 })
 
 test('renders math', async () => {
-  const md = await transformFixtureMdFile('basics', 'Math.md')
+  const md = await transformFixtureMdFile('basics', 'Math.md', { includeFrontmatter: true })
 
   expect(md).toMatchInlineSnapshot(`
-    "Test
+    "---
+    title: Math
+    head:
+      - tag: link
+        attrs:
+          rel: stylesheet
+          href: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css'
+    ---
+
+    Test
 
     $$
     \\begin{vmatrix}a & b\\\\
@@ -81,4 +90,10 @@ test('renders math', async () => {
     This is an inline math expression $e^{2i\\pi} = 1$.
     "
   `)
+})
+
+test('does not include katex styles if not needed', async () => {
+  const md = await transformFixtureMdFile('basics', 'Random.md', { includeFrontmatter: true })
+
+  expect(md).not.toMatch(/katex/)
 })

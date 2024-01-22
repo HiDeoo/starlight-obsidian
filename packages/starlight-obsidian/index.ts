@@ -37,12 +37,6 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
 
         updateConfig({
           customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles'],
-          head: [
-            {
-              attrs: { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css' },
-              tag: 'link',
-            },
-          ],
         })
       },
     },
