@@ -76,7 +76,8 @@ test('renders math', async () => {
       - tag: link
         attrs:
           rel: stylesheet
-          href: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css'
+          href: https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css
+
     ---
 
     Test

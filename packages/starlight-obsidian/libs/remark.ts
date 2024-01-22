@@ -269,7 +269,7 @@ function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFron
         tag: 'link',
         attrs: {
           rel: 'stylesheet',
-          href: 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css',
+          href: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css',
         },
       },
     ]
