@@ -30,6 +30,7 @@ import { extractPathAndAnchor, getExtension, isAnchor } from './path'
 const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)+)==/g
 const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)+)%%/gs
 const wikilinkReplacementRegex = /!?\[\[(?<url>(?:(?![[\]|]).)+)(?:\|(?<maybeText>(?:(?![[\]|]).)+))?]]/g
+const tagReplacementRegex = /(?:^|\s)#(?<tag>[\w/-]+)/g
 
 export function remarkEnsureFrontmatter() {
   return function transformer(tree: Root, file: VFile) {
@@ -109,6 +110,21 @@ export function remarkReplacements() {
             children: [{ type: 'text', value: text }],
             type: 'link',
             url: fileUrl,
+          }
+        },
+      ],
+      [
+        tagReplacementRegex,
+        (_match: string, tag: string) => {
+          // Tags with only numbers are not valid.
+          // https://help.obsidian.md/Editing+and+formatting/Tags#Tag%20format
+          if (/^\d+$/.test(tag)) {
+            return false
+          }
+
+          return {
+            type: 'html',
+            value: ` <span class="sl-obs-tag">#${tag}</span>`,
           }
         },
       ],
