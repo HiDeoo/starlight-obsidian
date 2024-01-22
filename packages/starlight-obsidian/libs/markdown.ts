@@ -19,8 +19,8 @@ const processor = remark()
   .use(remarkMarkdownLinks)
   .use(remarkMarkdownAssets)
 
-export function transformMarkdownToString(filePath: string, markdown: string, context: TransformContext) {
-  const compiled = processor.processSync(getVFile(filePath, markdown, context))
+export async function transformMarkdownToString(filePath: string, markdown: string, context: TransformContext) {
+  const compiled = await processor.process(getVFile(filePath, markdown, context))
 
   return String(compiled)
 }

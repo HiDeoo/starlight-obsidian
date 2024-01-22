@@ -35,7 +35,7 @@ async function addContentFIle(
   vaultFile: VaultFile,
 ) {
   const obsidianContent = await fs.readFile(vaultFile.fsPath, 'utf8')
-  const starlightContent = transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
+  const starlightContent = await transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
     files: vaultFiles,
     output: config.output,
     vault,
