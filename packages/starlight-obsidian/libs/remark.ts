@@ -1,14 +1,17 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { toHtml } from 'hast-util-to-html'
 import isAbsoluteUrl from 'is-absolute-url'
-import type { BlockContent, Parent, Root, RootContent } from 'mdast'
+import type { BlockContent, Code, Parent, Root, RootContent } from 'mdast'
 import { findAndReplace } from 'mdast-util-find-and-replace'
-import { SKIP, visit } from 'unist-util-visit'
+import { toHast } from 'mdast-util-to-hast'
+import { CONTINUE, SKIP, visit } from 'unist-util-visit'
 import type { VFile } from 'vfile'
 
 import type { StarlightObsidianConfig } from '..'
 
+import { transformHtmlToString } from './html'
 import { transformMarkdownToAST } from './markdown'
 import {
   getObsidianRelativePath,
@@ -200,6 +203,30 @@ export function remarkMarkdownAssets() {
 
       return SKIP
     })
+  }
+}
+
+export function remarkMermaid() {
+  return async function transformer(tree: Root) {
+    const mermaidNodes: [node: Code, index: number | undefined, parent: Parent | undefined][] = []
+
+    visit(tree, 'code', (node, index, parent) => {
+      if (node.lang === 'mermaid') {
+        mermaidNodes.push([node, index, parent])
+        return SKIP
+      }
+
+      return CONTINUE
+    })
+
+    await Promise.all(
+      mermaidNodes.map(async ([node, index, parent]) => {
+        const html = toHtml(toHast(node))
+        const processedHtml = await transformHtmlToString(html)
+
+        replaceNode(parent, index, { type: 'html', value: processedHtml })
+      }),
+    )
   }
 }
 

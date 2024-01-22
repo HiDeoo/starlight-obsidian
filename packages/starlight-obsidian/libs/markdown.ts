@@ -7,6 +7,7 @@ import {
   remarkEnsureFrontmatter,
   remarkMarkdownAssets,
   remarkMarkdownLinks,
+  remarkMermaid,
   remarkReplacements,
   type TransformContext,
 } from './remark'
@@ -18,6 +19,7 @@ const processor = remark()
   .use(remarkReplacements)
   .use(remarkMarkdownLinks)
   .use(remarkMarkdownAssets)
+  .use(remarkMermaid)
 
 export async function transformMarkdownToString(filePath: string, markdown: string, context: TransformContext) {
   const compiled = await processor.process(getVFile(filePath, markdown, context))
