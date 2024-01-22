@@ -67,5 +67,5 @@ export async function transformFixtureMdFile(
     return transformedMd
   }
 
-  return transformedMd.replace(/^---\n.*\n---\n\n/, '')
+  return transformedMd.replace(/^---\n.*\n+---\n\n/, '')
 }
