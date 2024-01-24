@@ -64,3 +64,17 @@ head:
 | [PDF](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20PDF%20in%20a%20note)                      |    ✅     |
 | [List](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20list%20in%20a%20note)                    |    ❌     |
 | [Search results](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20search%20results)                  |    ❌     |
+
+## Properties
+
+All unsupported properties are ignored and not exported.
+
+| Name                                                                                              | Supported |
+| :------------------------------------------------------------------------------------------------ | :-------: |
+| [`tags`](https://help.obsidian.md/Editing+and+formatting/Tags)                                    |    ✅     |
+| [`aliases`](https://help.obsidian.md/Linking+notes+and+files/Aliases)                             |    ❌     |
+| [`publish`](https://help.obsidian.md/Obsidian+Publish/Publish+and+unpublish+notes#Ignore%20notes) |    ❌     |
+| [`permalink`](https://help.obsidian.md/Obsidian+Publish/Publish+and+unpublish+notes#Permalinks)   |    ❌     |
+| [`description`](https://help.obsidian.md/Obsidian+Publish/Social+media+link+previews#Description) |    ✅     |
+| [`image`](https://help.obsidian.md/Obsidian+Publish/Social+media+link+previews#Image)             |    ❌     |
+| [`cover`](https://help.obsidian.md/Obsidian+Publish/Social+media+link+previews#Image)             |    ❌     |

@@ -348,6 +348,10 @@ function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFron
     ]
   }
 
+  if (obsidianFrontmatter?.description && obsidianFrontmatter.description.length > 0) {
+    frontmatter.description = obsidianFrontmatter.description
+  }
+
   if (obsidianFrontmatter?.tags && obsidianFrontmatter.tags.length > 0) {
     frontmatter.tags = obsidianFrontmatter.tags
   }
@@ -459,6 +463,7 @@ interface VisitorContext {
 
 interface Frontmatter {
   title: string | undefined
+  description?: string
   tags?: string[]
   head?: { tag: string; attrs: Record<string, string> }[]
 }
