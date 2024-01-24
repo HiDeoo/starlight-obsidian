@@ -1,9 +1,9 @@
 import { rehype } from 'rehype'
 import { expect, test } from 'vitest'
 
-import { rehypeBlockIdentifiers } from '../libs/rehype'
+import { rehypeStarlightObsidian } from '../libs/rehype'
 
-const processor = rehype().data('settings', { fragment: true }).use(rehypeBlockIdentifiers)
+const processor = rehype().data('settings', { fragment: true }).use(rehypeStarlightObsidian)
 
 test('does not transform text similar to a block identifier', async () => {
   const input = `<p>Some text ^with-a-block-identifier and some other text</p>`

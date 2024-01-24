@@ -4,7 +4,7 @@ import { CONTINUE, SKIP, visit } from 'unist-util-visit'
 
 const blockIdentifierRegex = /(?<identifier> *\^(?<name>[\w-]+))$/
 
-export function rehypeBlockIdentifiers() {
+export function rehypeStarlightObsidian() {
   return function transformer(tree: Root) {
     // Blocks are supported in paragraphs, list items, and blockquotes.
     // https://help.obsidian.md/Linking+notes+and+files/Internal+links#Link%20to%20a%20block%20in%20a%20note
