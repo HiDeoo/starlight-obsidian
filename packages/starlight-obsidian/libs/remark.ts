@@ -26,11 +26,15 @@ import {
   type VaultFile,
 } from './obsidian'
 import { extractPathAndAnchor, getExtension, isAnchor } from './path'
+import { getStarlightCalloutType } from './starlight'
 
 const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)+)==/g
 const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)+)%%/gs
 const wikilinkReplacementRegex = /!?\[\[(?<url>(?:(?![[\]|]).)+)(?:\|(?<maybeText>(?:(?![[\]|]).)+))?]]/g
 const tagReplacementRegex = /(?:^|\s)#(?<tag>[\w/-]+)/g
+const calloutRegex = /^\[!(?<type>\w+)][+-]? ?(?<title>.*)$/
+
+const asideDelimiter = ':::'
 
 export function remarkEnsureFrontmatter() {
   return function transformer(tree: Root, file: VFile) {
@@ -258,6 +262,65 @@ export function remarkKatexStyles() {
   }
 }
 
+export function remarkCallouts() {
+  return function transformer(tree: Root) {
+    visit(tree, 'blockquote', (node, index, parent) => {
+      const [firstChild, ...otherChildren] = node.children
+
+      if (firstChild?.type !== 'paragraph') {
+        return SKIP
+      }
+
+      const [firstGrandChild, ...otherGrandChildren] = firstChild.children
+
+      if (firstGrandChild?.type !== 'text') {
+        return SKIP
+      }
+
+      const [firstLine, ...otherLines] = firstGrandChild.value.split('\n')
+
+      if (!firstLine) {
+        return SKIP
+      }
+
+      const match = firstLine.match(calloutRegex)
+
+      const type = match?.groups?.['type']
+      const title = match?.groups?.['title']
+
+      if (!match || !type) {
+        return SKIP
+      }
+
+      const asideTitle = title && title.length > 0 ? `[${title.trim()}]` : ''
+
+      const aside: RootContent[] = [
+        {
+          type: 'paragraph',
+          children: [
+            {
+              type: 'html',
+              value: `${asideDelimiter}${getStarlightCalloutType(type)}${asideTitle}\n${otherLines.join('\n')}`,
+            },
+            ...otherGrandChildren,
+            ...(otherChildren.length === 0
+              ? [{ type: 'html', value: `\n${asideDelimiter}` } satisfies RootContent]
+              : []),
+          ],
+        },
+      ]
+
+      if (otherChildren.length > 0) {
+        aside.push(...otherChildren, { type: 'html', value: asideDelimiter })
+      }
+
+      replaceNode(parent, index, aside)
+
+      return CONTINUE
+    })
+  }
+}
+
 function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFrontmatter) {
   const frontmatter: Frontmatter = {
     title: file.stem,
@@ -357,12 +420,12 @@ function getMarkdownAssetNode(file: VFile, fileUrl: string): RootContent {
   }
 }
 
-function replaceNode(parent: Parent | undefined, index: number | undefined, replacement: RootContent) {
+function replaceNode(parent: Parent | undefined, index: number | undefined, replacement: RootContent | RootContent[]) {
   if (!parent || index === undefined) {
     return
   }
 
-  parent.children[index] = replacement
+  parent.children.splice(index, 1, ...(Array.isArray(replacement) ? replacement : [replacement]))
 }
 
 function ensureTransformContext(file: VFile): asserts file is VFile & { data: TransformContext; dirname: string } {

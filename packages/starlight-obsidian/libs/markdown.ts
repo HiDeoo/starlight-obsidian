@@ -12,6 +12,7 @@ import {
   remarkMermaid,
   remarkReplacements,
   type TransformContext,
+  remarkCallouts,
 } from './remark'
 
 const processor = remark()
@@ -23,6 +24,7 @@ const processor = remark()
   .use(remarkReplacements)
   .use(remarkMarkdownLinks)
   .use(remarkMarkdownAssets)
+  .use(remarkCallouts)
   .use(remarkMermaid)
 
 export async function transformMarkdownToString(filePath: string, markdown: string, context: TransformContext) {

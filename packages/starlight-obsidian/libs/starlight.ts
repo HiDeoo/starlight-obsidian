@@ -10,6 +10,36 @@ import { getObsidianVaultFiles, type Vault, type VaultFile } from './obsidian'
 const docsPath = 'src/content/docs'
 const publicPath = 'public'
 
+const obsidianToStarlightCalloutTypeMap: Record<string, string> = {
+  note: 'note',
+  abstract: 'tip',
+  summary: 'tip',
+  tldr: 'tip',
+  info: 'note',
+  todo: 'note',
+  tip: 'tip',
+  hint: 'tip',
+  important: 'tip',
+  success: 'note',
+  check: 'note',
+  done: 'note',
+  question: 'caution',
+  help: 'caution',
+  faq: 'caution',
+  warning: 'caution',
+  caution: 'caution',
+  attention: 'caution',
+  failure: 'danger',
+  fail: 'danger',
+  missing: 'danger',
+  danger: 'danger',
+  error: 'danger',
+  bug: 'danger',
+  example: 'tip',
+  quote: 'note',
+  cite: 'note',
+}
+
 export async function addObsidianFiles(config: StarlightObsidianConfig, vault: Vault, obsidianPaths: string[]) {
   const outputPaths = getOutputPaths(config)
 
@@ -25,6 +55,10 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
         : addContentFIle(config, vault, outputPaths.content, vaultFiles, vaultFile))
     }),
   )
+}
+
+export function getStarlightCalloutType(obsidianCalloutType: string): string {
+  return obsidianToStarlightCalloutTypeMap[obsidianCalloutType] ?? 'note'
 }
 
 async function addContentFIle(

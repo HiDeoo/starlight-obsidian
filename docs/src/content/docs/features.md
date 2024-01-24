@@ -33,6 +33,13 @@ head:
 | [Diagram](https://help.obsidian.md/Editing+and+formatting/Advanced+formatting+syntax#Diagram) |    ✅     |
 | [Math](https://help.obsidian.md/Editing+and+formatting/Advanced+formatting+syntax#Math)       |    ✅     |
 
+## Miscellaneous
+
+| Name                                                                 | Supported |
+| :------------------------------------------------------------------- | :-------: |
+| [Tags](https://help.obsidian.md/Editing+and+formatting/Tags)         |    ✅     |
+| [Callouts](https://help.obsidian.md/Editing+and+formatting/Callouts) |    ✅     |
+
 ## Links
 
 | Name                                                                                                                                            | Supported |
