@@ -4,28 +4,9 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import { VFile } from 'vfile'
 
-import {
-  remarkEnsureFrontmatter,
-  remarkMarkdownAssets,
-  remarkMarkdownLinks,
-  remarkKatexStyles,
-  remarkMermaid,
-  remarkReplacements,
-  type TransformContext,
-  remarkCallouts,
-} from './remark'
+import { remarkStarlightObsidian, type TransformContext } from './remark'
 
-const processor = remark()
-  .use(remarkGfm)
-  .use(remarkMath)
-  .use(remarkKatexStyles)
-  .use(remarkFrontmatter)
-  .use(remarkEnsureFrontmatter)
-  .use(remarkReplacements)
-  .use(remarkMarkdownLinks)
-  .use(remarkMarkdownAssets)
-  .use(remarkCallouts)
-  .use(remarkMermaid)
+const processor = remark().use(remarkGfm).use(remarkMath).use(remarkFrontmatter).use(remarkStarlightObsidian)
 
 export async function transformMarkdownToString(filePath: string, markdown: string, context: TransformContext) {
   const compiled = await processor.process(getVFile(filePath, markdown, context))

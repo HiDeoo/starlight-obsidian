@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { toHtml } from 'hast-util-to-html'
 import isAbsoluteUrl from 'is-absolute-url'
-import type { BlockContent, Code, Parent, Root, RootContent } from 'mdast'
+import type { BlockContent, Blockquote, Code, Image, Link, Parent, Root, RootContent } from 'mdast'
 import { findAndReplace } from 'mdast-util-find-and-replace'
 import { toHast } from 'mdast-util-to-hast'
 import { CONTINUE, SKIP, visit } from 'unist-util-visit'
@@ -36,289 +36,299 @@ const calloutRegex = /^\[!(?<type>\w+)][+-]? ?(?<title>.*)$/
 
 const asideDelimiter = ':::'
 
-export function remarkEnsureFrontmatter() {
-  return function transformer(tree: Root, file: VFile) {
-    let hasFrontmatter = false
+export function remarkStarlightObsidian() {
+  return async function transformer(tree: Root, file: VFile) {
+    handleReplacements(tree, file)
+    await handleMermaid(tree, file)
 
-    // The frontmatter is always at the root of the tree.
-    for (const node of tree.children) {
-      if (node.type !== 'yaml') {
-        continue
-      }
+    visit(tree, (node, index, parent) => {
+      const context: VisitorContext = { file, index, parent }
 
-      hasFrontmatter = true
-      node.value = getFrontmatterNodeValue(file, parseObsidianFrontmatter(node.value))
-      break
-    }
-
-    if (!hasFrontmatter) {
-      tree.children.unshift({ type: 'yaml', value: getFrontmatterNodeValue(file) })
-    }
-  }
-}
-
-export function remarkReplacements() {
-  return function transformer(tree: Root, file: VFile) {
-    findAndReplace(tree, [
-      [
-        highlightReplacementRegex,
-        (_match: string, highlight: string) => ({
-          type: 'html',
-          value: `<mark class="sl-obs-highlight">${highlight}</mark>`,
-        }),
-      ],
-      [commentReplacementRegex, null],
-      [
-        wikilinkReplacementRegex,
-        (match: string, url: string, maybeText?: string) => {
-          ensureTransformContext(file)
-
-          let fileUrl: string
-          let text = maybeText ?? url
-
-          if (isAnchor(url)) {
-            fileUrl = slugifyObsidianAnchor(url)
-            text = maybeText ?? url.slice(isObsidianBlockAnchor(url) ? 2 : 1)
-          } else {
-            const [urlPath, urlAnchor] = extractPathAndAnchor(url)
-            const matchingFile = file.data.files.find(
-              (vaultFile) => vaultFile.stem === urlPath || vaultFile.fileName === urlPath,
-            )
-
-            switch (file.data.vault.options.linkFormat) {
-              case 'relative': {
-                fileUrl = getFileUrl(file.data.output, getRelativeFilePath(file, urlPath), urlAnchor)
-                break
-              }
-              case 'absolute':
-              case 'shortest': {
-                fileUrl = getFileUrl(
-                  file.data.output,
-                  matchingFile ? getFilePathFromVaultFile(matchingFile, urlPath) : urlPath,
-                  urlAnchor,
-                )
-                break
-              }
-            }
-          }
-
-          if (match.startsWith('!')) {
-            return {
-              type: 'image',
-              url: isMarkdownAsset(url, file) ? url : fileUrl,
-              alt: text,
-            }
-          }
-
-          return {
-            children: [{ type: 'text', value: text }],
-            type: 'link',
-            url: fileUrl,
-          }
-        },
-      ],
-      [
-        tagReplacementRegex,
-        (_match: string, tag: string) => {
-          // Tags with only numbers are not valid.
-          // https://help.obsidian.md/Editing+and+formatting/Tags#Tag%20format
-          if (/^\d+$/.test(tag)) {
-            return false
-          }
-
-          return {
-            type: 'html',
-            value: ` <span class="sl-obs-tag">#${tag}</span>`,
-          }
-        },
-      ],
-    ])
-  }
-}
-
-export function remarkMarkdownLinks() {
-  return function transformer(tree: Root, file: VFile) {
-    visit(tree, 'link', (node) => {
-      ensureTransformContext(file)
-
-      if (file.data.vault.options.linkSyntax === 'wikilink' || isAbsoluteUrl(node.url) || !file.dirname) {
-        return SKIP
-      }
-
-      if (isAnchor(node.url)) {
-        node.url = slugifyObsidianAnchor(node.url)
-        return SKIP
-      }
-
-      const url = path.basename(decodeURIComponent(node.url))
-      const [urlPath, urlAnchor] = extractPathAndAnchor(url)
-      const matchingFile = file.data.files.find((vaultFile) => vaultFile.fileName === urlPath)
-
-      if (!matchingFile) {
-        return SKIP
-      }
-
-      switch (file.data.vault.options.linkFormat) {
-        case 'relative': {
-          node.url = getFileUrl(file.data.output, getRelativeFilePath(file, node.url), urlAnchor)
-          break
+      switch (node.type) {
+        case 'math':
+        case 'inlineMath': {
+          return handleMath(context)
         }
-        case 'absolute':
-        case 'shortest': {
-          node.url = getFileUrl(file.data.output, getFilePathFromVaultFile(matchingFile, node.url), urlAnchor)
-          break
+        case 'link': {
+          return handleLinks(node, context)
+        }
+        case 'image': {
+          return handleImages(node, context)
+        }
+        case 'blockquote': {
+          return handleBlockquotes(node, context)
+        }
+        default: {
+          return CONTINUE
         }
       }
-
-      return SKIP
     })
+
+    handleFrontmatter(tree, file)
   }
 }
 
-export function remarkMarkdownAssets() {
-  return function transformer(tree: Root, file: VFile) {
-    visit(tree, 'image', (node, index, parent) => {
-      ensureTransformContext(file)
+function handleFrontmatter(tree: Root, file: VFile) {
+  let hasFrontmatter = false
 
-      if (isAbsoluteUrl(node.url) || !file.dirname) {
-        return SKIP
-      }
+  // The frontmatter is always at the root of the tree.
+  for (const node of tree.children) {
+    if (node.type !== 'yaml') {
+      continue
+    }
 
-      if (isMarkdownAsset(node.url, file)) {
-        replaceNode(parent, index, getMarkdownAssetNode(file, node.url))
-        return SKIP
-      }
+    hasFrontmatter = true
+    node.value = getFrontmatterNodeValue(file, parseObsidianFrontmatter(node.value))
+    break
+  }
 
-      let fileUrl = node.url
+  if (!hasFrontmatter) {
+    tree.children.unshift({ type: 'yaml', value: getFrontmatterNodeValue(file) })
+  }
+}
 
-      if (file.data.vault.options.linkSyntax !== 'wikilink') {
-        switch (file.data.vault.options.linkFormat) {
-          case 'relative': {
-            fileUrl = getFileUrl(file.data.output, getRelativeFilePath(file, node.url))
-            break
-          }
-          case 'absolute': {
-            fileUrl = getFileUrl(file.data.output, slugifyObsidianPath(node.url))
-            break
-          }
-          case 'shortest': {
-            const url = path.basename(decodeURIComponent(node.url))
-            const [urlPath] = extractPathAndAnchor(url)
-            const matchingFile = file.data.files.find((vaultFile) => vaultFile.fileName === urlPath)
+function handleReplacements(tree: Root, file: VFile) {
+  findAndReplace(tree, [
+    [
+      highlightReplacementRegex,
+      (_match: string, highlight: string) => ({
+        type: 'html',
+        value: `<mark class="sl-obs-highlight">${highlight}</mark>`,
+      }),
+    ],
+    [commentReplacementRegex, null],
+    [
+      wikilinkReplacementRegex,
+      (match: string, url: string, maybeText?: string) => {
+        ensureTransformContext(file)
 
-            if (!matchingFile) {
+        let fileUrl: string
+        let text = maybeText ?? url
+
+        if (isAnchor(url)) {
+          fileUrl = slugifyObsidianAnchor(url)
+          text = maybeText ?? url.slice(isObsidianBlockAnchor(url) ? 2 : 1)
+        } else {
+          const [urlPath, urlAnchor] = extractPathAndAnchor(url)
+          const matchingFile = file.data.files.find(
+            (vaultFile) => vaultFile.stem === urlPath || vaultFile.fileName === urlPath,
+          )
+
+          switch (file.data.vault.options.linkFormat) {
+            case 'relative': {
+              fileUrl = getFileUrl(file.data.output, getRelativeFilePath(file, urlPath), urlAnchor)
               break
             }
-
-            fileUrl = getFileUrl(file.data.output, getFilePathFromVaultFile(matchingFile, node.url))
-            break
+            case 'absolute':
+            case 'shortest': {
+              fileUrl = getFileUrl(
+                file.data.output,
+                matchingFile ? getFilePathFromVaultFile(matchingFile, urlPath) : urlPath,
+                urlAnchor,
+              )
+              break
+            }
           }
         }
-      }
 
-      if (isCustomAsset(node.url)) {
-        replaceNode(parent, index, getCustomAssetNode(fileUrl))
+        if (match.startsWith('!')) {
+          return {
+            type: 'image',
+            url: isMarkdownAsset(url, file) ? url : fileUrl,
+            alt: text,
+          }
+        }
 
-        return SKIP
-      }
+        return {
+          children: [{ type: 'text', value: text }],
+          type: 'link',
+          url: fileUrl,
+        }
+      },
+    ],
+    [
+      tagReplacementRegex,
+      (_match: string, tag: string) => {
+        // Tags with only numbers are not valid.
+        // https://help.obsidian.md/Editing+and+formatting/Tags#Tag%20format
+        if (/^\d+$/.test(tag)) {
+          return false
+        }
 
-      node.url = fileUrl
-
-      return SKIP
-    })
-  }
+        return {
+          type: 'html',
+          value: ` <span class="sl-obs-tag">#${tag}</span>`,
+        }
+      },
+    ],
+  ])
 }
 
-export function remarkMermaid() {
-  return async function transformer(tree: Root) {
-    const mermaidNodes: [node: Code, index: number | undefined, parent: Parent | undefined][] = []
-
-    visit(tree, 'code', (node, index, parent) => {
-      if (node.lang === 'mermaid') {
-        mermaidNodes.push([node, index, parent])
-        return SKIP
-      }
-
-      return CONTINUE
-    })
-
-    await Promise.all(
-      mermaidNodes.map(async ([node, index, parent]) => {
-        const html = toHtml(toHast(node))
-        const processedHtml = await transformHtmlToString(html)
-
-        replaceNode(parent, index, { type: 'html', value: processedHtml })
-      }),
-    )
-  }
+function handleMath({ file }: VisitorContext) {
+  file.data.includeKatexStyles = true
+  return SKIP
 }
 
-export function remarkKatexStyles() {
-  return function transformer(tree: Root, file: VFile) {
-    visit(tree, ['math', 'inlineMath'], () => {
-      file.data.includeKatexStyles = true
-      return SKIP
-    })
+function handleLinks(node: Link, { file }: VisitorContext) {
+  ensureTransformContext(file)
+
+  if (file.data.vault.options.linkSyntax === 'wikilink' || isAbsoluteUrl(node.url) || !file.dirname) {
+    return SKIP
   }
+
+  if (isAnchor(node.url)) {
+    node.url = slugifyObsidianAnchor(node.url)
+    return SKIP
+  }
+
+  const url = path.basename(decodeURIComponent(node.url))
+  const [urlPath, urlAnchor] = extractPathAndAnchor(url)
+  const matchingFile = file.data.files.find((vaultFile) => vaultFile.fileName === urlPath)
+
+  if (!matchingFile) {
+    return SKIP
+  }
+
+  switch (file.data.vault.options.linkFormat) {
+    case 'relative': {
+      node.url = getFileUrl(file.data.output, getRelativeFilePath(file, node.url), urlAnchor)
+      break
+    }
+    case 'absolute':
+    case 'shortest': {
+      node.url = getFileUrl(file.data.output, getFilePathFromVaultFile(matchingFile, node.url), urlAnchor)
+      break
+    }
+  }
+
+  return SKIP
 }
 
-export function remarkCallouts() {
-  return function transformer(tree: Root) {
-    visit(tree, 'blockquote', (node, index, parent) => {
-      const [firstChild, ...otherChildren] = node.children
+function handleImages(node: Image, context: VisitorContext) {
+  const { file } = context
 
-      if (firstChild?.type !== 'paragraph') {
-        return SKIP
+  ensureTransformContext(file)
+
+  if (isAbsoluteUrl(node.url) || !file.dirname) {
+    return SKIP
+  }
+
+  if (isMarkdownAsset(node.url, file)) {
+    replaceNode(context, getMarkdownAssetNode(file, node.url))
+    return SKIP
+  }
+
+  let fileUrl = node.url
+
+  if (file.data.vault.options.linkSyntax !== 'wikilink') {
+    switch (file.data.vault.options.linkFormat) {
+      case 'relative': {
+        fileUrl = getFileUrl(file.data.output, getRelativeFilePath(file, node.url))
+        break
       }
-
-      const [firstGrandChild, ...otherGrandChildren] = firstChild.children
-
-      if (firstGrandChild?.type !== 'text') {
-        return SKIP
+      case 'absolute': {
+        fileUrl = getFileUrl(file.data.output, slugifyObsidianPath(node.url))
+        break
       }
+      case 'shortest': {
+        const url = path.basename(decodeURIComponent(node.url))
+        const [urlPath] = extractPathAndAnchor(url)
+        const matchingFile = file.data.files.find((vaultFile) => vaultFile.fileName === urlPath)
 
-      const [firstLine, ...otherLines] = firstGrandChild.value.split('\n')
+        if (!matchingFile) {
+          break
+        }
 
-      if (!firstLine) {
-        return SKIP
+        fileUrl = getFileUrl(file.data.output, getFilePathFromVaultFile(matchingFile, node.url))
+        break
       }
+    }
+  }
 
-      const match = firstLine.match(calloutRegex)
+  if (isCustomAsset(node.url)) {
+    replaceNode(context, getCustomAssetNode(fileUrl))
 
-      const type = match?.groups?.['type']
-      const title = match?.groups?.['title']
+    return SKIP
+  }
 
-      if (!match || !type) {
-        return SKIP
-      }
+  node.url = fileUrl
 
-      const asideTitle = title && title.length > 0 ? `[${title.trim()}]` : ''
+  return SKIP
+}
 
-      const aside: RootContent[] = [
+function handleBlockquotes(node: Blockquote, context: VisitorContext) {
+  const [firstChild, ...otherChildren] = node.children
+
+  if (firstChild?.type !== 'paragraph') {
+    return SKIP
+  }
+
+  const [firstGrandChild, ...otherGrandChildren] = firstChild.children
+
+  if (firstGrandChild?.type !== 'text') {
+    return SKIP
+  }
+
+  const [firstLine, ...otherLines] = firstGrandChild.value.split('\n')
+
+  if (!firstLine) {
+    return SKIP
+  }
+
+  const match = firstLine.match(calloutRegex)
+
+  const type = match?.groups?.['type']
+  const title = match?.groups?.['title']
+
+  if (!match || !type) {
+    return SKIP
+  }
+
+  const asideTitle = title && title.length > 0 ? `[${title.trim()}]` : ''
+
+  const aside: RootContent[] = [
+    {
+      type: 'paragraph',
+      children: [
         {
-          type: 'paragraph',
-          children: [
-            {
-              type: 'html',
-              value: `${asideDelimiter}${getStarlightCalloutType(type)}${asideTitle}\n${otherLines.join('\n')}`,
-            },
-            ...otherGrandChildren,
-            ...(otherChildren.length === 0
-              ? [{ type: 'html', value: `\n${asideDelimiter}` } satisfies RootContent]
-              : []),
-          ],
+          type: 'html',
+          value: `${asideDelimiter}${getStarlightCalloutType(type)}${asideTitle}\n${otherLines.join('\n')}`,
         },
-      ]
+        ...otherGrandChildren,
+        ...(otherChildren.length === 0 ? [{ type: 'html', value: `\n${asideDelimiter}` } satisfies RootContent] : []),
+      ],
+    },
+  ]
 
-      if (otherChildren.length > 0) {
-        aside.push(...otherChildren, { type: 'html', value: asideDelimiter })
-      }
-
-      replaceNode(parent, index, aside)
-
-      return CONTINUE
-    })
+  if (otherChildren.length > 0) {
+    aside.push(...otherChildren, { type: 'html', value: asideDelimiter })
   }
+
+  replaceNode(context, aside)
+
+  return CONTINUE
+}
+
+async function handleMermaid(tree: Root, file: VFile) {
+  const mermaidNodes: [node: Code, context: VisitorContext][] = []
+
+  visit(tree, 'code', (node, index, parent) => {
+    if (node.lang === 'mermaid') {
+      mermaidNodes.push([node, { file, index, parent }])
+      return SKIP
+    }
+
+    return CONTINUE
+  })
+
+  await Promise.all(
+    mermaidNodes.map(async ([node, context]) => {
+      const html = toHtml(toHast(node))
+      const processedHtml = await transformHtmlToString(html)
+
+      replaceNode(context, { type: 'html', value: processedHtml })
+    }),
+  )
 }
 
 function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFrontmatter) {
@@ -420,7 +430,7 @@ function getMarkdownAssetNode(file: VFile, fileUrl: string): RootContent {
   }
 }
 
-function replaceNode(parent: Parent | undefined, index: number | undefined, replacement: RootContent | RootContent[]) {
+function replaceNode({ index, parent }: VisitorContext, replacement: RootContent | RootContent[]) {
   if (!parent || index === undefined) {
     return
   }
@@ -439,6 +449,12 @@ export interface TransformContext {
   includeKatexStyles?: boolean
   output: StarlightObsidianConfig['output']
   vault: Vault
+}
+
+interface VisitorContext {
+  file: VFile
+  index: number | undefined
+  parent: Parent | undefined
 }
 
 interface Frontmatter {
