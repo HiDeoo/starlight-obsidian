@@ -16,6 +16,7 @@ test('includes supported properties', async () => {
     "---
     title: Supported properties
     description: This is a custom description
+    slug: custom-slug
     ---
 
     Test

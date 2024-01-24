@@ -19,6 +19,7 @@ const obsidianAppConfigSchema = z.object({
 
 const obsidianFrontmatterSchema = z.object({
   description: z.string().optional(),
+  permalink: z.string().optional(),
   tags: z.array(z.string()).optional(),
 })
 
