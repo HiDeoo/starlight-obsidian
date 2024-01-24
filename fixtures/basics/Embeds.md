@@ -5,3 +5,5 @@
 ![[A Video.webm]]
 
 ![[A PDF.pdf]]
+
+<iframe src="https://example.org/"></iframe>

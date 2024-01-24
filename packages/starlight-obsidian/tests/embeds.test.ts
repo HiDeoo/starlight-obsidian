@@ -69,6 +69,8 @@ test('transforms supported embeds', async () => {
     <video class="sl-obs-embed-video" controls src="/notes/A Video.webm"></video>
 
     <iframe class="sl-obs-embed-pdf" src="/notes/A PDF.pdf"></iframe>
+
+    <iframe src="https://example.org/"></iframe>
     "
   `)
 })
