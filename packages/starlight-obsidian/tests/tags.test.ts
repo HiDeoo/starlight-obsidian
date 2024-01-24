@@ -17,7 +17,6 @@ test('transforms inline tags in the content', async () => {
     tags:
       - page-tag1
       - page-tag2
-
     ---
 
     This is a <span class="sl-obs-tag">#tag</span> in a sentence and <span class="sl-obs-tag">#another</span> one.
