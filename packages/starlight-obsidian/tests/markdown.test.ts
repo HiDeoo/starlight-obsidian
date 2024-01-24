@@ -66,7 +66,7 @@ test('renders tables', async () => {
   `)
 })
 
-test('renders math', async () => {
+test('renders math and includes katex styles', async () => {
   const md = await transformFixtureMdFile('basics', 'Math.md', { includeFrontmatter: true })
 
   expect(md).toMatchInlineSnapshot(`
