@@ -3,15 +3,15 @@ import { expect, test } from 'vitest'
 import { transformFixtureMdFile } from './utils'
 
 test('includes tags in the frontmatter', async () => {
-  const md = await transformFixtureMdFile('basics', 'Tags.md', { includeFrontmatter: true })
+  const result = await transformFixtureMdFile('basics', 'Tags.md', { includeFrontmatter: true })
 
-  expect(md).toMatch(/^tags:\n\s+- page-tag1\n\s+- page-tag2$/m)
+  expect(result.content).toMatch(/^tags:\n\s+- page-tag1\n\s+- page-tag2$/m)
 })
 
 test('transforms inline tags in the content', async () => {
-  const md = await transformFixtureMdFile('basics', 'Tags.md')
+  const result = await transformFixtureMdFile('basics', 'Tags.md')
 
-  expect(md).toMatchInlineSnapshot(`
+  expect(result.content).toMatchInlineSnapshot(`
     "---
     title: Tags
     tags:

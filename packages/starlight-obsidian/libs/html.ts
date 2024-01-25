@@ -7,7 +7,7 @@ const processor = rehype().use(rehypeMermaid, {
 })
 
 export async function transformHtmlToString(html: string) {
-  const compiled = await processor.process(html)
+  const file = await processor.process(html)
 
-  return String(compiled)
+  return String(file)
 }

@@ -3,9 +3,9 @@ import { expect, test } from 'vitest'
 import { transformFixtureMdFile } from './utils'
 
 test('transforms callouts', async () => {
-  const md = await transformFixtureMdFile('basics', 'Callouts.md')
+  const result = await transformFixtureMdFile('basics', 'Callouts.md')
 
-  expect(md).toMatchInlineSnapshot(`
+  expect(result.content).toMatchInlineSnapshot(`
     "This is a sentence.
 
     :::note
@@ -42,9 +42,9 @@ test('transforms callouts', async () => {
 })
 
 test('supports all callout types', async () => {
-  const md = await transformFixtureMdFile('basics', 'Callouts types.md')
+  const result = await transformFixtureMdFile('basics', 'Callouts types.md')
 
-  expect(md).toMatchInlineSnapshot(`
+  expect(result.content).toMatchInlineSnapshot(`
     ":::note
     Note callout
     :::

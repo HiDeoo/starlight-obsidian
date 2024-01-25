@@ -77,8 +77,14 @@ function handleFrontmatter(tree: Root, file: VFile) {
       continue
     }
 
+    const obsidianFrontmatter = parseObsidianFrontmatter(node.value)
+    node.value = getFrontmatterNodeValue(file, obsidianFrontmatter)
     hasFrontmatter = true
-    node.value = getFrontmatterNodeValue(file, parseObsidianFrontmatter(node.value))
+
+    if (obsidianFrontmatter?.aliases && obsidianFrontmatter.aliases.length > 0) {
+      file.data.aliases = obsidianFrontmatter.aliases
+    }
+
     break
   }
 
@@ -453,6 +459,7 @@ function ensureTransformContext(file: VFile): asserts file is VFile & { data: Tr
 }
 
 export interface TransformContext {
+  aliases?: string[]
   files: VaultFile[]
   includeKatexStyles?: boolean
   output: StarlightObsidianConfig['output']

@@ -66,6 +66,33 @@ test('copies content files to a custom output directory', async () => {
   expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/test/foo.md', expect.any(String))
 })
 
+test('emits aliases', async () => {
+  readFileSpy = vi.spyOn(fs, 'readFile').mockResolvedValueOnce(`{}`).mockResolvedValue(`---
+aliases:
+  - foo
+  - bar
+---
+
+Test`)
+
+  const config = getFixtureConfig('aliases')
+  const vault = await getVault(config)
+
+  await addObsidianFiles(config, vault, ['folder/foo.md'])
+
+  expect(writeFileSpy).toHaveBeenCalledTimes(3)
+
+  expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/folder', { recursive: true })
+  expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/folder/foo.md', expect.any(String))
+
+  expect(mkdirSpy).toHaveBeenNthCalledWith(2, 'public/notes/folder/foo', { recursive: true })
+
+  const redirect = /<meta http-equiv="refresh" content="0;url=\/notes\/folder\/foo">/
+
+  expect(writeFileSpy.mock.calls.at(1)).toMatch(redirect)
+  expect(writeFileSpy.mock.calls.at(2)).toMatch(redirect)
+})
+
 test('clears the default output directories', async () => {
   const config = getFixtureConfig('basics')
   const vault = await getVault(config)

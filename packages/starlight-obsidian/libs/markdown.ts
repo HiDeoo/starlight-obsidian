@@ -8,10 +8,14 @@ import { remarkStarlightObsidian, type TransformContext } from './remark'
 
 const processor = remark().use(remarkGfm).use(remarkMath).use(remarkFrontmatter).use(remarkStarlightObsidian)
 
-export async function transformMarkdownToString(filePath: string, markdown: string, context: TransformContext) {
-  const compiled = await processor.process(getVFile(filePath, markdown, context))
+export async function transformMarkdownToString(
+  filePath: string,
+  markdown: string,
+  context: TransformContext,
+): Promise<TransformResult> {
+  const file = await processor.process(getVFile(filePath, markdown, context))
 
-  return String(compiled)
+  return { aliases: file.data.aliases, content: String(file) }
 }
 
 export function transformMarkdownToAST(filePath: string, markdown: string, context: TransformContext) {
@@ -24,4 +28,9 @@ function getVFile(filePath: string, markdown: string, context: TransformContext)
     path: filePath,
     value: markdown,
   })
+}
+
+interface TransformResult {
+  aliases: string[] | undefined
+  content: string
 }

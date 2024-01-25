@@ -47,7 +47,7 @@ export async function transformFixtureMdFile(
 ): ReturnType<typeof transformMarkdownToString> {
   const md = await getFixtureFile(fixtureName, filePath)
   const fileName = path.basename(filePath)
-  const transformedMd = await transformMarkdownToString(filePath, md, {
+  const result = await transformMarkdownToString(filePath, md, {
     files: options.context?.files ?? [
       {
         fileName,
@@ -63,9 +63,9 @@ export async function transformFixtureMdFile(
     vault: options.context?.vault ?? { options: { linkFormat: 'shortest', linkSyntax: 'wikilink' }, path: '' },
   })
 
-  if (options.includeFrontmatter) {
-    return transformedMd
+  if (!options.includeFrontmatter) {
+    result.content = result.content.replace(/^---\n.*\n+---\n\n/, '')
   }
 
-  return transformedMd.replace(/^---\n.*\n+---\n\n/, '')
+  return result
 }

@@ -18,6 +18,10 @@ const obsidianAppConfigSchema = z.object({
 })
 
 const obsidianFrontmatterSchema = z.object({
+  aliases: z
+    .array(z.string())
+    .optional()
+    .transform((aliases) => aliases?.map((alias) => slug(alias))),
   description: z.string().optional(),
   permalink: z.string().optional(),
   tags: z.array(z.string()).optional(),

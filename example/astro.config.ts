@@ -17,7 +17,8 @@ export default defineConfig({
           // vault: '../fixtures/links-markdown-shortest',
           // vault: '../fixtures/links-wikilink-absolute',
           // vault: '../fixtures/links-wikilink-relative',
-          vault: '../fixtures/links-wikilink-shortest',
+          // vault: '../fixtures/links-wikilink-shortest',
+          vault: '../fixtures/aliases',
         }),
       ],
       // TODO(HiDeoo)

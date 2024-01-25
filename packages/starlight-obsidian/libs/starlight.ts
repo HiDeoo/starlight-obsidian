@@ -51,8 +51,8 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
   await Promise.all(
     vaultFiles.map(async (vaultFile) => {
       await (vaultFile.type === 'asset'
-        ? addAssetFile(outputPaths.asset, vaultFile)
-        : addContentFIle(config, vault, outputPaths.content, vaultFiles, vaultFile))
+        ? addAssetFile(outputPaths, vaultFile)
+        : addContentFIle(config, vault, outputPaths, vaultFiles, vaultFile))
     }),
   )
 }
@@ -64,30 +64,69 @@ export function getStarlightCalloutType(obsidianCalloutType: string): string {
 async function addContentFIle(
   config: StarlightObsidianConfig,
   vault: Vault,
-  outputPath: string,
+  outputPaths: OutputPaths,
   vaultFiles: VaultFile[],
   vaultFile: VaultFile,
 ) {
   const obsidianContent = await fs.readFile(vaultFile.fsPath, 'utf8')
-  const starlightContent = await transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
+  const { content: starlightContent, aliases } = await transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
     files: vaultFiles,
     output: config.output,
     vault,
   })
 
-  const starlightPath = path.join(outputPath, vaultFile.path)
+  const starlightPath = path.join(outputPaths.content, vaultFile.path)
   const starlightDirPath = path.dirname(starlightPath)
 
   await ensureDirectory(starlightDirPath)
   await fs.writeFile(starlightPath, starlightContent)
+
+  if (aliases) {
+    for (const alias of aliases) {
+      await addAliasFile(config, outputPaths, vaultFile, alias)
+    }
+  }
 }
 
-async function addAssetFile(outputPath: string, vaultFile: VaultFile) {
-  const starlightPath = path.join(outputPath, vaultFile.slug)
+async function addAssetFile(outputPaths: OutputPaths, vaultFile: VaultFile) {
+  const starlightPath = path.join(outputPaths.asset, vaultFile.slug)
   const starlightDirPath = path.dirname(starlightPath)
 
   await ensureDirectory(starlightDirPath)
   await fs.copyFile(vaultFile.fsPath, starlightPath)
+}
+
+async function addAliasFile(
+  config: StarlightObsidianConfig,
+  outputPaths: OutputPaths,
+  vaultFile: VaultFile,
+  alias: string,
+) {
+  const starlightPath = path.join(outputPaths.asset, path.dirname(vaultFile.path), alias, 'index.html')
+  const starlightDirPath = path.dirname(starlightPath)
+
+  const to = path.join('/', config.output, vaultFile.slug)
+  const from = path.join(path.dirname(to), alias)
+
+  await ensureDirectory(starlightDirPath)
+
+  // Based on https://github.com/withastro/astro/blob/57ab578bc7bdac6c65c2315365c0e94bc98af2b3/packages/astro/src/core/build/generate.ts#L584-L591
+  // but tweaked to add an `<html>` element so that Pagefind does not emit a warning when ignoring the page.
+  await fs.writeFile(
+    starlightPath,
+    `<!doctype html>
+<html>
+  <head>
+    <title>Redirecting to: ${to}</title>
+    <meta http-equiv="refresh" content="0;url=${to}">
+    <meta name="robots" content="noindex">
+    <link rel="canonical" href="${to}">
+  </head>
+  <body>
+    <a href="${to}">Redirecting from <code>${from}</code> to "<code>${to}</code>"</a>
+  </body>
+</html>`,
+  )
 }
 
 function getOutputPaths(config: StarlightObsidianConfig): OutputPaths {

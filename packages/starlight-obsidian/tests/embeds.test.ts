@@ -45,23 +45,23 @@ test.each(linkSyntaxAndFormats)('transforms embed URLs in %s with the %s format'
   const files = getObsidianVaultFiles(vault, paths)
   const options = { context: { files, output: 'notes', vault } }
 
-  let md = await transformFixtureMdFile(fixtureName, 'root embeds.md', options)
+  let result = await transformFixtureMdFile(fixtureName, 'root embeds.md', options)
 
-  expect(md).toBe(expectedMd)
+  expect(result.content).toBe(expectedMd)
 
-  md = await transformFixtureMdFile(fixtureName, 'folder/embeds in folder.md', options)
+  result = await transformFixtureMdFile(fixtureName, 'folder/embeds in folder.md', options)
 
-  expect(md).toBe(expectedMd)
+  expect(result.content).toBe(expectedMd)
 
-  md = await transformFixtureMdFile(fixtureName, 'folder/nested folder/embeds in nested folder.md', options)
+  result = await transformFixtureMdFile(fixtureName, 'folder/nested folder/embeds in nested folder.md', options)
 
-  expect(md).toBe(expectedMd)
+  expect(result.content).toBe(expectedMd)
 })
 
 test('transforms supported embeds', async () => {
-  const md = await transformFixtureMdFile('basics', 'Embeds.md')
+  const result = await transformFixtureMdFile('basics', 'Embeds.md')
 
-  expect(md).toMatchInlineSnapshot(`
+  expect(result.content).toMatchInlineSnapshot(`
     "![An image.png](</notes/An image.png>)
 
     <audio class="sl-obs-embed-audio" controls src="/notes/A sound.mp3"></audio>

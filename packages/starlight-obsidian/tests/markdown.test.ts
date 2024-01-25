@@ -3,9 +3,9 @@ import { expect, test } from 'vitest'
 import { transformFixtureMdFile } from './utils'
 
 test('highlights text', async () => {
-  const md = await transformFixtureMdFile('basics', 'Basic syntax (highlights).md')
+  const result = await transformFixtureMdFile('basics', 'Basic syntax (highlights).md')
 
-  expect(md).toMatchInlineSnapshot(`
+  expect(result.content).toMatchInlineSnapshot(`
     "<mark class="sl-obs-highlight">Highlighted text 1</mark>
 
     <mark class="sl-obs-highlight">Highlighted text 2</mark>
@@ -20,9 +20,9 @@ test('highlights text', async () => {
 })
 
 test('strips out comments', async () => {
-  const md = await transformFixtureMdFile('basics', 'Basic syntax (comments).md')
+  const result = await transformFixtureMdFile('basics', 'Basic syntax (comments).md')
 
-  expect(md).toMatchInlineSnapshot(`
+  expect(result.content).toMatchInlineSnapshot(`
     "This is an  comment.
 
     This is an  comment and another  comment.
@@ -32,19 +32,19 @@ test('strips out comments', async () => {
 })
 
 test('sets the proper title', async () => {
-  let md = await transformFixtureMdFile('basics', 'Random.md', { includeFrontmatter: true })
+  let result = await transformFixtureMdFile('basics', 'Random.md', { includeFrontmatter: true })
 
-  expect(md).toMatch(/^title: Random$/m)
+  expect(result.content).toMatch(/^title: Random$/m)
 
-  md = await transformFixtureMdFile('basics', 'Basic syntax (comments).md', { includeFrontmatter: true })
+  result = await transformFixtureMdFile('basics', 'Basic syntax (comments).md', { includeFrontmatter: true })
 
-  expect(md).toMatch(/^title: Basic syntax \(comments\)$/m)
+  expect(result.content).toMatch(/^title: Basic syntax \(comments\)$/m)
 })
 
 test('renders tables', async () => {
-  const md = await transformFixtureMdFile('basics', 'Tables.md')
+  const result = await transformFixtureMdFile('basics', 'Tables.md')
 
-  expect(md).toMatchInlineSnapshot(`
+  expect(result.content).toMatchInlineSnapshot(`
     "| First name | Last name |
     | ---------- | --------- |
     | Max        | Planck    |
@@ -67,9 +67,9 @@ test('renders tables', async () => {
 })
 
 test('renders math and includes katex styles', async () => {
-  const md = await transformFixtureMdFile('basics', 'Math.md', { includeFrontmatter: true })
+  const result = await transformFixtureMdFile('basics', 'Math.md', { includeFrontmatter: true })
 
-  expect(md).toMatchInlineSnapshot(`
+  expect(result.content).toMatchInlineSnapshot(`
     "---
     title: Math
     head:
@@ -93,7 +93,7 @@ test('renders math and includes katex styles', async () => {
 })
 
 test('does not include katex styles if not needed', async () => {
-  const md = await transformFixtureMdFile('basics', 'Random.md', { includeFrontmatter: true })
+  const result = await transformFixtureMdFile('basics', 'Random.md', { includeFrontmatter: true })
 
-  expect(md).not.toMatch(/katex/)
+  expect(result.content).not.toMatch(/katex/)
 })

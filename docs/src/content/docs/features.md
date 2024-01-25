@@ -51,6 +51,7 @@ head:
 | [Internal block links](https://help.obsidian.md/Linking+notes+and+files/Internal+links#Link%20to%20a%20block%20in%20a%20note)                   |    ✅     |
 | [Internal links with custom display text](https://help.obsidian.md/Linking+notes+and+files/Internal+links#Change%20the%20link%20display%20text) |    ✅     |
 | [External links](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#External%20links)                                      |    ✅     |
+| [Aliases](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#External%20links)                                             |    ✅     |
 
 ## Embeds
 

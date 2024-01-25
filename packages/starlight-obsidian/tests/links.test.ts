@@ -22,9 +22,9 @@ test('formats link URLs', async () => {
     const files = getObsidianVaultFiles(vault, paths)
     const options = { context: { files, output: 'notes', vault } }
 
-    let md = await transformFixtureMdFile(fixtureName, 'root 1.md', options)
+    let result = await transformFixtureMdFile(fixtureName, 'root 1.md', options)
 
-    expect(md).toMatchInlineSnapshot(`
+    expect(result.content).toMatchInlineSnapshot(`
       "[root 2](/notes/root-2)
 
       [file in folder 1](/notes/folder/file-in-folder-1)
@@ -69,9 +69,9 @@ test('formats link URLs', async () => {
       "
     `)
 
-    md = await transformFixtureMdFile(fixtureName, 'folder/file in folder 1.md', options)
+    result = await transformFixtureMdFile(fixtureName, 'folder/file in folder 1.md', options)
 
-    expect(md).toMatchInlineSnapshot(`
+    expect(result.content).toMatchInlineSnapshot(`
       "[root 1](/notes/root-1)
 
       [file in folder 2](/notes/folder/file-in-folder-2)
@@ -116,9 +116,9 @@ test('formats link URLs', async () => {
       "
     `)
 
-    md = await transformFixtureMdFile(fixtureName, 'folder/nested folder/file in nested folder 1.md', options)
+    result = await transformFixtureMdFile(fixtureName, 'folder/nested folder/file in nested folder 1.md', options)
 
-    expect(md).toMatchInlineSnapshot(`
+    expect(result.content).toMatchInlineSnapshot(`
       "[root 1](/notes/root-1)
 
       [file in folder 1](/notes/folder/file-in-folder-1)
