@@ -66,6 +66,15 @@ test('copies content files to a custom output directory', async () => {
   expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/test/foo.md', expect.any(String))
 })
 
+test('does not copy canvas', async () => {
+  const config = getFixtureConfig('basics')
+  const vault = await getVault(config)
+
+  await addObsidianFiles(config, vault, ['foo.md', 'bar.canvas'])
+
+  expect(copyFileSpy).not.toHaveBeenCalled()
+})
+
 test('emits aliases', async () => {
   readFileSpy = vi.spyOn(fs, 'readFile').mockResolvedValueOnce(`{}`).mockResolvedValue(`---
 aliases:
