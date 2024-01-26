@@ -24,6 +24,7 @@ export function getFixtureConfig(
   config: Partial<StarlightObsidianConfig> = {},
 ): StarlightObsidianConfig {
   return {
+    configFolder: '.obsidian',
     output: 'notes',
     vault: getFixturePath(fixtureName),
     ...config,

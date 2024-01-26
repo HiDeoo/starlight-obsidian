@@ -41,3 +41,9 @@ test('returns the default vault options', async () => {
   expect(vault.options.linkFormat).toBe('shortest')
   expect(vault.options.linkSyntax).toBe('wikilink')
 })
+
+test('supports custom vault config folder', async () => {
+  const vault = await getVault(getFixtureConfig('custom-config-folder', { configFolder: '.custom-config' }))
+
+  expect(vault.options.linkSyntax).toBe('markdown')
+})

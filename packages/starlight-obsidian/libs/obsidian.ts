@@ -46,11 +46,11 @@ export async function getVault(config: StarlightObsidianConfig): Promise<Vault> 
     throwUserError('The provided vault path is not a directory.')
   }
 
-  if (!(await isVaultDirectory(vaultPath))) {
+  if (!(await isVaultDirectory(config, vaultPath))) {
     throwUserError('The provided vault path is not a valid Obsidian vault directory.')
   }
 
-  const options = await getVaultOptions(vaultPath)
+  const options = await getVaultOptions(config, vaultPath)
 
   return {
     options,
@@ -147,14 +147,14 @@ export function parseObsidianFrontmatter(content: string): ObsidianFrontmatter |
   }
 }
 
-async function isVaultDirectory(vaultPath: string) {
-  const configPath = path.join(vaultPath, '.obsidian')
+async function isVaultDirectory(config: StarlightObsidianConfig, vaultPath: string) {
+  const configPath = path.join(vaultPath, config.configFolder)
 
   return (await isDirectory(configPath)) && (await isFile(path.join(configPath, 'app.json')))
 }
 
-async function getVaultOptions(vaultPath: string): Promise<VaultOptions> {
-  const appConfigPath = path.join(vaultPath, '.obsidian/app.json')
+async function getVaultOptions(config: StarlightObsidianConfig, vaultPath: string): Promise<VaultOptions> {
+  const appConfigPath = path.join(vaultPath, config.configFolder, 'app.json')
 
   try {
     const appConfigData = await fs.readFile(appConfigPath, 'utf8')

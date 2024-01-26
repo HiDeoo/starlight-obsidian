@@ -35,10 +35,11 @@ head:
 
 ## Miscellaneous
 
-| Name                                                                 | Supported |
-| :------------------------------------------------------------------- | :-------: |
-| [Tags](https://help.obsidian.md/Editing+and+formatting/Tags)         |    ✅     |
-| [Callouts](https://help.obsidian.md/Editing+and+formatting/Callouts) |    ✅     |
+| Name                                                                                    | Supported |
+| :-------------------------------------------------------------------------------------- | :-------: |
+| [Tags](https://help.obsidian.md/Editing+and+formatting/Tags)                            |    ✅     |
+| [Callouts](https://help.obsidian.md/Editing+and+formatting/Callouts)                    |    ✅     |
+| [Configuration folder](https://help.obsidian.md/Files+and+folders/Configuration+folder) |    ✅     |
 
 ## Links
 

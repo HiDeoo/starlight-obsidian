@@ -7,6 +7,8 @@ import { throwUserError } from './libs/plugin'
 import { addObsidianFiles } from './libs/starlight'
 
 const starlightObsidianConfigSchema = z.object({
+  // TODO(HiDeoo)
+  configFolder: z.string().startsWith('.').default('.obsidian'),
   // TODO(HiDeoo) doc with @default
   output: z.string().default('notes'),
   // TODO(HiDeoo) Add doc (absolute or relative path)
