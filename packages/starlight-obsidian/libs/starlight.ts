@@ -83,7 +83,7 @@ async function addContentFile(
     return
   }
 
-  const starlightPath = path.join(outputPaths.content, vaultFile.path)
+  const starlightPath = path.join(outputPaths.content, vaultFile.path.replace(/\.md$/, '.mdx'))
   const starlightDirPath = path.dirname(starlightPath)
 
   await ensureDirectory(starlightDirPath)

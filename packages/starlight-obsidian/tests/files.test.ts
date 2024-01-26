@@ -44,11 +44,11 @@ test('copies Obsidian files to the default output directory', async () => {
 
   expect(readFileSpy).toHaveBeenNthCalledWith(2, 'foo.md', 'utf8')
   expect(mkdirSpy).toHaveBeenNthCalledWith(3, 'src/content/docs/notes', { recursive: true })
-  expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/foo.md', expect.any(String))
+  expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/foo.mdx', expect.any(String))
 
   expect(readFileSpy).toHaveBeenNthCalledWith(3, 'nested/bar.md', 'utf8')
   expect(mkdirSpy).toHaveBeenNthCalledWith(4, 'src/content/docs/notes/nested', { recursive: true })
-  expect(writeFileSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes/nested/bar.md', expect.any(String))
+  expect(writeFileSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes/nested/bar.mdx', expect.any(String))
 })
 
 test('copies content files to a custom output directory', async () => {
@@ -63,7 +63,7 @@ test('copies content files to a custom output directory', async () => {
   expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'public/test', { recursive: true })
   expect(copyFileSpy).toHaveBeenNthCalledWith(1, 'bar.webm', 'public/test/bar.webm')
   expect(mkdirSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/test', { recursive: true })
-  expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/test/foo.md', expect.any(String))
+  expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/test/foo.mdx', expect.any(String))
 })
 
 test('does not copy canvas', async () => {
@@ -92,7 +92,7 @@ Test`)
   expect(writeFileSpy).toHaveBeenCalledTimes(3)
 
   expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/folder', { recursive: true })
-  expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/folder/foo.md', expect.any(String))
+  expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/folder/foo.mdx', expect.any(String))
 
   expect(mkdirSpy).toHaveBeenNthCalledWith(2, 'public/notes/folder/foo', { recursive: true })
 
@@ -132,10 +132,10 @@ published`)
   expect(writeFileSpy).toHaveBeenCalledTimes(2)
 
   expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes', { recursive: true })
-  expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/bar.md', expect.any(String))
+  expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/bar.mdx', expect.any(String))
 
   expect(mkdirSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes', { recursive: true })
-  expect(writeFileSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes/qux.md', expect.any(String))
+  expect(writeFileSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes/qux.mdx', expect.any(String))
 })
 
 test('clears the default output directories', async () => {
