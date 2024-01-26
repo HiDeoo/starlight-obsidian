@@ -97,3 +97,13 @@ test('does not include katex styles if not needed', async () => {
 
   expect(result.content).not.toMatch(/katex/)
 })
+
+test('parses and flags files with the `publish` property set to `true`', async () => {
+  let result = await transformFixtureMdFile('basics', 'Basic syntax.md')
+
+  expect(result.skip).toBe(false)
+
+  result = await transformFixtureMdFile('basics', 'Private file.md')
+
+  expect(result.skip).toBe(true)
+})

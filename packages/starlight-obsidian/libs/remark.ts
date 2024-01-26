@@ -38,6 +38,13 @@ const asideDelimiter = ':::'
 
 export function remarkStarlightObsidian() {
   return async function transformer(tree: Root, file: VFile) {
+    const obsidianFrontmatter = getObsidianFrontmatter(tree)
+
+    if (obsidianFrontmatter && obsidianFrontmatter.publish === false) {
+      file.data.skip = true
+      return
+    }
+
     handleReplacements(tree, file)
     await handleMermaid(tree, file)
 
@@ -64,11 +71,28 @@ export function remarkStarlightObsidian() {
       }
     })
 
-    handleFrontmatter(tree, file)
+    handleFrontmatter(tree, file, obsidianFrontmatter)
   }
 }
 
-function handleFrontmatter(tree: Root, file: VFile) {
+function getObsidianFrontmatter(tree: Root) {
+  // The frontmatter is always at the root of the tree.
+  for (const node of tree.children) {
+    if (node.type !== 'yaml') {
+      continue
+    }
+
+    const obsidianFrontmatter = parseObsidianFrontmatter(node.value)
+
+    if (obsidianFrontmatter) {
+      return obsidianFrontmatter
+    }
+  }
+
+  return
+}
+
+function handleFrontmatter(tree: Root, file: VFile, obsidianFrontmatter?: ObsidianFrontmatter) {
   let hasFrontmatter = false
 
   // The frontmatter is always at the root of the tree.
@@ -77,7 +101,6 @@ function handleFrontmatter(tree: Root, file: VFile) {
       continue
     }
 
-    const obsidianFrontmatter = parseObsidianFrontmatter(node.value)
     node.value = getFrontmatterNodeValue(file, obsidianFrontmatter)
     hasFrontmatter = true
 
@@ -463,6 +486,7 @@ export interface TransformContext {
   files: VaultFile[]
   includeKatexStyles?: boolean
   output: StarlightObsidianConfig['output']
+  skip?: true
   vault: Vault
 }
 

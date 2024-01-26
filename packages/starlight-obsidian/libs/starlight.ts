@@ -52,7 +52,7 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
     vaultFiles.map(async (vaultFile) => {
       await (vaultFile.type === 'asset'
         ? addAssetFile(outputPaths, vaultFile)
-        : addContentFIle(config, vault, outputPaths, vaultFiles, vaultFile))
+        : addContentFile(config, vault, outputPaths, vaultFiles, vaultFile))
     }),
   )
 }
@@ -61,7 +61,7 @@ export function getStarlightCalloutType(obsidianCalloutType: string): string {
   return obsidianToStarlightCalloutTypeMap[obsidianCalloutType] ?? 'note'
 }
 
-async function addContentFIle(
+async function addContentFile(
   config: StarlightObsidianConfig,
   vault: Vault,
   outputPaths: OutputPaths,
@@ -69,11 +69,19 @@ async function addContentFIle(
   vaultFile: VaultFile,
 ) {
   const obsidianContent = await fs.readFile(vaultFile.fsPath, 'utf8')
-  const { content: starlightContent, aliases } = await transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
+  const {
+    content: starlightContent,
+    aliases,
+    skip,
+  } = await transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
     files: vaultFiles,
     output: config.output,
     vault,
   })
+
+  if (skip) {
+    return
+  }
 
   const starlightPath = path.join(outputPaths.content, vaultFile.path)
   const starlightDirPath = path.dirname(starlightPath)

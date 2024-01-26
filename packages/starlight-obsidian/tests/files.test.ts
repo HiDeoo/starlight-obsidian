@@ -102,6 +102,42 @@ Test`)
   expect(writeFileSpy.mock.calls.at(2)).toMatch(redirect)
 })
 
+test("skips files with the `publish` property set to `false` or `'false'`", async () => {
+  readFileSpy = vi
+    .spyOn(fs, 'readFile')
+    .mockResolvedValueOnce(`{}`)
+    .mockResolvedValueOnce(
+      `---
+publish: false
+---
+
+skipped`,
+    )
+    .mockResolvedValueOnce('published').mockResolvedValueOnce(`---
+publish: 'false'
+---
+
+skipped`).mockResolvedValueOnce(`---
+publish: true
+---
+
+published`)
+
+  const config = getFixtureConfig('aliases')
+  const vault = await getVault(config)
+
+  await addObsidianFiles(config, vault, ['folder/foo.md', 'bar.md', 'baz.md', 'qux.md'])
+
+  expect(mkdirSpy).toHaveBeenCalledTimes(2)
+  expect(writeFileSpy).toHaveBeenCalledTimes(2)
+
+  expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes', { recursive: true })
+  expect(writeFileSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes/bar.md', expect.any(String))
+
+  expect(mkdirSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes', { recursive: true })
+  expect(writeFileSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes/qux.md', expect.any(String))
+})
+
 test('clears the default output directories', async () => {
   const config = getFixtureConfig('basics')
   const vault = await getVault(config)

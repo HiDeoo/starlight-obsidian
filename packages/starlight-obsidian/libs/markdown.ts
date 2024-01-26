@@ -15,7 +15,11 @@ export async function transformMarkdownToString(
 ): Promise<TransformResult> {
   const file = await processor.process(getVFile(filePath, markdown, context))
 
-  return { aliases: file.data.aliases, content: String(file) }
+  return {
+    aliases: file.data.aliases,
+    content: String(file),
+    skip: file.data.skip === true,
+  }
 }
 
 export function transformMarkdownToAST(filePath: string, markdown: string, context: TransformContext) {
@@ -33,4 +37,5 @@ function getVFile(filePath: string, markdown: string, context: TransformContext)
 interface TransformResult {
   aliases: string[] | undefined
   content: string
+  skip: boolean
 }
