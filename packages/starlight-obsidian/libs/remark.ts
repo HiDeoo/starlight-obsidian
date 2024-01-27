@@ -74,6 +74,7 @@ export function remarkStarlightObsidian() {
     })
 
     handleFrontmatter(tree, file, obsidianFrontmatter)
+    handleImports(tree, file)
   }
 }
 
@@ -116,6 +117,30 @@ function handleFrontmatter(tree: Root, file: VFile, obsidianFrontmatter?: Obsidi
   if (!hasFrontmatter) {
     tree.children.unshift({ type: 'yaml', value: getFrontmatterNodeValue(file) })
   }
+}
+
+function handleImports(tree: Root, file: VFile) {
+  if (!file.data.includeTwitterComponent && !file.data.includeYoutubeComponent) {
+    return
+  }
+
+  const imports: RootContent[] = []
+
+  if (file.data.includeTwitterComponent) {
+    imports.push({
+      type: 'mdxjsEsm',
+      value: `import Twitter from 'starlight-obsidian/components/Twitter.astro'`,
+    })
+  }
+
+  if (file.data.includeYoutubeComponent) {
+    imports.push({
+      type: 'mdxjsEsm',
+      value: `import Youtube from 'starlight-obsidian/components/Youtube.astro'`,
+    })
+  }
+
+  tree.children.splice(1, 0, ...imports)
 }
 
 function handleReplacements(tree: Root, file: VFile) {
@@ -439,18 +464,18 @@ function handleExternalEmbeds(node: Image, context: VisitorContext) {
   const id = twitterId ?? youtubeId
   const component = type === 'twitter' ? 'Twitter' : 'Youtube'
 
-  replaceNode(context, [
-    {
-      type: 'mdxjsEsm',
-      value: `import ${component} from 'starlight-obsidian/components/${component}.astro'\n\n`,
-    },
-    {
-      type: 'mdxJsxFlowElement',
-      name: component,
-      attributes: [{ type: 'mdxJsxAttribute', name: 'id', value: id }],
-      children: [],
-    },
-  ])
+  if (type === 'twitter') {
+    context.file.data.includeTwitterComponent = true
+  } else {
+    context.file.data.includeYoutubeComponent = true
+  }
+
+  replaceNode(context, {
+    type: 'mdxJsxFlowElement',
+    name: component,
+    attributes: [{ type: 'mdxJsxAttribute', name: 'id', value: id }],
+    children: [],
+  })
 }
 
 // Custom file nodes are replaced by a custom HTML node, e.g. an audio player for audio files, etc.
@@ -525,6 +550,8 @@ export interface TransformContext {
   aliases?: string[]
   files: VaultFile[]
   includeKatexStyles?: boolean
+  includeTwitterComponent?: boolean
+  includeYoutubeComponent?: boolean
   output: StarlightObsidianConfig['output']
   skip?: true
   vault: Vault

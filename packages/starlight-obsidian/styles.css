@@ -36,7 +36,7 @@
   background-color: var(--sl-color-accent-high);
 }
 
-astro-embed-tweet .twitter-tweet:not(.twitter-tweet-rendered) {
+blockquote.twitter-tweet:not(.twitter-tweet-rendered) {
   border: 1px solid var(--sl-color-gray-5);
   margin-block: 1rem;
 }
