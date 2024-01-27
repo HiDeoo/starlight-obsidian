@@ -4,13 +4,7 @@ import { getObsidianPaths, getObsidianVaultFiles, getVault } from '../libs/obsid
 
 import { getFixtureConfig, linkSyntaxAndFormats, transformFixtureMdFile } from './utils'
 
-const expectedMd = `![An image](</notes/An image.png>)
-
-![An image in folder](</notes/folder/An image in folder.png>)
-
-![An image in nested folder](</notes/folder/nested-folder/An image in nested folder.png>)
-
-<audio class="sl-obs-embed-audio" controls src="/notes/A sound.mp3"></audio>
+const expectedCustomFileMd = `<audio class="sl-obs-embed-audio" controls src="/notes/A sound.mp3"></audio>
 
 <audio class="sl-obs-embed-audio" controls src="/notes/folder/A sound.mp3"></audio>
 
@@ -35,6 +29,19 @@ const expectedMd = `![An image](</notes/An image.png>)
 > content in nested folder
 `
 
+function getExpectedAssetMd(depth: number) {
+  // src/assets/notes/An image.png
+  // src/content/docs/notes/file.md
+  //     ^       ^
+  const prefix = '../'.repeat(depth + 1 + 2)
+
+  return `![An image](<${prefix}assets/notes/An image.png>)
+
+![An image in folder](<${prefix}assets/notes/folder/An image in folder.png>)
+
+![An image in nested folder](<${prefix}assets/notes/folder/nested-folder/An image in nested folder.png>)`
+}
+
 // This only tests image and audio embeds as the URL processing is the same for all embeds.
 // The next test covers the node replacement logic.
 test.each(linkSyntaxAndFormats)('transforms embed URLs in %s with the %s format', async (syntax, format) => {
@@ -47,22 +54,25 @@ test.each(linkSyntaxAndFormats)('transforms embed URLs in %s with the %s format'
 
   let result = await transformFixtureMdFile(fixtureName, 'root embeds.md', options)
 
-  expect(result.content).toBe(expectedMd)
+  expect(result.content).toMatch(expectedCustomFileMd)
+  expect(result.content).toMatch(getExpectedAssetMd(0))
 
   result = await transformFixtureMdFile(fixtureName, 'folder/embeds in folder.md', options)
 
-  expect(result.content).toBe(expectedMd)
+  expect(result.content).toMatch(expectedCustomFileMd)
+  expect(result.content).toMatch(getExpectedAssetMd(1))
 
   result = await transformFixtureMdFile(fixtureName, 'folder/nested folder/embeds in nested folder.md', options)
 
-  expect(result.content).toBe(expectedMd)
+  expect(result.content).toMatch(expectedCustomFileMd)
+  expect(result.content).toMatch(getExpectedAssetMd(2))
 })
 
 test('transforms supported embeds', async () => {
   const result = await transformFixtureMdFile('basics', 'Embeds.md')
 
   expect(result.content).toMatchInlineSnapshot(`
-    "![An image.png](</notes/An image.png>)
+    "![An image.png](<../../../../../packages/starlight-obsidian/assets/notes/An image.png>)
 
     <audio class="sl-obs-embed-audio" controls src="/notes/A sound.mp3"></audio>
 

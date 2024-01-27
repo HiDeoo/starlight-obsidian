@@ -23,6 +23,7 @@ dist
 dist-ssr
 example/public/notes
 example/src/content/docs/notes
+example/src/assets/notes
 fixtures/**/workspace.json
 lerna-debug.log*
 logs

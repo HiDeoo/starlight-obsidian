@@ -28,7 +28,7 @@ import {
   type VaultFile,
 } from './obsidian'
 import { extractPathAndAnchor, getExtension, isAnchor } from './path'
-import { getStarlightCalloutType } from './starlight'
+import { getStarlightCalloutType, isAssetFile } from './starlight'
 
 const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)+)==/g
 const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)+)%%/gs
@@ -288,7 +288,7 @@ function handleImages(node: Image, context: VisitorContext) {
     return SKIP
   }
 
-  node.url = fileUrl
+  node.url = isAssetFile(fileUrl) ? getAssetPath(file, fileUrl) : fileUrl
 
   return SKIP
 }
@@ -408,6 +408,12 @@ function getRelativeFilePath(file: VFile, relativePath: string) {
   ensureTransformContext(file)
 
   return path.posix.join(getObsidianRelativePath(file.data.vault, file.dirname), relativePath)
+}
+
+function getAssetPath(file: VFile, relativePath: string) {
+  ensureTransformContext(file)
+
+  return path.posix.join('../../..', path.relative(file.dirname, file.data.vault.path), 'assets', relativePath)
 }
 
 function getFilePathFromVaultFile(vaultFile: VaultFile, url: string) {

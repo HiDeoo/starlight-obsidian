@@ -46,9 +46,10 @@ export async function transformFixtureMdFile(
   filePath: string,
   options: { context?: TransformContext; includeFrontmatter?: boolean } = {},
 ): ReturnType<typeof transformMarkdownToString> {
+  const fixtureFilePath = path.resolve(path.join(getFixturePath(fixtureName), filePath))
   const md = await getFixtureFile(fixtureName, filePath)
   const fileName = path.basename(filePath)
-  const result = await transformMarkdownToString(filePath, md, {
+  const result = await transformMarkdownToString(fixtureFilePath, md, {
     files: options.context?.files ?? [
       {
         fileName,

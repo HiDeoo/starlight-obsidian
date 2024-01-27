@@ -11,6 +11,7 @@ import type { StarlightObsidianConfig } from '..'
 import { isDirectory, isFile } from './fs'
 import { getExtension, isAnchor, stripExtension } from './path'
 import { throwUserError } from './plugin'
+import { isAssetFile } from './starlight'
 
 const obsidianAppConfigSchema = z.object({
   newLinkFormat: z.union([z.literal('absolute'), z.literal('relative'), z.literal('shortest')]).default('shortest'),
@@ -77,7 +78,7 @@ export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): Va
       path: filePath,
       slug: slugifyObsidianPath(filePath),
       stem: stripExtension(fileName),
-      type: isObsidianFile(fileName) ? 'file' : 'content',
+      type: isAssetFile(fileName) ? 'asset' : isObsidianFile(fileName) ? 'file' : 'content',
       uniqueFileName: allFileNames.filter((currentFileName) => currentFileName === fileName).length === 1,
     }
   })
@@ -186,7 +187,7 @@ export interface VaultFile {
   slug: string
   // This represent the file name without the extension.
   stem: string
-  type: 'content' | 'file'
+  type: 'asset' | 'content' | 'file'
   uniqueFileName: boolean
 }
 

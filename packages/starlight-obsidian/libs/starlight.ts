@@ -3,10 +3,12 @@ import path from 'node:path'
 
 import type { StarlightObsidianConfig } from '..'
 
-import { ensureDirectory, removeDirectory } from './fs'
+import { copyFile, ensureDirectory, removeDirectory } from './fs'
 import { transformMarkdownToString } from './markdown'
-import { getObsidianVaultFiles, type Vault, type VaultFile } from './obsidian'
+import { getObsidianVaultFiles, isObsidianFile, type Vault, type VaultFile } from './obsidian'
+import { getExtension } from './path'
 
+const assetsPath = 'src/assets'
 const docsPath = 'src/content/docs'
 const publicPath = 'public'
 
@@ -50,9 +52,11 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
   // TODO(HiDeoo) worker? queue? parallel?
   await Promise.all(
     vaultFiles.map(async (vaultFile) => {
-      await (vaultFile.type === 'file'
-        ? addFile(outputPaths, vaultFile)
-        : addContentFile(config, vault, outputPaths, vaultFiles, vaultFile))
+      await (vaultFile.type === 'asset'
+        ? addAsset(outputPaths, vaultFile)
+        : vaultFile.type === 'file'
+          ? addFile(outputPaths, vaultFile)
+          : addContent(config, vault, outputPaths, vaultFiles, vaultFile))
     }),
   )
 }
@@ -61,7 +65,11 @@ export function getStarlightCalloutType(obsidianCalloutType: string): string {
   return obsidianToStarlightCalloutTypeMap[obsidianCalloutType] ?? 'note'
 }
 
-async function addContentFile(
+export function isAssetFile(filePath: string): boolean {
+  return getExtension(filePath) !== '.bmp' && isObsidianFile(filePath, 'image')
+}
+
+async function addContent(
   config: StarlightObsidianConfig,
   vault: Vault,
   outputPaths: OutputPaths,
@@ -91,20 +99,20 @@ async function addContentFile(
 
   if (aliases) {
     for (const alias of aliases) {
-      await addAliasFile(config, outputPaths, vaultFile, alias)
+      await addAlias(config, outputPaths, vaultFile, alias)
     }
   }
 }
 
 async function addFile(outputPaths: OutputPaths, vaultFile: VaultFile) {
-  const starlightPath = path.join(outputPaths.file, vaultFile.slug)
-  const starlightDirPath = path.dirname(starlightPath)
-
-  await ensureDirectory(starlightDirPath)
-  await fs.copyFile(vaultFile.fsPath, starlightPath)
+  await copyFile(vaultFile.fsPath, path.join(outputPaths.file, vaultFile.slug))
 }
 
-async function addAliasFile(
+async function addAsset(outputPaths: OutputPaths, vaultFile: VaultFile) {
+  await copyFile(vaultFile.fsPath, path.join(outputPaths.asset, vaultFile.slug))
+}
+
+async function addAlias(
   config: StarlightObsidianConfig,
   outputPaths: OutputPaths,
   vaultFile: VaultFile,
@@ -139,17 +147,20 @@ async function addAliasFile(
 
 function getOutputPaths(config: StarlightObsidianConfig): OutputPaths {
   return {
+    asset: path.join(assetsPath, config.output),
     content: path.join(docsPath, config.output),
     file: path.join(publicPath, config.output),
   }
 }
 
 async function cleanOutputPaths(outputPaths: OutputPaths) {
+  await removeDirectory(outputPaths.asset)
   await removeDirectory(outputPaths.content)
   await removeDirectory(outputPaths.file)
 }
 
 interface OutputPaths {
+  asset: string
   content: string
   file: string
 }

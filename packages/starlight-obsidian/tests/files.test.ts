@@ -36,8 +36,8 @@ test('copies Obsidian files to the associated output directories', async () => {
   expect(writeFileSpy).toHaveBeenCalledTimes(2)
   expect(copyFileSpy).toHaveBeenCalledTimes(2)
 
-  expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'public/notes', { recursive: true })
-  expect(copyFileSpy).toHaveBeenNthCalledWith(1, 'baz.png', 'public/notes/baz.png')
+  expect(mkdirSpy).toHaveBeenNthCalledWith(1, 'src/assets/notes', { recursive: true })
+  expect(copyFileSpy).toHaveBeenNthCalledWith(1, 'baz.png', 'src/assets/notes/baz.png')
 
   expect(mkdirSpy).toHaveBeenNthCalledWith(2, 'public/notes/nested', { recursive: true })
   expect(copyFileSpy).toHaveBeenNthCalledWith(2, 'nested/qux.pdf', 'public/notes/nested/qux.pdf')
@@ -144,9 +144,10 @@ test('clears the default output directories', async () => {
 
   await addObsidianFiles(config, vault, ['foo.md'])
 
-  expect(rmSpy).toHaveBeenCalledTimes(2)
-  expect(rmSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes', { force: true, recursive: true })
-  expect(rmSpy).toHaveBeenNthCalledWith(2, 'public/notes', { force: true, recursive: true })
+  expect(rmSpy).toHaveBeenCalledTimes(3)
+  expect(rmSpy).toHaveBeenNthCalledWith(1, 'src/assets/notes', { force: true, recursive: true })
+  expect(rmSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes', { force: true, recursive: true })
+  expect(rmSpy).toHaveBeenNthCalledWith(3, 'public/notes', { force: true, recursive: true })
 })
 
 test('clears custom output directories', async () => {
@@ -155,7 +156,8 @@ test('clears custom output directories', async () => {
 
   await addObsidianFiles(config, vault, ['foo.md'])
 
-  expect(rmSpy).toHaveBeenCalledTimes(2)
-  expect(rmSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/test', { force: true, recursive: true })
-  expect(rmSpy).toHaveBeenNthCalledWith(2, 'public/test', { force: true, recursive: true })
+  expect(rmSpy).toHaveBeenCalledTimes(3)
+  expect(rmSpy).toHaveBeenNthCalledWith(1, 'src/assets/test', { force: true, recursive: true })
+  expect(rmSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/test', { force: true, recursive: true })
+  expect(rmSpy).toHaveBeenNthCalledWith(3, 'public/test', { force: true, recursive: true })
 })
