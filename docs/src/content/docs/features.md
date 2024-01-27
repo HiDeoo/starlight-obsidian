@@ -16,7 +16,7 @@ This page lists Obsidian features relevant to publishing and their support statu
 | [Headings](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Headings)                                       |    ✅     |
 | [Bold, italics, highlights](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Bold,%20italics,%20highlights) |    ✅     |
 | [External images](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#External%20images)                       |    ✅     |
-| [External images with dimensions](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#External%20images)       |    ❌     |
+| [External images with dimensions](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#External%20images)       |    ✅     |
 | [Quotes](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Quotes)                                           |    ✅     |
 | [Lists](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Lists)                                             |    ✅     |
 | [Task lists](https://help.obsidian.md/Editing+and+formatting/Basic+formatting+syntax#Task%20lists)                                 |    ✅     |

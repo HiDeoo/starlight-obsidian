@@ -35,6 +35,7 @@ const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)+)%%/gs
 const wikilinkReplacementRegex = /!?\[\[(?<url>(?:(?![[\]|]).)+)(?:\|(?<maybeText>(?:(?![[\]|]).)+))?]]/g
 const tagReplacementRegex = /(?:^|\s)#(?<tag>[\w/-]+)/g
 const calloutRegex = /^\[!(?<type>\w+)][+-]? ?(?<title>.*)$/
+const imageSizeRegex = /^(?<altText>.*)\|(?:(?<widthOnly>\d+)|(?:(?<width>\d+)x(?<height>\d+)))$/
 
 const asideDelimiter = ':::'
 
@@ -270,7 +271,26 @@ function handleImages(node: Image, context: VisitorContext) {
   }
 
   if (isAbsoluteUrl(node.url)) {
-    handleExternalEmbeds(node, context)
+    const isExternalEmbed = handleExternalEmbeds(node, context)
+
+    if (isExternalEmbed) {
+      return SKIP
+    }
+
+    if (isObsidianFile(node.url, 'image')) {
+      const [alt, width, height] = getImageSizeFromAltText(node.alt)
+
+      if (!width) {
+        return SKIP
+      }
+
+      const styles = height === undefined ? '' : ` style="height: ${height}px !important;"`
+
+      replaceNode(context, {
+        type: 'html',
+        value: `<img src="${node.url}" alt="${alt}" width="${width}" height="${height ?? 'auto'}"${styles} />`,
+      })
+    }
 
     return SKIP
   }
@@ -339,8 +359,7 @@ function handleBlockquotes(node: Blockquote, context: VisitorContext) {
 
   const match = firstLine.match(calloutRegex)
 
-  const type = match?.groups?.['type']
-  const title = match?.groups?.['title']
+  const { title, type } = match?.groups ?? {}
 
   if (!match || !type) {
     return SKIP
@@ -457,7 +476,7 @@ function handleExternalEmbeds(node: Image, context: VisitorContext) {
   const youtubeId = youtubeMatcher(node.url)
 
   if (!twitterId && !youtubeId) {
-    return
+    return false
   }
 
   const type = twitterId ? 'twitter' : 'youtube'
@@ -476,6 +495,8 @@ function handleExternalEmbeds(node: Image, context: VisitorContext) {
     attributes: [{ type: 'mdxJsxAttribute', name: 'id', value: id }],
     children: [],
   })
+
+  return true
 }
 
 // Custom file nodes are replaced by a custom HTML node, e.g. an audio player for audio files, etc.
@@ -499,6 +520,26 @@ function getCustomFileNode(filePath: string): RootContent {
   return {
     type: 'html',
     value: `<iframe class="sl-obs-embed-pdf" src="${filePath}"></iframe>`,
+  }
+}
+
+function getImageSizeFromAltText(
+  alt?: string | null,
+): [alt: string | null | undefined, width: string | undefined, height: string | undefined] {
+  if (!alt) {
+    return [alt, undefined, undefined]
+  }
+
+  const match = alt.match(imageSizeRegex)
+
+  const { altText, width, widthOnly, height } = match?.groups ?? {}
+
+  if (!widthOnly && !width) {
+    return [undefined, undefined, undefined]
+  } else if (widthOnly) {
+    return [altText, widthOnly, undefined]
+  } else {
+    return [altText, width, height]
   }
 }
 

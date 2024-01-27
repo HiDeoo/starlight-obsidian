@@ -101,3 +101,16 @@ test('transforms Youtube videos and tweets', async () => {
     "
   `)
 })
+
+test('transforms images with dimensions', async () => {
+  const result = await transformFixtureMdFile('basics', 'Images with dimensions.md')
+
+  expect(result.content).toMatchInlineSnapshot(`
+    "![External image with no dimensions50x50](https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg)
+
+    <img src="https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg" alt="External image with a width" width="50" height="auto" />
+
+    <img src="https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg" alt="External image with a width and a height" width="50" height="200" style="height: 200px !important;" />
+    "
+  `)
+})
