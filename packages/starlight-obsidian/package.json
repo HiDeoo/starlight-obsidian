@@ -7,7 +7,9 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
-    "./PageTitle.astro": "./PageTitle.astro",
+    "./components/Twitter.astro": "./components/Twitter.astro",
+    "./components/Youtube.astro": "./components/Youtube.astro",
+    "./overrides/PageTitle.astro": "./overrides/PageTitle.astro",
     "./schema": "./schema.ts",
     "./styles": "./styles.css",
     "./package.json": "./package.json"
@@ -17,6 +19,8 @@
     "lint": "prettier -c --cache . && eslint . --cache --max-warnings=0"
   },
   "dependencies": {
+    "@astro-community/astro-embed-twitter": "0.5.3",
+    "@astro-community/astro-embed-youtube": "0.4.4",
     "github-slugger": "2.0.0",
     "globby": "14.0.0",
     "hast-util-to-html": "9.0.0",
@@ -30,6 +34,7 @@
     "remark-frontmatter": "5.0.0",
     "remark-gfm": "4.0.0",
     "remark-math": "6.0.0",
+    "remark-mdx": "3.0.0",
     "unist-util-visit": "5.0.0",
     "vfile": "6.0.1",
     "yaml": "2.3.4"

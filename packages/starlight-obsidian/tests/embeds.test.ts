@@ -70,7 +70,22 @@ test('transforms supported embeds', async () => {
 
     <iframe class="sl-obs-embed-pdf" src="/notes/A PDF.pdf"></iframe>
 
-    <iframe src="https://example.org/"></iframe>
+    <iframe src="https://example.org/" />
+    "
+  `)
+})
+
+test('transforms Youtube videos and tweets', async () => {
+  const result = await transformFixtureMdFile('basics', 'Youtube video and tweet.md')
+
+  expect(result.content).toMatchInlineSnapshot(`
+    "import Youtube from 'starlight-obsidian/components/Youtube.astro'
+
+    <Youtube id="sYe8fW05-_4" />
+
+    import Twitter from 'starlight-obsidian/components/Twitter.astro'
+
+    <Twitter id="https://twitter.com/astrodotbuild/status/1665720351261614082" />
     "
   `)
 })

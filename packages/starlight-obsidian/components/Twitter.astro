@@ -1,0 +1,11 @@
+---
+import { Tweet } from '@astro-community/astro-embed-twitter'
+
+interface Props {
+  id: string
+}
+
+const { id } = Astro.props
+---
+
+<Tweet {id} />

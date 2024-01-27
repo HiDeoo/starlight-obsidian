@@ -1,0 +1,11 @@
+---
+import { YouTube } from '@astro-community/astro-embed-youtube'
+
+interface Props {
+  id: string
+}
+
+const { id } = Astro.props
+---
+
+<YouTube {id} />

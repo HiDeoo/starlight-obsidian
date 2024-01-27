@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import twitterMatcher from '@astro-community/astro-embed-twitter/matcher'
+import youtubeMatcher from '@astro-community/astro-embed-youtube/matcher'
 import { toHtml } from 'hast-util-to-html'
 import isAbsoluteUrl from 'is-absolute-url'
 import type { BlockContent, Blockquote, Code, Image, Link, Parent, Root, RootContent } from 'mdast'
@@ -238,7 +240,13 @@ function handleImages(node: Image, context: VisitorContext) {
 
   ensureTransformContext(file)
 
-  if (isAbsoluteUrl(node.url) || !file.dirname) {
+  if (!file.dirname) {
+    return SKIP
+  }
+
+  if (isAbsoluteUrl(node.url)) {
+    handleExternalEmbeds(node, context)
+
     return SKIP
   }
 
@@ -411,6 +419,32 @@ function isMarkdownAsset(filePath: string, file: VFile) {
     (file.data.vault?.options.linkSyntax === 'markdown' && filePath.endsWith('.md')) ||
     getExtension(filePath).length === 0
   )
+}
+
+function handleExternalEmbeds(node: Image, context: VisitorContext) {
+  const twitterId = twitterMatcher(node.url)
+  const youtubeId = youtubeMatcher(node.url)
+
+  if (!twitterId && !youtubeId) {
+    return
+  }
+
+  const type = twitterId ? 'twitter' : 'youtube'
+  const id = twitterId ?? youtubeId
+  const component = type === 'twitter' ? 'Twitter' : 'Youtube'
+
+  replaceNode(context, [
+    {
+      type: 'mdxjsEsm',
+      value: `import ${component} from 'starlight-obsidian/components/${component}.astro'\n\n`,
+    },
+    {
+      type: 'mdxJsxFlowElement',
+      name: component,
+      attributes: [{ type: 'mdxJsxAttribute', name: 'id', value: id }],
+      children: [],
+    },
+  ])
 }
 
 // Custom asset nodes are replaced by a custom HTML node, e.g. an audio player for audio files, etc.

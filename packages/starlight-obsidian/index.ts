@@ -48,7 +48,7 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
           logger.warn('To use `starlight-obsidian`, remove the override for the `PageTitle` component.\n')
         } else {
           updatedStarlightConfig.components = {
-            PageTitle: 'starlight-obsidian/PageTitle.astro',
+            PageTitle: 'starlight-obsidian/overrides/PageTitle.astro',
           }
         }
 

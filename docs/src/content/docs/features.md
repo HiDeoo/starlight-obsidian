@@ -6,6 +6,8 @@ head:
     content: 'th:first-of-type { width: 100%; }'
 ---
 
+This page lists Obsidian features relevant to publishing and their support status in the Starlight Obsidian plugin.
+
 ## Basic formatting syntax
 
 | Name                                                                                                                               | Supported |
@@ -63,8 +65,8 @@ head:
 | [Image with dimensions](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20image%20in%20a%20note) |    ❌     |
 | [Audio file](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20audio%20file%20in%20a%20note)     |    ✅     |
 | [Video file](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20audio%20file%20in%20a%20note)     |    ✅     |
-| [Youtube video](https://help.obsidian.md/Editing+and+formatting/Embed+web+pages#Embed%20a%20YouTube%20video)             |    ❌     |
-| [Tweet](https://help.obsidian.md/Editing+and+formatting/Embed+web+pages#Embed%20a%20tweet)                               |    ❌     |
+| [Youtube video](https://help.obsidian.md/Editing+and+formatting/Embed+web+pages#Embed%20a%20YouTube%20video)             |    ✅     |
+| [Tweet](https://help.obsidian.md/Editing+and+formatting/Embed+web+pages#Embed%20a%20tweet)                               |    ✅     |
 | [PDF](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20PDF%20in%20a%20note)                      |    ✅     |
 | [Web pages](https://help.obsidian.md/Editing+and+formatting/Embed+web+pages)                                             |    ✅     |
 | [List](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20list%20in%20a%20note)                    |    ❌     |
