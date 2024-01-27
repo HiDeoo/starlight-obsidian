@@ -62,7 +62,7 @@ This page lists Obsidian features relevant to publishing and their support statu
 | :----------------------------------------------------------------------------------------------------------------------- | :-------: |
 | [Note](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20a%20note%20in%20another%20note)              |    ✅     |
 | [Image](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20image%20in%20a%20note)                 |    ✅     |
-| [Image with dimensions](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20image%20in%20a%20note) |    ❌     |
+| [Image with dimensions](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20image%20in%20a%20note) |    ✅     |
 | [Audio file](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20audio%20file%20in%20a%20note)     |    ✅     |
 | [Video file](https://help.obsidian.md/Linking+notes+and+files/Embed+files#Embed%20an%20audio%20file%20in%20a%20note)     |    ✅     |
 | [Youtube video](https://help.obsidian.md/Editing+and+formatting/Embed+web+pages#Embed%20a%20YouTube%20video)             |    ✅     |

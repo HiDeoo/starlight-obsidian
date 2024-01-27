@@ -102,8 +102,8 @@ test('transforms Youtube videos and tweets', async () => {
   `)
 })
 
-test('transforms images with dimensions', async () => {
-  const result = await transformFixtureMdFile('basics', 'Images with dimensions.md')
+test('transforms external images with dimensions', async () => {
+  const result = await transformFixtureMdFile('basics', 'External images with dimensions.md')
 
   expect(result.content).toMatchInlineSnapshot(`
     "![External image with no dimensions50x50](https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg)
@@ -113,4 +113,16 @@ test('transforms images with dimensions', async () => {
     <img src="https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg" alt="External image with a width and a height" width="50" height="200" style="height: 200px !important;" />
     "
   `)
+})
+
+test('transforms internal images with dimensions', async () => {
+  const result = await transformFixtureMdFile('basics', 'Internal images with dimensions.md')
+
+  expect(result.content).toMatch(/^import { Image } from 'astro:assets'$/m)
+  expect(result.content).toMatch(/^import \w{6} from '[\w./-]+\/assets\/notes\/An image.png'$/m)
+
+  expect(result.content).toMatch(/^<Image src={\w+} alt="An image with a width" width="100" height="auto" \/>$/m)
+  expect(result.content).toMatch(
+    /^<Image src={\w+} alt="An image with a width and a height" width="100" height="200" style="height: 200px !important;" \/>$/m,
+  )
 })

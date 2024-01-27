@@ -8,6 +8,7 @@ import isAbsoluteUrl from 'is-absolute-url'
 import type { BlockContent, Blockquote, Code, Image, Link, Parent, Root, RootContent } from 'mdast'
 import { findAndReplace } from 'mdast-util-find-and-replace'
 import { toHast } from 'mdast-util-to-hast'
+import { customAlphabet } from 'nanoid'
 import { CONTINUE, SKIP, visit } from 'unist-util-visit'
 import type { VFile } from 'vfile'
 import yaml from 'yaml'
@@ -30,9 +31,11 @@ import {
 import { extractPathAndAnchor, getExtension, isAnchor } from './path'
 import { getStarlightCalloutType, isAssetFile } from './starlight'
 
+const generateAssetImportId = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6)
+
 const highlightReplacementRegex = /==(?<highlight>(?:(?!==).)+)==/g
 const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)+)%%/gs
-const wikilinkReplacementRegex = /!?\[\[(?<url>(?:(?![[\]|]).)+)(?:\|(?<maybeText>(?:(?![[\]|]).)+))?]]/g
+const wikilinkReplacementRegex = /!?\[\[(?<url>(?:(?![[\]|]).)+)(?:\|(?<maybeText>(?:(?![[\]]).)+))?]]/g
 const tagReplacementRegex = /(?:^|\s)#(?<tag>[\w/-]+)/g
 const calloutRegex = /^\[!(?<type>\w+)][+-]? ?(?<title>.*)$/
 const imageSizeRegex = /^(?<altText>.*)\|(?:(?<widthOnly>\d+)|(?:(?<width>\d+)x(?<height>\d+)))$/
@@ -121,7 +124,11 @@ function handleFrontmatter(tree: Root, file: VFile, obsidianFrontmatter?: Obsidi
 }
 
 function handleImports(tree: Root, file: VFile) {
-  if (!file.data.includeTwitterComponent && !file.data.includeYoutubeComponent) {
+  if (
+    !file.data.includeTwitterComponent &&
+    !file.data.includeYoutubeComponent &&
+    (!file.data.assetImports || file.data.assetImports.length === 0)
+  ) {
     return
   }
 
@@ -139,6 +146,22 @@ function handleImports(tree: Root, file: VFile) {
       type: 'mdxjsEsm',
       value: `import Youtube from 'starlight-obsidian/components/Youtube.astro'`,
     })
+  }
+
+  if (file.data.assetImports) {
+    imports.push(
+      {
+        type: 'mdxjsEsm',
+        value: `import { Image } from 'astro:assets'`,
+      },
+      ...file.data.assetImports.map(
+        ([id, path]) =>
+          ({
+            type: 'mdxjsEsm',
+            value: `import ${id} from '${path}'`,
+          }) as RootContent,
+      ),
+    )
   }
 
   tree.children.splice(1, 0, ...imports)
@@ -278,18 +301,7 @@ function handleImages(node: Image, context: VisitorContext) {
     }
 
     if (isObsidianFile(node.url, 'image')) {
-      const [alt, width, height] = getImageSizeFromAltText(node.alt)
-
-      if (!width) {
-        return SKIP
-      }
-
-      const styles = height === undefined ? '' : ` style="height: ${height}px !important;"`
-
-      replaceNode(context, {
-        type: 'html',
-        value: `<img src="${node.url}" alt="${alt}" width="${width}" height="${height ?? 'auto'}"${styles} />`,
-      })
+      handleImagesWithSize(node, context, 'external')
     }
 
     return SKIP
@@ -334,6 +346,14 @@ function handleImages(node: Image, context: VisitorContext) {
   }
 
   node.url = isAssetFile(fileUrl) ? getAssetPath(file, fileUrl) : fileUrl
+
+  if (isAssetFile(node.url)) {
+    const isImageWithSize = handleImagesWithSize(node, context, 'asset')
+
+    if (isImageWithSize) {
+      return SKIP
+    }
+  }
 
   return SKIP
 }
@@ -499,6 +519,67 @@ function handleExternalEmbeds(node: Image, context: VisitorContext) {
   return true
 }
 
+function handleImagesWithSize(node: Image, context: VisitorContext, type: 'asset' | 'external') {
+  if (!node.alt) {
+    return false
+  }
+
+  const match = node.alt.match(imageSizeRegex)
+  const { altText, width, widthOnly, height } = match?.groups ?? {}
+
+  if (widthOnly === undefined && width === undefined) {
+    return false
+  }
+
+  const imgWidth = widthOnly ?? width
+  const imgHeight = height ?? 'auto'
+  // Workaround Starlight `auto` height default style.
+  const imgStyle = height === undefined ? undefined : `height: ${height}px !important;`
+
+  if (type === 'external') {
+    const style = imgStyle === undefined ? '' : ` style="${imgStyle}"`
+
+    replaceNode(context, {
+      type: 'html',
+      value: `<img src="${node.url}" alt="${altText}" width="${imgWidth}" height="${imgHeight}"${style} />`,
+    })
+  } else {
+    const importId = generateAssetImportId()
+
+    if (!context.file.data.assetImports) {
+      context.file.data.assetImports = []
+    }
+
+    context.file.data.assetImports.push([importId, node.url])
+
+    replaceNode(context, {
+      type: 'mdxJsxFlowElement',
+      name: 'Image',
+      attributes: [
+        {
+          type: 'mdxJsxAttribute',
+          name: 'src',
+          value: {
+            type: 'mdxJsxAttributeValueExpression',
+            value: importId,
+          },
+        },
+        { type: 'mdxJsxAttribute', name: 'alt', value: altText },
+        { type: 'mdxJsxAttribute', name: 'width', value: imgWidth },
+        { type: 'mdxJsxAttribute', name: 'height', value: imgHeight },
+        ...((imgStyle ? [{ type: 'mdxJsxAttribute', name: 'style', value: imgStyle }] : []) satisfies {
+          type: 'mdxJsxAttribute'
+          name: string
+          value: string
+        }[]),
+      ],
+      children: [],
+    })
+  }
+
+  return true
+}
+
 // Custom file nodes are replaced by a custom HTML node, e.g. an audio player for audio files, etc.
 function isCustomFile(filePath: string) {
   return isObsidianFile(filePath) && !isObsidianFile(filePath, 'image')
@@ -520,26 +601,6 @@ function getCustomFileNode(filePath: string): RootContent {
   return {
     type: 'html',
     value: `<iframe class="sl-obs-embed-pdf" src="${filePath}"></iframe>`,
-  }
-}
-
-function getImageSizeFromAltText(
-  alt?: string | null,
-): [alt: string | null | undefined, width: string | undefined, height: string | undefined] {
-  if (!alt) {
-    return [alt, undefined, undefined]
-  }
-
-  const match = alt.match(imageSizeRegex)
-
-  const { altText, width, widthOnly, height } = match?.groups ?? {}
-
-  if (!widthOnly && !width) {
-    return [undefined, undefined, undefined]
-  } else if (widthOnly) {
-    return [altText, widthOnly, undefined]
-  } else {
-    return [altText, width, height]
   }
 }
 
@@ -589,6 +650,7 @@ function ensureTransformContext(file: VFile): asserts file is VFile & { data: Tr
 
 export interface TransformContext {
   aliases?: string[]
+  assetImports?: [id: string, path: string][]
   files: VaultFile[]
   includeKatexStyles?: boolean
   includeTwitterComponent?: boolean
