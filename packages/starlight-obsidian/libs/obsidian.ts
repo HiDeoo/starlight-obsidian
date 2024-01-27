@@ -31,17 +31,12 @@ const obsidianFrontmatterSchema = z.object({
   tags: z.array(z.string()).optional(),
 })
 
-const imageAssetsFileFormats = new Set(['.avif', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
-const audioAssetsFileFormats = new Set(['.flac', '.m4a', '.mp3', '.wav', '.ogg', '.wav', '.3gp'])
-const videoASsetsFileFormats = new Set(['.mkv', '.mov', '.mp4', '.ogv', '.webm'])
-const otherAssetsFileFormats = new Set(['.pdf'])
+const imageFileFormats = new Set(['.avif', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
+const audioFileFormats = new Set(['.flac', '.m4a', '.mp3', '.wav', '.ogg', '.wav', '.3gp'])
+const videoFileFormats = new Set(['.mkv', '.mov', '.mp4', '.ogv', '.webm'])
+const otherFileFormats = new Set(['.pdf'])
 
-const assetsFileFormats = new Set([
-  ...imageAssetsFileFormats,
-  ...audioAssetsFileFormats,
-  ...videoASsetsFileFormats,
-  ...otherAssetsFileFormats,
-])
+const fileFormats = new Set([...imageFileFormats, ...audioFileFormats, ...videoFileFormats, ...otherFileFormats])
 
 export async function getVault(config: StarlightObsidianConfig): Promise<Vault> {
   const vaultPath = path.resolve(config.vault)
@@ -63,7 +58,7 @@ export async function getVault(config: StarlightObsidianConfig): Promise<Vault> 
 }
 
 export function getObsidianPaths(vault: Vault) {
-  return globby(['**/*.md', ...[...assetsFileFormats].map((fileFormat) => `**/*${fileFormat}`)], {
+  return globby(['**/*.md', ...[...fileFormats].map((fileFormat) => `**/*${fileFormat}`)], {
     absolute: true,
     cwd: vault.path,
   })
@@ -82,7 +77,7 @@ export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): Va
       path: filePath,
       slug: slugifyObsidianPath(filePath),
       stem: stripExtension(fileName),
-      type: isObsidianAsset(fileName) ? 'asset' : 'content',
+      type: isObsidianFile(fileName) ? 'file' : 'content',
       uniqueFileName: allFileNames.filter((currentFileName) => currentFileName === fileName).length === 1,
     }
   })
@@ -101,7 +96,7 @@ export function slugifyObsidianPath(obsidianPath: string) {
 
       if (!isLastSegment) {
         return slug(decodeURIComponent(segment))
-      } else if (isObsidianAsset(segment)) {
+      } else if (isObsidianFile(segment)) {
         return decodeURIComponent(segment)
       }
 
@@ -128,17 +123,17 @@ export function isObsidianBlockAnchor(anchor: string) {
   return anchor.startsWith('#^') || anchor.startsWith('^')
 }
 
-export function isObsidianAsset(filePath: string, type?: 'image' | 'audio' | 'video' | 'other') {
+export function isObsidianFile(filePath: string, type?: 'image' | 'audio' | 'video' | 'other') {
   const formats: Set<string> =
     type === undefined
-      ? assetsFileFormats
+      ? fileFormats
       : type === 'image'
-        ? imageAssetsFileFormats
+        ? imageFileFormats
         : type === 'audio'
-          ? audioAssetsFileFormats
+          ? audioFileFormats
           : type === 'video'
-            ? videoASsetsFileFormats
-            : otherAssetsFileFormats
+            ? videoFileFormats
+            : otherFileFormats
 
   return formats.has(getExtension(filePath))
 }
@@ -191,7 +186,7 @@ export interface VaultFile {
   slug: string
   // This represent the file name without the extension.
   stem: string
-  type: 'content' | 'asset'
+  type: 'content' | 'file'
   uniqueFileName: boolean
 }
 

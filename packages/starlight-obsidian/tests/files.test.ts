@@ -22,7 +22,7 @@ afterAll(() => {
   vi.restoreAllMocks()
 })
 
-test('copies Obsidian files to the default output directory', async () => {
+test('copies Obsidian files to the associated output directories', async () => {
   const config = getFixtureConfig('basics')
   const vault = await getVault(config)
 
@@ -145,8 +145,8 @@ test('clears the default output directories', async () => {
   await addObsidianFiles(config, vault, ['foo.md'])
 
   expect(rmSpy).toHaveBeenCalledTimes(2)
-  expect(rmSpy).toHaveBeenNthCalledWith(1, 'public/notes', { force: true, recursive: true })
-  expect(rmSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/notes', { force: true, recursive: true })
+  expect(rmSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/notes', { force: true, recursive: true })
+  expect(rmSpy).toHaveBeenNthCalledWith(2, 'public/notes', { force: true, recursive: true })
 })
 
 test('clears custom output directories', async () => {
@@ -156,6 +156,6 @@ test('clears custom output directories', async () => {
   await addObsidianFiles(config, vault, ['foo.md'])
 
   expect(rmSpy).toHaveBeenCalledTimes(2)
-  expect(rmSpy).toHaveBeenNthCalledWith(1, 'public/test', { force: true, recursive: true })
-  expect(rmSpy).toHaveBeenNthCalledWith(2, 'src/content/docs/test', { force: true, recursive: true })
+  expect(rmSpy).toHaveBeenNthCalledWith(1, 'src/content/docs/test', { force: true, recursive: true })
+  expect(rmSpy).toHaveBeenNthCalledWith(2, 'public/test', { force: true, recursive: true })
 })

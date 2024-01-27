@@ -50,8 +50,8 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
   // TODO(HiDeoo) worker? queue? parallel?
   await Promise.all(
     vaultFiles.map(async (vaultFile) => {
-      await (vaultFile.type === 'asset'
-        ? addAssetFile(outputPaths, vaultFile)
+      await (vaultFile.type === 'file'
+        ? addFile(outputPaths, vaultFile)
         : addContentFile(config, vault, outputPaths, vaultFiles, vaultFile))
     }),
   )
@@ -96,8 +96,8 @@ async function addContentFile(
   }
 }
 
-async function addAssetFile(outputPaths: OutputPaths, vaultFile: VaultFile) {
-  const starlightPath = path.join(outputPaths.asset, vaultFile.slug)
+async function addFile(outputPaths: OutputPaths, vaultFile: VaultFile) {
+  const starlightPath = path.join(outputPaths.file, vaultFile.slug)
   const starlightDirPath = path.dirname(starlightPath)
 
   await ensureDirectory(starlightDirPath)
@@ -110,7 +110,7 @@ async function addAliasFile(
   vaultFile: VaultFile,
   alias: string,
 ) {
-  const starlightPath = path.join(outputPaths.asset, path.dirname(vaultFile.path), alias, 'index.html')
+  const starlightPath = path.join(outputPaths.file, path.dirname(vaultFile.path), alias, 'index.html')
   const starlightDirPath = path.dirname(starlightPath)
 
   const to = path.join('/', config.output, vaultFile.slug)
@@ -139,17 +139,17 @@ async function addAliasFile(
 
 function getOutputPaths(config: StarlightObsidianConfig): OutputPaths {
   return {
-    asset: path.join(publicPath, config.output),
     content: path.join(docsPath, config.output),
+    file: path.join(publicPath, config.output),
   }
 }
 
 async function cleanOutputPaths(outputPaths: OutputPaths) {
-  await removeDirectory(outputPaths.asset)
   await removeDirectory(outputPaths.content)
+  await removeDirectory(outputPaths.file)
 }
 
 interface OutputPaths {
-  asset: string
   content: string
+  file: string
 }

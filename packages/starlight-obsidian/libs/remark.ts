@@ -18,7 +18,7 @@ import { transformHtmlToString } from './html'
 import { transformMarkdownToAST } from './markdown'
 import {
   getObsidianRelativePath,
-  isObsidianAsset,
+  isObsidianFile,
   isObsidianBlockAnchor,
   parseObsidianFrontmatter,
   slugifyObsidianAnchor,
@@ -165,7 +165,7 @@ function handleReplacements(tree: Root, file: VFile) {
         if (match.startsWith('!')) {
           return {
             type: 'image',
-            url: isMarkdownAsset(url, file) ? url : fileUrl,
+            url: isMarkdownFile(url, file) ? url : fileUrl,
             alt: text,
           }
         }
@@ -250,8 +250,8 @@ function handleImages(node: Image, context: VisitorContext) {
     return SKIP
   }
 
-  if (isMarkdownAsset(node.url, file)) {
-    replaceNode(context, getMarkdownAssetNode(file, node.url))
+  if (isMarkdownFile(node.url, file)) {
+    replaceNode(context, getMarkdownFileNode(file, node.url))
     return SKIP
   }
 
@@ -282,8 +282,8 @@ function handleImages(node: Image, context: VisitorContext) {
     }
   }
 
-  if (isCustomAsset(node.url)) {
-    replaceNode(context, getCustomAssetNode(fileUrl))
+  if (isCustomFile(node.url)) {
+    replaceNode(context, getCustomFileNode(fileUrl))
 
     return SKIP
   }
@@ -414,7 +414,7 @@ function getFilePathFromVaultFile(vaultFile: VaultFile, url: string) {
   return vaultFile.uniqueFileName ? vaultFile.slug : slugifyObsidianPath(url)
 }
 
-function isMarkdownAsset(filePath: string, file: VFile) {
+function isMarkdownFile(filePath: string, file: VFile) {
   return (
     (file.data.vault?.options.linkSyntax === 'markdown' && filePath.endsWith('.md')) ||
     getExtension(filePath).length === 0
@@ -447,18 +447,18 @@ function handleExternalEmbeds(node: Image, context: VisitorContext) {
   ])
 }
 
-// Custom asset nodes are replaced by a custom HTML node, e.g. an audio player for audio files, etc.
-function isCustomAsset(filePath: string) {
-  return isObsidianAsset(filePath) && !isObsidianAsset(filePath, 'image')
+// Custom file nodes are replaced by a custom HTML node, e.g. an audio player for audio files, etc.
+function isCustomFile(filePath: string) {
+  return isObsidianFile(filePath) && !isObsidianFile(filePath, 'image')
 }
 
-function getCustomAssetNode(filePath: string): RootContent {
-  if (isObsidianAsset(filePath, 'audio')) {
+function getCustomFileNode(filePath: string): RootContent {
+  if (isObsidianFile(filePath, 'audio')) {
     return {
       type: 'html',
       value: `<audio class="sl-obs-embed-audio" controls src="${filePath}"></audio>`,
     }
-  } else if (isObsidianAsset(filePath, 'video')) {
+  } else if (isObsidianFile(filePath, 'video')) {
     return {
       type: 'html',
       value: `<video class="sl-obs-embed-video" controls src="${filePath}"></video>`,
@@ -471,7 +471,7 @@ function getCustomAssetNode(filePath: string): RootContent {
   }
 }
 
-function getMarkdownAssetNode(file: VFile, fileUrl: string): RootContent {
+function getMarkdownFileNode(file: VFile, fileUrl: string): RootContent {
   ensureTransformContext(file)
 
   const fileExt = file.data.vault.options.linkSyntax === 'wikilink' ? '.md' : ''
