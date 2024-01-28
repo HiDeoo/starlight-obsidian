@@ -8,7 +8,10 @@ export default defineConfig({
       editLink: {
         baseUrl: 'https://github.com/HiDeoo/starlight-obsidian/edit/main/docs/',
       },
-      sidebar: [{ label: 'Features', link: '/features/' }],
+      sidebar: [
+        { label: 'Getting Started', link: '/getting-started/' },
+        { label: 'Features', link: '/features/' },
+      ],
       social: {
         github: 'https://github.com/HiDeoo/starlight-obsidian',
       },

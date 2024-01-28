@@ -1,0 +1,137 @@
+---
+title: Getting Started
+description: Learn how to start publishing your Obsidian vault using the Starlight Obsidian plugin.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components'
+
+A [Starlight](https://starlight.astro.build) plugin to publish [Obsidian](https://obsidian.md) vaults to a Starlight website.
+
+Check out the [demo](https://starlight-obsidian.vercel.app/demo/hello/) for a preview of the generated pages.
+
+## Prerequisites
+
+You will need to have a Starlight website set up.
+If you don't have one yet, you can follow the ["Getting Started"](https://starlight.astro.build/getting-started) guide in the Starlight docs to create one.
+
+## Install the plugin
+
+Starlight Obsidian is a Starlight [plugin](https://starlight.astro.build/reference/plugins/).
+Install it using your favorite package manager:
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+npm install starlight-obsidian
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm add starlight-obsidian
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+yarn add starlight-obsidian
+```
+
+</TabItem>
+<TabItem label="Bun">
+
+```sh
+bun add starlight-obsidian
+```
+
+</TabItem>
+<TabItem label="ni">
+
+```sh
+ni starlight-obsidian
+```
+
+</TabItem>
+</Tabs>
+
+:::note
+
+If your vault contains diagrams and charts relying on [Mermaid](https://mermaid.js.org/), you will also need to install [Playwright](https://playwright.dev):
+
+<Tabs>
+<TabItem label="npm">
+
+```sh
+npx playwright install --with-deps chromium
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+pnpm dlx playwright install --with-deps chromium
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+yarn dlx playwright install --with-deps chromium
+```
+
+</TabItem>
+<TabItem label="Bun">
+
+```sh
+bunx playwright install --with-deps chromium
+```
+
+</TabItem>
+<TabItem label="ni">
+
+```sh
+nlx playwright install --with-deps chromium
+```
+
+</TabItem>
+</Tabs>
+
+:::
+
+## Configure the plugin
+
+The Starlight Obsidian plugin can be configured in your Starlight [configuration](https://starlight.astro.build/reference/configuration/#plugins) in the `astro.config.mjs` file:
+
+```diff lang="js"
+// astro.config.mjs
+import starlight from '@astrojs/starlight'
+import { defineConfig } from 'astro/config'
++import starlightObsidian, { obsidianSidebarGroup } from 'starlight-obsidian'
+
+export default defineConfig({
+  integrations: [
+    starlight({
++      plugins: [
++        // Generate the Obsidian vault pages.
++        starlightObsidian({
++          vault: '../path/to/obsidian/vault',
++        }),
++      ],
+      sidebar: [
+        {
+          label: 'Guides',
+          items: [{ label: 'Example Guide', link: '/guides/example/' }],
+        },
++        // Add the generated sidebar group to the sidebar.
++        obsidianSidebarGroup,
+      ],
+      title: 'My Docs',
+    }),
+  ],
+})
+```
+
+The Starlight Obsidian plugin behavior can be tweaked using various [configuration options](/configuration).
