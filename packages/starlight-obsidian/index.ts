@@ -7,25 +7,56 @@ import { throwUserError } from './libs/plugin'
 import { addObsidianFiles, getSidebarFromConfig, getSidebarGroupPlaceholder } from './libs/starlight'
 
 const starlightObsidianConfigSchema = z.object({
-  // TODO(HiDeoo)
+  /**
+   * The name of the Obsidian vault configuration folder if different from the default one.
+   *
+   * @default '.obsidian'
+   * @see https://help.obsidian.md/Files+and+folders/Configuration+folder
+   */
   configFolder: z.string().startsWith('.').default('.obsidian'),
-  // TODO(HiDeoo)
+  /**
+   * An list of glob patterns to ignore when generating the Obsidian vault pages.
+   * This can be used to ignore files, folders or assets.
+   *
+   * @default []
+   * @see https://github.com/mrmlnc/fast-glob#basic-syntax
+   * @see https://help.obsidian.md/Files+and+folders/Accepted+file+formats
+   */
   ignore: z.array(z.string()).default([]),
-  // TODO(HiDeoo) doc with @default
+  /**
+   * The output directory containing the generated Obsidian vault pages relative to the `src/content/docs/` directory.
+   *
+   * @default 'notes'
+   */
   output: z.string().default('notes'),
-  // TODO(HiDeoo)
+  /**
+   * The generated vault pages sidebar configuration.
+   */
   sidebar: z
     .object({
-      // TODO(HiDeoo)
+      /**
+       * Whether the generated vault pages sidebar group should be collapsed by default.
+       *
+       * @default false
+       */
       collapsed: z.boolean().default(false),
-      // TODO(HiDeoo)
+      /**
+       * Whether the root sidebar group for your vault nested folders should be collapsed by default.
+       *
+       * Defaults to the value of the `collapsed` option.
+       */
       collapsedFolders: z.boolean().optional(),
-      // TODO(HiDeoo)
+      /**
+       * The generated vault pages sidebar group label.
+       *
+       * @default 'Notes'
+       */
       label: z.string().default('Notes'),
     })
     .default({}),
-  // TODO(HiDeoo) Add doc (absolute or relative path)
-  // TODO(HiDeoo) vaultDir? Something else
+  /**
+   * The absolute or relative path to the Obsidian vault to publish.
+   */
   vault: z.string(),
 })
 
