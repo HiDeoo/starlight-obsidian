@@ -9,6 +9,8 @@ import { addObsidianFiles } from './libs/starlight'
 const starlightObsidianConfigSchema = z.object({
   // TODO(HiDeoo)
   configFolder: z.string().startsWith('.').default('.obsidian'),
+  // TODO(HiDeoo)
+  ignore: z.array(z.string()).default([]),
   // TODO(HiDeoo) doc with @default
   output: z.string().default('notes'),
   // TODO(HiDeoo) Add doc (absolute or relative path)
@@ -32,7 +34,7 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
     hooks: {
       async setup({ addIntegration, config: starlightConfig, logger, updateConfig }) {
         const vault = await getVault(config)
-        const obsidianPaths = await getObsidianPaths(vault)
+        const obsidianPaths = await getObsidianPaths(vault, config.ignore)
         await addObsidianFiles(config, vault, obsidianPaths)
 
         addIntegration(starlightObsidianIntegration())

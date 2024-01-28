@@ -25,6 +25,7 @@ export function getFixtureConfig(
 ): StarlightObsidianConfig {
   return {
     configFolder: '.obsidian',
+    ignore: [],
     output: 'notes',
     vault: getFixturePath(fixtureName),
     ...config,

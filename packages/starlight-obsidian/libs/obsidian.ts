@@ -60,10 +60,11 @@ export async function getVault(config: StarlightObsidianConfig): Promise<Vault> 
   }
 }
 
-export function getObsidianPaths(vault: Vault) {
+export function getObsidianPaths(vault: Vault, ignore: StarlightObsidianConfig['ignore'] = []) {
   return globby(['**/*.md', ...[...fileFormats].map((fileFormat) => `**/*${fileFormat}`)], {
     absolute: true,
     cwd: vault.path,
+    ignore,
   })
 }
 
