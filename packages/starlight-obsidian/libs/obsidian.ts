@@ -100,8 +100,10 @@ export function slugifyObsidianPath(obsidianPath: string) {
 
       if (!isLastSegment) {
         return slug(decodeURIComponent(segment))
-      } else if (isObsidianFile(segment)) {
+      } else if (isObsidianFile(segment) && !isAssetFile(segment)) {
         return decodeURIComponent(segment)
+      } else if (isAssetFile(segment)) {
+        return `${slug(decodeURIComponent(stripExtension(segment)))}${getExtension(segment)}`
       }
 
       return slug(decodeURIComponent(stripExtension(segment)))

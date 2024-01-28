@@ -5,7 +5,7 @@ import twitterMatcher from '@astro-community/astro-embed-twitter/matcher'
 import youtubeMatcher from '@astro-community/astro-embed-youtube/matcher'
 import { toHtml } from 'hast-util-to-html'
 import isAbsoluteUrl from 'is-absolute-url'
-import type { BlockContent, Blockquote, Code, Image, Link, Parent, Root, RootContent } from 'mdast'
+import type { BlockContent, Blockquote, Code, Html, Image, Link, Parent, Root, RootContent } from 'mdast'
 import { findAndReplace } from 'mdast-util-find-and-replace'
 import { toHast } from 'mdast-util-to-hast'
 import { customAlphabet } from 'nanoid'
@@ -132,35 +132,22 @@ function handleImports(tree: Root, file: VFile) {
     return
   }
 
-  const imports: RootContent[] = []
+  file.data.isMdx = true
+
+  const imports: Html[] = []
 
   if (file.data.includeTwitterComponent) {
-    imports.push({
-      type: 'mdxjsEsm',
-      value: `import Twitter from 'starlight-obsidian/components/Twitter.astro'`,
-    })
+    imports.push(createMdxNode(`import Twitter from 'starlight-obsidian/components/Twitter.astro'`))
   }
 
   if (file.data.includeYoutubeComponent) {
-    imports.push({
-      type: 'mdxjsEsm',
-      value: `import Youtube from 'starlight-obsidian/components/Youtube.astro'`,
-    })
+    imports.push(createMdxNode(`import Youtube from 'starlight-obsidian/components/Youtube.astro'`))
   }
 
   if (file.data.assetImports) {
     imports.push(
-      {
-        type: 'mdxjsEsm',
-        value: `import { Image } from 'astro:assets'`,
-      },
-      ...file.data.assetImports.map(
-        ([id, path]) =>
-          ({
-            type: 'mdxjsEsm',
-            value: `import ${id} from '${path}'`,
-          }) as RootContent,
-      ),
+      createMdxNode(`import { Image } from 'astro:assets'`),
+      ...file.data.assetImports.map(([id, path]) => createMdxNode(`import ${id} from '${path}'`)),
     )
   }
 
@@ -348,11 +335,7 @@ function handleImages(node: Image, context: VisitorContext) {
   node.url = isAssetFile(fileUrl) ? getAssetPath(file, fileUrl) : fileUrl
 
   if (isAssetFile(node.url)) {
-    const isImageWithSize = handleImagesWithSize(node, context, 'asset')
-
-    if (isImageWithSize) {
-      return SKIP
-    }
+    handleImagesWithSize(node, context, 'asset')
   }
 
   return SKIP
@@ -523,39 +506,32 @@ function handleExternalEmbeds(node: Image, context: VisitorContext) {
     context.file.data.includeYoutubeComponent = true
   }
 
-  replaceNode(context, {
-    type: 'mdxJsxFlowElement',
-    name: component,
-    attributes: [{ type: 'mdxJsxAttribute', name: 'id', value: id }],
-    children: [],
-  })
+  replaceNode(context, createMdxNode(`<${component} id="${id}" />`))
 
   return true
 }
 
 function handleImagesWithSize(node: Image, context: VisitorContext, type: 'asset' | 'external') {
   if (!node.alt) {
-    return false
+    return
   }
 
   const match = node.alt.match(imageSizeRegex)
   const { altText, width, widthOnly, height } = match?.groups ?? {}
 
   if (widthOnly === undefined && width === undefined) {
-    return false
+    return
   }
 
   const imgWidth = widthOnly ?? width
   const imgHeight = height ?? 'auto'
   // Workaround Starlight `auto` height default style.
-  const imgStyle = height === undefined ? undefined : `height: ${height}px !important;`
+  const imgStyle = height === undefined ? '' : ` style="height: ${height}px !important;"`
 
   if (type === 'external') {
-    const style = imgStyle === undefined ? '' : ` style="${imgStyle}"`
-
     replaceNode(context, {
       type: 'html',
-      value: `<img src="${node.url}" alt="${altText}" width="${imgWidth}" height="${imgHeight}"${style} />`,
+      value: `<img src="${node.url}" alt="${altText}" width="${imgWidth}" height="${imgHeight}"${imgStyle} />`,
     })
   } else {
     const importId = generateAssetImportId()
@@ -566,32 +542,13 @@ function handleImagesWithSize(node: Image, context: VisitorContext, type: 'asset
 
     context.file.data.assetImports.push([importId, node.url])
 
-    replaceNode(context, {
-      type: 'mdxJsxFlowElement',
-      name: 'Image',
-      attributes: [
-        {
-          type: 'mdxJsxAttribute',
-          name: 'src',
-          value: {
-            type: 'mdxJsxAttributeValueExpression',
-            value: importId,
-          },
-        },
-        { type: 'mdxJsxAttribute', name: 'alt', value: altText },
-        { type: 'mdxJsxAttribute', name: 'width', value: imgWidth },
-        { type: 'mdxJsxAttribute', name: 'height', value: imgHeight },
-        ...((imgStyle ? [{ type: 'mdxJsxAttribute', name: 'style', value: imgStyle }] : []) satisfies {
-          type: 'mdxJsxAttribute'
-          name: string
-          value: string
-        }[]),
-      ],
-      children: [],
-    })
+    replaceNode(
+      context,
+      createMdxNode(
+        `<Image src={${importId}} alt="${altText}" width="${imgWidth}" height="${imgHeight}"${imgStyle} />`,
+      ),
+    )
   }
-
-  return true
 }
 
 // Custom file nodes are replaced by a custom HTML node, e.g. an audio player for audio files, etc.
@@ -656,6 +613,14 @@ function replaceNode({ index, parent }: VisitorContext, replacement: RootContent
   parent.children.splice(index, 1, ...(Array.isArray(replacement) ? replacement : [replacement]))
 }
 
+// We are using `Html` node instead of real MDX nodes because we are not using `remark-mdx` due to the fact that it
+// makes the parsing step way more strict. During our inital testing round, we found out that a few users had pretty
+// poorly formatted Markdown files (usually the result of various Obisidian migration tools) and we wanted to make sure
+// that they could still use Starlight Obsidian.
+function createMdxNode(value: string): Html {
+  return { type: 'html', value }
+}
+
 function ensureTransformContext(file: VFile): asserts file is VFile & { data: TransformContext; dirname: string } {
   if (!file.dirname || !file.data.files || file.data.output === undefined || !file.data.vault) {
     throw new Error('Invalid transform context.')
@@ -669,6 +634,7 @@ export interface TransformContext {
   includeKatexStyles?: boolean
   includeTwitterComponent?: boolean
   includeYoutubeComponent?: boolean
+  isMdx?: true
   output: StarlightObsidianConfig['output']
   skip?: true
   vault: Vault

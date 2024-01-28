@@ -2,17 +2,11 @@ import { remark } from 'remark'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
-import remarkMdx from 'remark-mdx'
 import { VFile } from 'vfile'
 
 import { remarkStarlightObsidian, type TransformContext } from './remark'
 
-const processor = remark()
-  .use(remarkMdx)
-  .use(remarkGfm)
-  .use(remarkMath)
-  .use(remarkFrontmatter)
-  .use(remarkStarlightObsidian)
+const processor = remark().use(remarkGfm).use(remarkMath).use(remarkFrontmatter).use(remarkStarlightObsidian)
 
 export async function transformMarkdownToString(
   filePath: string,
@@ -25,6 +19,7 @@ export async function transformMarkdownToString(
     aliases: file.data.aliases,
     content: String(file),
     skip: file.data.skip === true,
+    type: file.data.isMdx === true ? 'mdx' : 'markdown',
   }
 }
 
@@ -44,4 +39,5 @@ interface TransformResult {
   aliases: string[] | undefined
   content: string
   skip: boolean
+  type: 'markdown' | 'mdx'
 }

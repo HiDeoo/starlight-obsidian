@@ -35,11 +35,11 @@ function getExpectedAssetMd(depth: number) {
   //     ^       ^
   const prefix = '../'.repeat(depth + 1 + 2)
 
-  return `![An image](<${prefix}assets/notes/An image.png>)
+  return `![An image](${prefix}assets/notes/an-image.png)
 
-![An image in folder](<${prefix}assets/notes/folder/An image in folder.png>)
+![An image in folder](${prefix}assets/notes/folder/an-image-in-folder.png)
 
-![An image in nested folder](<${prefix}assets/notes/folder/nested-folder/An image in nested folder.png>)`
+![An image in nested folder](${prefix}assets/notes/folder/nested-folder/an-image-in-nested-folder.png)`
 }
 
 // This only tests image and audio embeds as the URL processing is the same for all embeds.
@@ -72,7 +72,7 @@ test('transforms supported embeds', async () => {
   const result = await transformFixtureMdFile('basics', 'Embeds.md')
 
   expect(result.content).toMatchInlineSnapshot(`
-    "![An image.png](<../../../../../packages/starlight-obsidian/assets/notes/An image.png>)
+    "![An image.png](../../../../../packages/starlight-obsidian/assets/notes/an-image.png)
 
     <audio class="sl-obs-embed-audio" controls src="/notes/A sound.mp3"></audio>
 
@@ -80,7 +80,7 @@ test('transforms supported embeds', async () => {
 
     <iframe class="sl-obs-embed-pdf" src="/notes/A PDF.pdf"></iframe>
 
-    <iframe src="https://example.org/" />
+    <iframe src="https://example.org/"></iframe>
     "
   `)
 })
@@ -119,7 +119,7 @@ test('transforms internal images with dimensions', async () => {
   const result = await transformFixtureMdFile('basics', 'Internal images with dimensions.md')
 
   expect(result.content).toMatch(/^import { Image } from 'astro:assets'$/m)
-  expect(result.content).toMatch(/^import \w{6} from '[\w./-]+\/assets\/notes\/An image.png'$/m)
+  expect(result.content).toMatch(/^import \w{6} from '[\w./-]+\/assets\/notes\/an-image.png'$/m)
 
   expect(result.content).toMatch(/^<Image src={\w+} alt="An image with a width" width="100" height="auto" \/>$/m)
   expect(result.content).toMatch(

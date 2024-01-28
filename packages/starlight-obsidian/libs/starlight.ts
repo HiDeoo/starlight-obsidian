@@ -148,6 +148,7 @@ async function addContent(
       content: starlightContent,
       aliases,
       skip,
+      type,
     } = await transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
       files: vaultFiles,
       output: config.output,
@@ -158,7 +159,10 @@ async function addContent(
       return
     }
 
-    const starlightPath = path.join(outputPaths.content, vaultFile.path.replace(/\.md$/, '.mdx'))
+    const starlightPath = path.join(
+      outputPaths.content,
+      type === 'markdown' ? vaultFile.path : vaultFile.path.replace(/\.md$/, '.mdx'),
+    )
     const starlightDirPath = path.dirname(starlightPath)
 
     await ensureDirectory(starlightDirPath)
