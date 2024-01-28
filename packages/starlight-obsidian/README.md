@@ -23,6 +23,12 @@ A [Starlight](https://starlight.astro.build) plugin to publish [Obsidian](https:
 
 Check out the [demo](https://starlight-obsidian.vercel.app/demo/hello/) for a preview of the generated pages.
 
+> **Warning**
+>
+> The Starlight Obsidian plugin is in early development. If you find something that's not working, [open an issue](https://github.com/HiDeoo/starlight-obsidian/issues/new/choose) on GitHub.
+>
+> You should also always check that the rendered pages are correct and only include the content you want to publish before publishing your website.
+
 ## License
 
 Licensed under the MIT License, Copyright © HiDeoo.
