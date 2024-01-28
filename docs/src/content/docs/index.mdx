@@ -1,0 +1,41 @@
+---
+title: Starlight Obsidian
+description: Starlight plugin to publish Obsidian vaults.
+head:
+  - tag: title
+    content: Starlight Obsidian
+template: splash
+editUrl: false
+lastUpdated: false
+hero:
+  tagline: Starlight plugin to publish Obsidian vaults.
+  image:
+    html: '📔'
+  actions:
+    - text: Getting Started
+      link: /getting-started/
+      icon: rocket
+      variant: primary
+    - text: Demo
+      link: /demo/hello/
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components'
+
+## Next steps
+
+<CardGrid stagger>
+  <Card title="Install the plugin" icon="puzzle">
+    Check the [getting started guide](/getting-started/) for installation instructions.
+  </Card>
+  <Card title="Configure the plugin" icon="setting">
+    Edit your config in `astro.config.mjs`.
+  </Card>
+  <Card title="Publish your vault" icon="rocket">
+    Publish your vault with the [“Deploy your site”](https://docs.astro.build/en/guides/deploy/) guide.
+  </Card>
+  <Card title="Read the docs" icon="open-book">
+    Learn more in [the Starlight Obsidian Docs](/getting-started/).
+  </Card>
+</CardGrid>

@@ -1,1 +1,1 @@
-# starlight-obsidian
+packages/starlight-obsidian/README.md

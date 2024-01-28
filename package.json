@@ -1,0 +1,48 @@
+{
+  "name": "starlight-obsidian-monorepo",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "Starlight plugin to publish Obsidian vaults.",
+  "author": "HiDeoo <github@hideoo.dev> (https://hideoo.dev)",
+  "type": "module",
+  "scripts": {
+    "test": "pnpm --stream -r test",
+    "lint": "pnpm -r lint",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@hideoo/eslint-config": "2.0.2",
+    "@hideoo/prettier-config": "2.0.0",
+    "@hideoo/tsconfig": "2.0.1",
+    "eslint": "8.56.0",
+    "husky": "8.0.3",
+    "lint-staged": "15.2.0",
+    "prettier": "3.2.2",
+    "prettier-plugin-astro": "0.13.0",
+    "typescript": "5.3.3"
+  },
+  "engines": {
+    "node": ">=18.14.1"
+  },
+  "packageManager": "pnpm@8.14.1",
+  "private": true,
+  "sideEffects": false,
+  "keywords": [
+    "starlight",
+    "plugin",
+    "obsidian",
+    "vault",
+    "documentation",
+    "astro"
+  ],
+  "homepage": "https://github.com/HiDeoo/starlight-obsidian",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HiDeoo/starlight-obsidian.git"
+  },
+  "bugs": "https://github.com/HiDeoo/starlight-obsidian/issues",
+  "lint-staged": {
+    "**/*": "prettier -w -u --cache",
+    "**/*.{js,jsx,ts,tsx,cjs,mjs}": "eslint --cache --max-warnings=0"
+  }
+}
