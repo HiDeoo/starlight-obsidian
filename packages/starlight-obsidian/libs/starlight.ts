@@ -97,7 +97,6 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
 
   const vaultFiles = getObsidianVaultFiles(vault, obsidianPaths)
 
-  // TODO(HiDeoo) worker? queue? parallel?
   await Promise.all(
     vaultFiles.map(async (vaultFile) => {
       await (vaultFile.type === 'asset'
