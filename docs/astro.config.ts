@@ -10,6 +10,7 @@ export default defineConfig({
       },
       sidebar: [
         { label: 'Getting Started', link: '/getting-started/' },
+        { label: 'Configuration', link: '/configuration/' },
         { label: 'Features', link: '/features/' },
       ],
       social: {

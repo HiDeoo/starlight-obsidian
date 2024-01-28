@@ -15,8 +15,8 @@ const starlightObsidianConfigSchema = z.object({
    */
   configFolder: z.string().startsWith('.').default('.obsidian'),
   /**
-   * An list of glob patterns to ignore when generating the Obsidian vault pages.
-   * This can be used to ignore files, folders or assets.
+   * A list of glob patterns to ignore when generating the Obsidian vault pages.
+   * This option can be used to ignore files or folders.
    *
    * @default []
    * @see https://github.com/mrmlnc/fast-glob#basic-syntax
@@ -24,24 +24,25 @@ const starlightObsidianConfigSchema = z.object({
    */
   ignore: z.array(z.string()).default([]),
   /**
-   * The output directory containing the generated Obsidian vault pages relative to the `src/content/docs/` directory.
+   * The name of the output directory containing the generated Obsidian vault pages relative to the `src/content/docs/`
+   * directory.
    *
    * @default 'notes'
    */
   output: z.string().default('notes'),
   /**
-   * The generated vault pages sidebar configuration.
+   * The generated vault pages sidebar group configuration.
    */
   sidebar: z
     .object({
       /**
-       * Whether the generated vault pages sidebar group should be collapsed by default.
+       * Whether the generated vault pages root sidebar group should be collapsed by default.
        *
        * @default false
        */
       collapsed: z.boolean().default(false),
       /**
-       * Whether the root sidebar group for your vault nested folders should be collapsed by default.
+       * Whether the sidebar groups of your vault nested folders should be collapsed by default.
        *
        * Defaults to the value of the `collapsed` option.
        */
