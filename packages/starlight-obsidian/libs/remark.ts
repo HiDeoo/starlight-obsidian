@@ -478,7 +478,7 @@ function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFron
 }
 
 function getFileUrl(output: StarlightObsidianConfig['output'], filePath: string, anchor?: string) {
-  return `${path.posix.join('/', output, slugifyObsidianPath(filePath))}${slugifyObsidianAnchor(anchor ?? '')}`
+  return `${path.posix.join(path.posix.sep, output, slugifyObsidianPath(filePath))}${slugifyObsidianAnchor(anchor ?? '')}`
 }
 
 function getRelativeFilePath(file: VFile, relativePath: string) {
@@ -624,7 +624,7 @@ function getMarkdownFileNode(file: VFile, fileUrl: string): RootContent {
   const filePath = decodeURIComponent(
     file.data.vault.options.linkFormat === 'relative' ? getRelativeFilePath(file, fileUrl) : fileUrl,
   )
-  const url = path.join('/', `${filePath}${fileExt}`)
+  const url = path.posix.join(path.posix.sep, `${filePath}${fileExt}`)
 
   const matchingFile = file.data.files.find((vaultFile) => vaultFile.path === url)
 

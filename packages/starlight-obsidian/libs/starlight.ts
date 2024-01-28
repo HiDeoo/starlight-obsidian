@@ -121,8 +121,8 @@ async function addAlias(
   const starlightPath = path.join(outputPaths.file, path.dirname(vaultFile.path), alias, 'index.html')
   const starlightDirPath = path.dirname(starlightPath)
 
-  const to = path.join('/', config.output, vaultFile.slug)
-  const from = path.join(path.dirname(to), alias)
+  const to = path.posix.join(path.posix.sep, config.output, vaultFile.slug)
+  const from = path.posix.join(path.dirname(to), alias)
 
   await ensureDirectory(starlightDirPath)
 
