@@ -30,6 +30,12 @@ test('ignores nested folders with a globstar', async () => {
   expect(paths.every((path) => !path.includes('/folder/nested folder/'))).toBe(true)
 })
 
+test('ignores the `.trash` folder', async () => {
+  const paths = await getFixtureObsidianPaths('with-obsidian-trash')
+
+  expect(paths).not.toContain('/.trash')
+})
+
 async function getFixtureObsidianPaths(fixtureName: string, config: Partial<StarlightObsidianConfig> = {}) {
   const vault = await getVault(getFixtureConfig(fixtureName, config))
   const paths = await getObsidianPaths(vault, config.ignore)
