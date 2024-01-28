@@ -67,7 +67,7 @@ export async function transformFixtureMdFile(
   })
 
   if (!options.includeFrontmatter) {
-    result.content = result.content.replace(/^---\n.*\n+---\n\n/, '')
+    result.content = result.content.replace(/^---\n(?:.|\n)*---\n\n/, '')
   }
 
   return result

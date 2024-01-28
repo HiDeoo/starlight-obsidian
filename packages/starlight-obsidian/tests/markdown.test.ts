@@ -41,6 +41,12 @@ test('sets the proper title', async () => {
   expect(result.content).toMatch(/^title: Basic syntax \(comments\)$/m)
 })
 
+test('disables edit links', async () => {
+  const result = await transformFixtureMdFile('basics', 'Random.md', { includeFrontmatter: true })
+
+  expect(result.content).toMatch(/^editUrl: false$/m)
+})
+
 test('renders tables', async () => {
   const result = await transformFixtureMdFile('basics', 'Tables.md')
 
@@ -72,6 +78,7 @@ test('renders math and includes katex styles', async () => {
   expect(result.content).toMatchInlineSnapshot(`
     "---
     title: Math
+    editUrl: false
     head:
       - tag: link
         attrs:

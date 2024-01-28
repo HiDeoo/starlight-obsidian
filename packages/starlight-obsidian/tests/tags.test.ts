@@ -9,11 +9,12 @@ test('includes tags in the frontmatter', async () => {
 })
 
 test('transforms inline tags in the content', async () => {
-  const result = await transformFixtureMdFile('basics', 'Tags.md')
+  const result = await transformFixtureMdFile('basics', 'Tags.md', { includeFrontmatter: true })
 
   expect(result.content).toMatchInlineSnapshot(`
     "---
     title: Tags
+    editUrl: false
     tags:
       - page-tag1
       - page-tag2

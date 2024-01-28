@@ -435,6 +435,7 @@ async function handleMermaid(tree: Root, file: VFile) {
 function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFrontmatter) {
   const frontmatter: Frontmatter = {
     title: file.stem,
+    editUrl: false,
   }
 
   if (file.data.includeKatexStyles) {
@@ -682,6 +683,7 @@ interface VisitorContext {
 interface Frontmatter {
   title: string | undefined
   description?: string
+  editUrl: false
   slug?: string
   tags?: string[]
   head?: { tag: string; attrs: Record<string, string> }[]

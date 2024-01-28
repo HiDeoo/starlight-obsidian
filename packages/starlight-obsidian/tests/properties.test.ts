@@ -15,6 +15,7 @@ test('includes supported properties', async () => {
   expect(result.content).toMatchInlineSnapshot(`
     "---
     title: Supported properties
+    editUrl: false
     description: This is a custom description
     slug: custom-slug
     ---
@@ -29,6 +30,7 @@ test.each([['cover', 'image']])('supports OG images using the `%s` property', as
 
   expect(result.content).toMatch(`---
 title: Property ${property}
+editUrl: false
 head:
   - tag: meta
     attrs:
