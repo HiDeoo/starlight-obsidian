@@ -1,6 +1,8 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import type { StarlightUserConfig } from '@astrojs/starlight/types'
+
 import type { StarlightObsidianConfig } from '..'
 
 import { copyFile, ensureDirectory, removeDirectory } from './fs'
@@ -11,6 +13,8 @@ import { getExtension } from './path'
 const assetsPath = 'src/assets'
 const docsPath = 'src/content/docs'
 const publicPath = 'public'
+
+const starlightObsidianSidebarGroupLabel = Symbol('StarlightObsidianSidebarGroupLabel')
 
 const obsidianToStarlightCalloutTypeMap: Record<string, string> = {
   note: 'note',
@@ -40,6 +44,50 @@ const obsidianToStarlightCalloutTypeMap: Record<string, string> = {
   example: 'tip',
   quote: 'note',
   cite: 'note',
+}
+
+export function getSidebarGroupPlaceholder(): SidebarManualGroup {
+  return {
+    items: [],
+    label: starlightObsidianSidebarGroupLabel.toString(),
+  }
+}
+
+export function getSidebarFromConfig(
+  config: StarlightObsidianConfig,
+  sidebar: StarlightUserConfig['sidebar'],
+): StarlightUserConfig['sidebar'] {
+  if (!sidebar || sidebar.length === 0) {
+    return sidebar
+  }
+
+  function replaceSidebarGroupPlaceholder(group: SidebarManualGroup): SidebarGroup {
+    if (group.label === starlightObsidianSidebarGroupLabel.toString()) {
+      return {
+        autogenerate: {
+          collapsed: config.sidebar.collapsedFolders ?? config.sidebar.collapsed,
+          directory: config.output,
+        },
+        collapsed: config.sidebar.collapsed,
+        label: config.sidebar.label,
+      }
+    }
+
+    if (isSidebarGroup(group)) {
+      return {
+        ...group,
+        items: group.items.map((item) => {
+          return isSidebarGroup(item) ? replaceSidebarGroupPlaceholder(item) : item
+        }),
+      }
+    }
+
+    return group
+  }
+
+  return sidebar.map((item) => {
+    return isSidebarGroup(item) ? replaceSidebarGroupPlaceholder(item) : item
+  })
 }
 
 export async function addObsidianFiles(config: StarlightObsidianConfig, vault: Vault, obsidianPaths: string[]) {
@@ -159,8 +207,19 @@ async function cleanOutputPaths(outputPaths: OutputPaths) {
   await removeDirectory(outputPaths.file)
 }
 
+function isSidebarGroup(item: SidebarGroup): item is SidebarManualGroup {
+  return 'items' in item
+}
+
 interface OutputPaths {
   asset: string
   content: string
   file: string
 }
+
+interface SidebarManualGroup {
+  items: SidebarManualGroup[]
+  label: string
+}
+
+type SidebarGroup = NonNullable<StarlightUserConfig['sidebar']>[number]

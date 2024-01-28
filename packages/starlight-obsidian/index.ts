@@ -4,7 +4,7 @@ import { z } from 'astro/zod'
 import { starlightObsidianIntegration } from './libs/integration'
 import { getObsidianPaths, getVault } from './libs/obsidian'
 import { throwUserError } from './libs/plugin'
-import { addObsidianFiles } from './libs/starlight'
+import { addObsidianFiles, getSidebarFromConfig, getSidebarGroupPlaceholder } from './libs/starlight'
 
 const starlightObsidianConfigSchema = z.object({
   // TODO(HiDeoo)
@@ -13,10 +13,23 @@ const starlightObsidianConfigSchema = z.object({
   ignore: z.array(z.string()).default([]),
   // TODO(HiDeoo) doc with @default
   output: z.string().default('notes'),
+  // TODO(HiDeoo)
+  sidebar: z
+    .object({
+      // TODO(HiDeoo)
+      collapsed: z.boolean().default(false),
+      // TODO(HiDeoo)
+      collapsedFolders: z.boolean().optional(),
+      // TODO(HiDeoo)
+      label: z.string().default('Notes'),
+    })
+    .default({}),
   // TODO(HiDeoo) Add doc (absolute or relative path)
   // TODO(HiDeoo) vaultDir? Something else
   vault: z.string(),
 })
+
+export const obsidianSidebarGroup = getSidebarGroupPlaceholder()
 
 export default function starlightObsidianPlugin(userConfig: StarlightObsidianUserConfig): StarlightPlugin {
   const parsedConfig = starlightObsidianConfigSchema.safeParse(userConfig)
@@ -41,6 +54,7 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
 
         const updatedStarlightConfig: Partial<StarlightUserConfig> = {
           customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles'],
+          sidebar: getSidebarFromConfig(config, starlightConfig.sidebar),
         }
 
         if (starlightConfig.components?.PageTitle) {

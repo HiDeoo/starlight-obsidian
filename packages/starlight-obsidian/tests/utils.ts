@@ -27,6 +27,10 @@ export function getFixtureConfig(
     configFolder: '.obsidian',
     ignore: [],
     output: 'notes',
+    sidebar: {
+      collapsed: false,
+      label: 'Notes',
+    },
     vault: getFixturePath(fixtureName),
     ...config,
   }
