@@ -10,9 +10,9 @@ export default defineConfig({
       },
       plugins: [
         starlightObsidian({
-          // vault: '../fixtures/basics',
+          vault: '../fixtures/basics',
           // vault: '../fixtures/not-a-vault',
-          vault: '../fixtures/links-markdown-absolute',
+          // vault: '../fixtures/links-markdown-absolute',
           // vault: '../fixtures/links-markdown-relative',
           // vault: '../fixtures/links-markdown-shortest',
           // vault: '../fixtures/links-wikilink-absolute',

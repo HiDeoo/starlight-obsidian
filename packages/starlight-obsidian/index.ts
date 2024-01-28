@@ -46,12 +46,6 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
     name: 'starlight-obsidian-plugin',
     hooks: {
       async setup({ addIntegration, config: starlightConfig, logger, updateConfig }) {
-        const vault = await getVault(config)
-        const obsidianPaths = await getObsidianPaths(vault, config.ignore)
-        await addObsidianFiles(config, vault, obsidianPaths)
-
-        addIntegration(starlightObsidianIntegration())
-
         const updatedStarlightConfig: Partial<StarlightUserConfig> = {
           customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles'],
           sidebar: getSidebarFromConfig(config, starlightConfig.sidebar),
@@ -68,6 +62,17 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
           }
         }
 
+        const start = performance.now()
+        logger.info('Generating Starlight pages from Obsidian vault…')
+
+        const vault = await getVault(config)
+        const obsidianPaths = await getObsidianPaths(vault, config.ignore)
+        await addObsidianFiles(config, vault, obsidianPaths)
+
+        const duration = Math.round(performance.now() - start)
+        logger.info(`Starlight pages generated from Obsidian vault in ${duration}ms.`)
+
+        addIntegration(starlightObsidianIntegration())
         updateConfig(updatedStarlightConfig)
       },
     },
