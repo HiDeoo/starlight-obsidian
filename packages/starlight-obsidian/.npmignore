@@ -1,0 +1,5 @@
+.eslintcache
+.prettierignore
+tests
+tsconfig.json
+tsconfig.tsbuildinfo
