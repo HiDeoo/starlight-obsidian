@@ -21,7 +21,7 @@ Want to get started immediately? Check out the [getting started guide](https://s
 
 A [Starlight](https://starlight.astro.build) plugin to publish [Obsidian](https://obsidian.md) vaults to a Starlight website.
 
-Check out the [demo](https://starlight-obsidian.vercel.app/demo/hello) for a preview of the generated pages.
+Check out the [demo](https://starlight-obsidian.vercel.app/demo/hello/) for a preview of the generated pages.
 
 ## License
 
