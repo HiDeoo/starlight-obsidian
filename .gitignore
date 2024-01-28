@@ -21,6 +21,7 @@ coverage
 docs/src/content/docs/notes
 dist
 dist-ssr
+docs/src/content/docs/demo
 example/public/notes
 example/src/content/docs/notes
 example/src/assets/notes

@@ -47,6 +47,9 @@ importers:
       sharp:
         specifier: 0.33.2
         version: 0.33.2
+      starlight-obsidian:
+        specifier: workspace:*
+        version: link:../packages/starlight-obsidian
 
   example:
     dependencies:

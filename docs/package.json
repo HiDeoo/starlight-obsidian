@@ -14,7 +14,8 @@
   "dependencies": {
     "@astrojs/starlight": "0.16.0",
     "astro": "4.2.1",
-    "sharp": "0.33.2"
+    "sharp": "0.33.2",
+    "starlight-obsidian": "workspace:*"
   },
   "engines": {
     "node": ">=18.14.1"

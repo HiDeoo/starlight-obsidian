@@ -1,5 +1,6 @@
 import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
+import starlightObsidian, { obsidianSidebarGroup } from 'starlight-obsidian'
 
 export default defineConfig({
   integrations: [
@@ -8,6 +9,17 @@ export default defineConfig({
       editLink: {
         baseUrl: 'https://github.com/HiDeoo/starlight-obsidian/edit/main/docs/',
       },
+      plugins: [
+        starlightObsidian({
+          output: 'demo',
+          sidebar: {
+            collapsed: true,
+            collapsedFolders: false,
+            label: 'Demo',
+          },
+          vault: '../fixtures/demo',
+        }),
+      ],
       sidebar: [
         {
           label: 'Start Here',
@@ -24,6 +36,7 @@ export default defineConfig({
             { label: 'Features', link: '/guides/features/' },
           ],
         },
+        obsidianSidebarGroup,
       ],
       social: {
         github: 'https://github.com/HiDeoo/starlight-obsidian',
