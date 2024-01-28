@@ -1,12 +1,19 @@
 ---
 title: Features
-description: // TODO(HiDeoo)
+description: Discover the Obsidian features supported by the Starlight Obsidian plugin.
 head:
   - tag: style
     content: 'th:first-of-type { width: 100%; }'
 ---
 
 This page lists Obsidian features relevant to publishing and their support status in the Starlight Obsidian plugin.
+
+:::note
+
+Unsupported features listed on this page are not an indication that they are planned to be supported in the future.
+Some features may never be supported due to various reasons, e.g. accessibility concerns.
+
+:::
 
 ## Basic formatting syntax
 
