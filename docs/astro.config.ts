@@ -9,12 +9,20 @@ export default defineConfig({
         baseUrl: 'https://github.com/HiDeoo/starlight-obsidian/edit/main/docs/',
       },
       sidebar: [
-        { label: 'Getting Started', link: '/getting-started/' },
-        { label: 'Configuration', link: '/configuration/' },
-        { label: 'Features', link: '/features/' },
+        {
+          label: 'Start Here',
+          items: [
+            { label: 'Getting Started', link: '/getting-started/' },
+            { label: 'Configuration', link: '/configuration/' },
+          ],
+        },
         {
           label: 'Guides',
-          items: [{ label: 'Project Structure', link: '/guides/project-structure/' }],
+          items: [
+            { label: 'Project Structure', link: '/guides/project-structure/' },
+            { label: 'Ignoring Content', link: '/guides/ignoring-content/' },
+            { label: 'Features', link: '/guides/features/' },
+          ],
         },
       ],
       social: {
