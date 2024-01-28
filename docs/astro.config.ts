@@ -12,6 +12,10 @@ export default defineConfig({
         { label: 'Getting Started', link: '/getting-started/' },
         { label: 'Configuration', link: '/configuration/' },
         { label: 'Features', link: '/features/' },
+        {
+          label: 'Guides',
+          items: [{ label: 'Project Structure', link: '/guides/project-structure/' }],
+        },
       ],
       social: {
         github: 'https://github.com/HiDeoo/starlight-obsidian',
