@@ -449,6 +449,19 @@ function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFron
     ]
   }
 
+  const ogImage = obsidianFrontmatter?.cover ?? obsidianFrontmatter?.image
+
+  if (ogImage && isAbsoluteUrl(ogImage)) {
+    if (!frontmatter.head) {
+      frontmatter.head = []
+    }
+
+    frontmatter.head.push(
+      { tag: 'meta', attrs: { property: 'og:image', content: ogImage } },
+      { tag: 'meta', attrs: { name: 'twitter:image', content: ogImage } },
+    )
+  }
+
   if (obsidianFrontmatter?.description && obsidianFrontmatter.description.length > 0) {
     frontmatter.description = obsidianFrontmatter.description
   }

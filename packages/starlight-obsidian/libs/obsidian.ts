@@ -23,7 +23,9 @@ const obsidianFrontmatterSchema = z.object({
     .array(z.string())
     .optional()
     .transform((aliases) => aliases?.map((alias) => slug(alias))),
+  cover: z.string().optional(),
   description: z.string().optional(),
+  image: z.string().optional(),
   permalink: z.string().optional(),
   publish: z
     .union([z.boolean(), z.literal('true'), z.literal('false')])

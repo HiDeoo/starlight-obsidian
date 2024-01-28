@@ -83,8 +83,8 @@ All unsupported properties are ignored and not exported.
 | [`publish`](https://help.obsidian.md/Obsidian+Publish/Publish+and+unpublish+notes#Ignore%20notes) |    ✅     |
 | [`permalink`](https://help.obsidian.md/Obsidian+Publish/Publish+and+unpublish+notes#Permalinks)   |    ✅     |
 | [`description`](https://help.obsidian.md/Obsidian+Publish/Social+media+link+previews#Description) |    ✅     |
-| [`image`](https://help.obsidian.md/Obsidian+Publish/Social+media+link+previews#Image)             |    ❌     |
-| [`cover`](https://help.obsidian.md/Obsidian+Publish/Social+media+link+previews#Image)             |    ❌     |
+| [`image`](https://help.obsidian.md/Obsidian+Publish/Social+media+link+previews#Image)             |    ✅     |
+| [`cover`](https://help.obsidian.md/Obsidian+Publish/Social+media+link+previews#Image)             |    ✅     |
 
 ## Plugins
 

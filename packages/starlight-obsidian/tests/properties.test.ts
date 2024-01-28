@@ -23,3 +23,23 @@ test('includes supported properties', async () => {
     "
   `)
 })
+
+test.each([['cover', 'image']])('supports OG images using the `%s` property', async (property) => {
+  const result = await transformFixtureMdFile('basics', `Property ${property}.md`, { includeFrontmatter: true })
+
+  expect(result.content).toMatch(`---
+title: Property ${property}
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg
+---
+
+Test
+`)
+})
