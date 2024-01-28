@@ -1,11 +1,11 @@
 ---
 title: Example Guide
-description: A guide in my new Starlight docs site.
 ---
 
-Guides lead a user through a specific task they want to accomplish, often with a sequence of steps.
-Writing a good guide requires thinking about what your users are trying to do.
+The example project is used to try out the Starlight Obsidian plugin with various vault fixtures.
 
-## Further reading
+You can find a list of the generated pages in the sidebar in the _Notes_ section.
 
-- Read [about how-to guides](https://diataxis.fr/how-to-guides/) in the Diátaxis framework
+## Fixtures
+
+To change the fixture used by the example project, update the `vault` option in the associated `astro.config.ts` file.

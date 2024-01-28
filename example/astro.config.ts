@@ -24,13 +24,7 @@ export default defineConfig({
           // configFolder: '.custom-config',
         }),
       ],
-      sidebar: [
-        {
-          label: 'Guides',
-          items: [{ label: 'Example Guide', link: '/guides/example/' }],
-        },
-        obsidianSidebarGroup,
-      ],
+      sidebar: [{ label: 'Example Guide', link: '/guides/example/' }, obsidianSidebarGroup],
       title: 'Starlight Obsidian Example',
     }),
   ],
