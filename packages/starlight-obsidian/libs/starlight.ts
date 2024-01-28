@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import type { StarlightUserConfig } from '@astrojs/starlight/types'
+import type { AstroIntegrationLogger } from 'astro'
 
 import type { StarlightObsidianConfig } from '..'
 
@@ -90,14 +91,19 @@ export function getSidebarFromConfig(
   })
 }
 
-export async function addObsidianFiles(config: StarlightObsidianConfig, vault: Vault, obsidianPaths: string[]) {
+export async function addObsidianFiles(
+  config: StarlightObsidianConfig,
+  vault: Vault,
+  obsidianPaths: string[],
+  logger: AstroIntegrationLogger,
+) {
   const outputPaths = getOutputPaths(config)
 
   await cleanOutputPaths(outputPaths)
 
   const vaultFiles = getObsidianVaultFiles(vault, obsidianPaths)
 
-  await Promise.all(
+  const results = await Promise.allSettled(
     vaultFiles.map(async (vaultFile) => {
       await (vaultFile.type === 'asset'
         ? addAsset(outputPaths, vaultFile)
@@ -106,6 +112,19 @@ export async function addObsidianFiles(config: StarlightObsidianConfig, vault: V
           : addContent(config, vault, outputPaths, vaultFiles, vaultFile))
     }),
   )
+
+  let didFail = false
+
+  for (const result of results) {
+    if (result.status === 'rejected') {
+      didFail = true
+      logger.error(result.reason instanceof Error ? result.reason.message : String(result.reason))
+    }
+  }
+
+  if (didFail) {
+    throw new Error('Failed to generate some Starlight pages. See the error(s) above for more information.')
+  }
 }
 
 export function getStarlightCalloutType(obsidianCalloutType: string): string {
@@ -123,40 +142,52 @@ async function addContent(
   vaultFiles: VaultFile[],
   vaultFile: VaultFile,
 ) {
-  const obsidianContent = await fs.readFile(vaultFile.fsPath, 'utf8')
-  const {
-    content: starlightContent,
-    aliases,
-    skip,
-  } = await transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
-    files: vaultFiles,
-    output: config.output,
-    vault,
-  })
+  try {
+    const obsidianContent = await fs.readFile(vaultFile.fsPath, 'utf8')
+    const {
+      content: starlightContent,
+      aliases,
+      skip,
+    } = await transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
+      files: vaultFiles,
+      output: config.output,
+      vault,
+    })
 
-  if (skip) {
-    return
-  }
-
-  const starlightPath = path.join(outputPaths.content, vaultFile.path.replace(/\.md$/, '.mdx'))
-  const starlightDirPath = path.dirname(starlightPath)
-
-  await ensureDirectory(starlightDirPath)
-  await fs.writeFile(starlightPath, starlightContent)
-
-  if (aliases) {
-    for (const alias of aliases) {
-      await addAlias(config, outputPaths, vaultFile, alias)
+    if (skip) {
+      return
     }
+
+    const starlightPath = path.join(outputPaths.content, vaultFile.path.replace(/\.md$/, '.mdx'))
+    const starlightDirPath = path.dirname(starlightPath)
+
+    await ensureDirectory(starlightDirPath)
+    await fs.writeFile(starlightPath, starlightContent)
+
+    if (aliases) {
+      for (const alias of aliases) {
+        await addAlias(config, outputPaths, vaultFile, alias)
+      }
+    }
+  } catch (error) {
+    throwVaultFileError(error, vaultFile)
   }
 }
 
 async function addFile(outputPaths: OutputPaths, vaultFile: VaultFile) {
-  await copyFile(vaultFile.fsPath, path.join(outputPaths.file, vaultFile.slug))
+  try {
+    await copyFile(vaultFile.fsPath, path.join(outputPaths.file, vaultFile.slug))
+  } catch (error) {
+    throwVaultFileError(error, vaultFile)
+  }
 }
 
 async function addAsset(outputPaths: OutputPaths, vaultFile: VaultFile) {
-  await copyFile(vaultFile.fsPath, path.join(outputPaths.asset, vaultFile.slug))
+  try {
+    await copyFile(vaultFile.fsPath, path.join(outputPaths.asset, vaultFile.slug))
+  } catch (error) {
+    throwVaultFileError(error, vaultFile)
+  }
 }
 
 async function addAlias(
@@ -204,6 +235,10 @@ async function cleanOutputPaths(outputPaths: OutputPaths) {
   await removeDirectory(outputPaths.asset)
   await removeDirectory(outputPaths.content)
   await removeDirectory(outputPaths.file)
+}
+
+function throwVaultFileError(error: unknown, vaultFile: VaultFile): never {
+  throw new Error(`${vaultFile.path} — ${error instanceof Error ? error.message : String(error)}`, { cause: error })
 }
 
 function isSidebarGroup(item: SidebarGroup): item is SidebarManualGroup {

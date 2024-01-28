@@ -94,15 +94,21 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
           }
         }
 
-        const start = performance.now()
-        logger.info('Generating Starlight pages from Obsidian vault…')
+        try {
+          const start = performance.now()
+          logger.info('Generating Starlight pages from Obsidian vault…')
 
-        const vault = await getVault(config)
-        const obsidianPaths = await getObsidianPaths(vault, config.ignore)
-        await addObsidianFiles(config, vault, obsidianPaths)
+          const vault = await getVault(config)
+          const obsidianPaths = await getObsidianPaths(vault, config.ignore)
+          await addObsidianFiles(config, vault, obsidianPaths, logger)
 
-        const duration = Math.round(performance.now() - start)
-        logger.info(`Starlight pages generated from Obsidian vault in ${duration}ms.`)
+          const duration = Math.round(performance.now() - start)
+          logger.info(`Starlight pages generated from Obsidian vault in ${duration}ms.`)
+        } catch (error) {
+          logger.error(error instanceof Error ? error.message : String(error))
+
+          throwUserError('Failed to generate Starlight pages from Obsidian vault.')
+        }
 
         addIntegration(starlightObsidianIntegration())
         updateConfig(updatedStarlightConfig)
