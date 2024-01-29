@@ -9,7 +9,7 @@ import yaml from 'yaml'
 import type { StarlightObsidianConfig } from '..'
 
 import { isDirectory, isFile } from './fs'
-import { getExtension, isAnchor, stripExtension } from './path'
+import { getExtension, isAnchor, slugifyPath, stripExtension } from './path'
 import { throwUserError } from './plugin'
 import { isAssetFile } from './starlight'
 
@@ -72,18 +72,27 @@ export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): Va
   const allFileNames = obsidianPaths.map((obsidianPath) => path.basename(obsidianPath))
 
   return obsidianPaths.map((obsidianPath, index) => {
-    const fileName = allFileNames[index] as string
-    const filePath = getObsidianRelativePath(vault, obsidianPath)
+    const baseFileName = allFileNames[index] as string
+    let fileName = baseFileName
 
-    return {
+    const type = isAssetFile(fileName) ? 'asset' : isObsidianFile(fileName) ? 'file' : 'content'
+
+    if (type === 'asset') {
+      fileName = slugifyPath(fileName)
+    }
+
+    const filePath = getObsidianRelativePath(vault, obsidianPath)
+    const slug = slugifyObsidianPath(filePath)
+
+    return createVaultFile({
       fileName,
       fsPath: obsidianPath,
-      path: filePath,
-      slug: slugifyObsidianPath(filePath),
+      path: type === 'asset' ? slug : filePath,
+      slug,
       stem: stripExtension(fileName),
-      type: isAssetFile(fileName) ? 'asset' : isObsidianFile(fileName) ? 'file' : 'content',
-      uniqueFileName: allFileNames.filter((currentFileName) => currentFileName === fileName).length === 1,
-    }
+      type,
+      uniqueFileName: allFileNames.filter((currentFileName) => currentFileName === baseFileName).length === 1,
+    })
   })
 }
 
@@ -152,6 +161,18 @@ export function parseObsidianFrontmatter(content: string): ObsidianFrontmatter |
   }
 }
 
+export function createVaultFile(baseVaultFile: BaseVaultFile) {
+  return {
+    ...baseVaultFile,
+    isEqualFileName(otherFileName: string) {
+      return (isAssetFile(otherFileName) ? slugifyPath(otherFileName) : otherFileName) === this.fileName
+    },
+    isEqualStem(otherStem: string) {
+      return (isAssetFile(otherStem) ? slugifyPath(otherStem) : otherStem) === this.stem
+    },
+  }
+}
+
 async function isVaultDirectory(config: StarlightObsidianConfig, vaultPath: string) {
   const configPath = path.join(vaultPath, config.configFolder)
 
@@ -184,7 +205,7 @@ interface VaultOptions {
   linkSyntax: 'markdown' | 'wikilink'
 }
 
-export interface VaultFile {
+interface BaseVaultFile {
   fileName: string
   fsPath: string
   // The path is relative to the vault root.
@@ -194,6 +215,11 @@ export interface VaultFile {
   stem: string
   type: 'asset' | 'content' | 'file'
   uniqueFileName: boolean
+}
+
+export interface VaultFile extends BaseVaultFile {
+  isEqualFileName(otherFileName: string): boolean
+  isEqualStem(otherStem: string): boolean
 }
 
 export type ObsidianFrontmatter = z.output<typeof obsidianFrontmatterSchema>

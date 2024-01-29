@@ -177,9 +177,6 @@ function handleReplacements(tree: Root, file: VFile) {
           text = maybeText ?? url.slice(isObsidianBlockAnchor(url) ? 2 : 1)
         } else {
           const [urlPath, urlAnchor] = extractPathAndAnchor(url)
-          const matchingFile = file.data.files.find(
-            (vaultFile) => vaultFile.stem === urlPath || vaultFile.fileName === urlPath,
-          )
 
           switch (file.data.vault.options.linkFormat) {
             case 'relative': {
@@ -188,6 +185,10 @@ function handleReplacements(tree: Root, file: VFile) {
             }
             case 'absolute':
             case 'shortest': {
+              const matchingFile = file.data.files.find(
+                (vaultFile) => vaultFile.isEqualStem(urlPath) || vaultFile.isEqualFileName(urlPath),
+              )
+
               fileUrl = getFileUrl(
                 file.data.output,
                 matchingFile ? getFilePathFromVaultFile(matchingFile, urlPath) : urlPath,
@@ -199,10 +200,13 @@ function handleReplacements(tree: Root, file: VFile) {
         }
 
         if (match.startsWith('!')) {
+          const isMarkdown = isMarkdownFile(url, file)
+
           return {
             type: 'image',
-            url: isMarkdownFile(url, file) ? url : fileUrl,
+            url: isMarkdown ? url : fileUrl,
             alt: text,
+            data: { isAssetResolved: !isMarkdown },
           }
         }
 
@@ -250,7 +254,7 @@ function handleLinks(node: Link, { file }: VisitorContext) {
 
   const url = path.basename(decodeURIComponent(node.url))
   const [urlPath, urlAnchor] = extractPathAndAnchor(url)
-  const matchingFile = file.data.files.find((vaultFile) => vaultFile.fileName === urlPath)
+  const matchingFile = file.data.files.find((vaultFile) => vaultFile.isEqualFileName(urlPath))
 
   if (!matchingFile) {
     return SKIP
@@ -301,7 +305,7 @@ function handleImages(node: Image, context: VisitorContext) {
 
   let fileUrl = node.url
 
-  if (file.data.vault.options.linkSyntax !== 'wikilink') {
+  if (!node.data?.isAssetResolved) {
     switch (file.data.vault.options.linkFormat) {
       case 'relative': {
         fileUrl = getFileUrl(file.data.output, getRelativeFilePath(file, node.url))
@@ -314,7 +318,7 @@ function handleImages(node: Image, context: VisitorContext) {
       case 'shortest': {
         const url = path.basename(decodeURIComponent(node.url))
         const [urlPath] = extractPathAndAnchor(url)
-        const matchingFile = file.data.files.find((vaultFile) => vaultFile.fileName === urlPath)
+        const matchingFile = file.data.files.find((vaultFile) => vaultFile.isEqualFileName(urlPath))
 
         if (!matchingFile) {
           break
@@ -657,4 +661,10 @@ interface Frontmatter {
 
 declare module 'vfile' {
   interface DataMap extends TransformContext {}
+}
+
+declare module 'unist' {
+  interface Data {
+    isAssetResolved?: boolean
+  }
 }

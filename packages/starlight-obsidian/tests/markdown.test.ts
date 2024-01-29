@@ -61,9 +61,9 @@ test('renders tables', async () => {
     | Max        | Planck    |
     | Marie      | Curie     |
 
-    | First column                        | Second column                                                                         |
-    | ----------------------------------- | ------------------------------------------------------------------------------------- |
-    | [Link to file](/notes/basic-syntax) | ![An image.png](../../../../../packages/starlight-obsidian/assets/notes/an-image.png) |
+    | First column                        | Second column                                       |
+    | ----------------------------------- | --------------------------------------------------- |
+    | [Link to file](/notes/basic-syntax) | ![An image.png](../../../assets/notes/an-image.png) |
 
     | Left-aligned text | Center-aligned text | Right-aligned text |
     | :---------------- | :-----------------: | -----------------: |

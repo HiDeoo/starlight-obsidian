@@ -1,5 +1,7 @@
 import path from 'node:path'
 
+import { slug } from 'github-slugger'
+
 export function getExtension(filePath: string) {
   return path.parse(filePath).ext
 }
@@ -16,4 +18,22 @@ export function extractPathAndAnchor(filePathAndAnchor: string): [string, string
 
 export function isAnchor(filePath: string): filePath is `#${string}` {
   return filePath.startsWith('#')
+}
+
+export function slugifyPath(filePath: string) {
+  const segments = filePath.split('/')
+
+  return segments
+    .map((segment, index) => {
+      const isLastSegment = index === segments.length - 1
+
+      if (!isLastSegment) {
+        return slug(segment)
+      }
+
+      const parsedPath = path.parse(segment)
+
+      return `${slug(parsedPath.name)}${parsedPath.ext}`
+    })
+    .join('/')
 }

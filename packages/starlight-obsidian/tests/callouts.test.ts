@@ -11,7 +11,7 @@ test('transforms callouts', async () => {
     :::note
     Here's a callout block.
     It supports **Markdown**, [Wikilinks](/notes/math), and embeds!
-    ![An image.png](../../../../../packages/starlight-obsidian/assets/notes/an-image.png)
+    ![An image.png](../../../assets/notes/an-image.png)
     :::
 
     :::tip[Callouts can have custom titles]

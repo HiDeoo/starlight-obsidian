@@ -72,7 +72,7 @@ test('transforms supported embeds', async () => {
   const result = await transformFixtureMdFile('basics', 'Embeds.md')
 
   expect(result.content).toMatchInlineSnapshot(`
-    "![An image.png](../../../../../packages/starlight-obsidian/assets/notes/an-image.png)
+    "![An image.png](../../../assets/notes/an-image.png)
 
     <audio class="sl-obs-embed-audio" controls src="/notes/A sound.mp3"></audio>
 
