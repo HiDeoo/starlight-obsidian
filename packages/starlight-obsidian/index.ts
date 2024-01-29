@@ -77,7 +77,11 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
   return {
     name: 'starlight-obsidian-plugin',
     hooks: {
-      async setup({ addIntegration, config: starlightConfig, logger, updateConfig }) {
+      async setup({ addIntegration, command, config: starlightConfig, logger, updateConfig }) {
+        if (command !== 'build' && command !== 'dev') {
+          return
+        }
+
         const updatedStarlightConfig: Partial<StarlightUserConfig> = {
           customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles'],
           sidebar: getSidebarFromConfig(config, starlightConfig.sidebar),
