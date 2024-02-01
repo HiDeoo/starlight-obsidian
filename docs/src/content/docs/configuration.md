@@ -56,7 +56,7 @@ The name of the output directory containing the generated Obsidian vault pages r
 
 The generated vault pages [sidebar group configuration](#sidebar-configuration).
 
-### `output`
+### `configFolder`
 
 **Type:** `string`  
 **Default:** `'.obsidian'`
