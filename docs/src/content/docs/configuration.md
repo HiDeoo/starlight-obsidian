@@ -63,6 +63,13 @@ The generated vault pages [sidebar group configuration](#sidebar-configuration).
 
 The name of the Obsidian vault [configuration folder](https://help.obsidian.md/Files+and+folders/Configuration+folder) if different from the default one.
 
+### `tableOfContentsOverview`
+
+**Type:** `'default' | 'title'`  
+**Default:** `'default'`
+
+By default, Starlight will include an “Overview” heading at the top of each page’s table of contents. If your Obsidian vault pages already include a top-level heading named “Overview”, you can set this option to `'title'` to instead use the page title as the top-level heading in the table of contents.
+
 ## Sidebar configuration
 
 The sidebar configuration is an object used to configure the generated vault pages sidebar group.

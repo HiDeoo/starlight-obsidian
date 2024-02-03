@@ -2,9 +2,12 @@ import type { AstroIntegration } from 'astro'
 import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
 
-import { rehypeStarlightObsidian } from './rehype'
+import type { StarlightObsidianConfig } from '..'
 
-export function starlightObsidianIntegration(): AstroIntegration {
+import { rehypeStarlightObsidian } from './rehype'
+import { vitePluginStarlightObsidianConfig } from './vite'
+
+export function starlightObsidianIntegration(config: StarlightObsidianConfig): AstroIntegration {
   return {
     name: 'starlight-obsidian-integration',
     hooks: {
@@ -13,6 +16,9 @@ export function starlightObsidianIntegration(): AstroIntegration {
           markdown: {
             rehypePlugins: [rehypeStarlightObsidian, rehypeKatex],
             remarkPlugins: [remarkMath],
+          },
+          vite: {
+            plugins: [vitePluginStarlightObsidianConfig(config)],
           },
         })
       },

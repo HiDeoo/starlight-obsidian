@@ -1,4 +1,5 @@
 import type { StarlightPlugin, StarlightUserConfig } from '@astrojs/starlight/types'
+import type { AstroIntegrationLogger } from 'astro'
 import { z } from 'astro/zod'
 
 import { starlightObsidianIntegration } from './libs/integration'
@@ -56,6 +57,14 @@ const starlightObsidianConfigSchema = z.object({
     })
     .default({}),
   /**
+   * Determines if the table of contents top-level heading should be the Starlight default one ("Overview") or the page
+   * title.
+   * This option is useful when the Obsidian vault pages already have a top-level heading named "Overview".
+   *
+   * @default 'title'
+   */
+  tableOfContentsOverview: z.union([z.literal('default'), z.literal('title')]).default('default'),
+  /**
    * The absolute or relative path to the Obsidian vault to publish.
    */
   vault: z.string(),
@@ -87,14 +96,21 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
           sidebar: getSidebarFromConfig(config, starlightConfig.sidebar),
         }
 
+        if (!updatedStarlightConfig.components) {
+          updatedStarlightConfig.components = {}
+        }
+
         if (starlightConfig.components?.PageTitle) {
-          logger.warn(
-            'It looks like you already have a `PageTitle` component override in your Starlight configuration.',
-          )
-          logger.warn('To use `starlight-obsidian`, remove the override for the `PageTitle` component.\n')
+          logComponentOverrideWarning(logger, 'PageTitle')
         } else {
-          updatedStarlightConfig.components = {
-            PageTitle: 'starlight-obsidian/overrides/PageTitle.astro',
+          updatedStarlightConfig.components.PageTitle = 'starlight-obsidian/overrides/PageTitle.astro'
+        }
+
+        if (config.tableOfContentsOverview === 'title') {
+          if (starlightConfig.components?.PageSidebar) {
+            logComponentOverrideWarning(logger, 'PageSidebar')
+          } else {
+            updatedStarlightConfig.components.PageSidebar = 'starlight-obsidian/overrides/PageSidebar.astro'
           }
         }
 
@@ -114,11 +130,16 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
           throwUserError('Failed to generate Starlight pages from Obsidian vault.')
         }
 
-        addIntegration(starlightObsidianIntegration())
+        addIntegration(starlightObsidianIntegration(config))
         updateConfig(updatedStarlightConfig)
       },
     },
   }
+}
+
+function logComponentOverrideWarning(logger: AstroIntegrationLogger, component: string) {
+  logger.warn(`It looks like you already have a \`${component}\` component override in your Starlight configuration.`)
+  logger.warn(`To use \`starlight-obsidian\`, remove the override for the \`${component}\` component.\n`)
 }
 
 export type StarlightObsidianUserConfig = z.input<typeof starlightObsidianConfigSchema>

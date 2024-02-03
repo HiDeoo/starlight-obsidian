@@ -9,6 +9,7 @@
     ".": "./index.ts",
     "./components/Twitter.astro": "./components/Twitter.astro",
     "./components/Youtube.astro": "./components/Youtube.astro",
+    "./overrides/PageSidebar.astro": "./overrides/PageSidebar.astro",
     "./overrides/PageTitle.astro": "./overrides/PageTitle.astro",
     "./schema": "./schema.ts",
     "./styles": "./styles.css",
