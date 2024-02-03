@@ -63,6 +63,13 @@ The generated vault pages [sidebar group configuration](#sidebar-configuration).
 
 The name of the Obsidian vault [configuration folder](https://help.obsidian.md/Files+and+folders/Configuration+folder) if different from the default one.
 
+### `autoLinkHeadings`
+
+**Type:** `boolean`  
+**Default:** `false`
+
+Add links to Starlight headings to make it easier to share a link to a specific section of a page.
+
 ### `tableOfContentsOverview`
 
 **Type:** `'default' | 'title'`  

@@ -9,6 +9,12 @@ import { addObsidianFiles, getSidebarFromConfig, getSidebarGroupPlaceholder } fr
 
 const starlightObsidianConfigSchema = z.object({
   /**
+   * Add links to Starlight headings to make it easier to share a link to a specific section of a page.
+   *
+   * @default false
+   */
+  autoLinkHeadings: z.boolean().default(false),
+  /**
    * The name of the Obsidian vault configuration folder if different from the default one.
    *
    * @default '.obsidian'
@@ -91,8 +97,14 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
           return
         }
 
+        const customCss = [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles/common']
+
+        if (config.autoLinkHeadings) {
+          customCss.push('starlight-obsidian/styles/autolinks-headings')
+        }
+
         const updatedStarlightConfig: Partial<StarlightUserConfig> = {
-          customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles'],
+          customCss,
           sidebar: getSidebarFromConfig(config, starlightConfig.sidebar),
         }
 

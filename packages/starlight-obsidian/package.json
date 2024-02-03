@@ -12,7 +12,8 @@
     "./overrides/PageSidebar.astro": "./overrides/PageSidebar.astro",
     "./overrides/PageTitle.astro": "./overrides/PageTitle.astro",
     "./schema": "./schema.ts",
-    "./styles": "./styles.css",
+    "./styles/common": "./styles/common.css",
+    "./styles/autolinks-headings": "./styles/autolinks-headings.css",
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -22,14 +23,19 @@
   "dependencies": {
     "@astro-community/astro-embed-twitter": "0.5.3",
     "@astro-community/astro-embed-youtube": "0.4.4",
+    "@astrojs/markdown-remark": "4.2.1",
     "github-slugger": "2.0.0",
     "globby": "14.0.0",
     "hast-util-to-html": "9.0.0",
+    "hast-util-to-string": "3.0.0",
+    "hastscript": "9.0.0",
+    "html-escaper": "3.0.3",
     "is-absolute-url": "4.0.1",
     "mdast-util-find-and-replace": "3.0.1",
     "mdast-util-to-hast": "13.1.0",
     "nanoid": "5.0.4",
     "rehype": "13.0.1",
+    "rehype-autolink-headings": "7.1.0",
     "rehype-katex": "7.0.0",
     "rehype-mermaid": "2.1.0",
     "remark": "15.0.1",
@@ -43,6 +49,7 @@
   "devDependencies": {
     "@astrojs/starlight": "0.16.0",
     "@types/hast": "3.0.3",
+    "@types/html-escaper": "3.0.2",
     "@types/mdast": "4.0.3",
     "@types/unist": "3.0.2",
     "astro": "4.2.1",
