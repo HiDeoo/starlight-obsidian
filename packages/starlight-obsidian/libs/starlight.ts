@@ -209,19 +209,21 @@ async function addAlias(
   await ensureDirectory(starlightDirPath)
 
   // Based on https://github.com/withastro/astro/blob/57ab578bc7bdac6c65c2315365c0e94bc98af2b3/packages/astro/src/core/build/generate.ts#L584-L591
-  // but tweaked to add an `<html>` element so that Pagefind does not emit a warning when ignoring the page.
+  // but tweaked to add an `<html>` element so that Pagefind does not emit a warning and ignore the page.
   await fs.writeFile(
     starlightPath,
     `<!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>Redirecting to: ${to}</title>
+    <title>${vaultFile.stem}</title>
     <meta http-equiv="refresh" content="0;url=${to}">
     <meta name="robots" content="noindex">
     <link rel="canonical" href="${to}">
   </head>
-  <body>
-    <a href="${to}">Redirecting from <code>${from}</code> to "<code>${to}</code>"</a>
+  <body data-pagefind-body>
+    <h2 id="alias">Alias</h2>
+    <code>(name: ${alias})</code>
+    <a href="${to}" data-pagefind-ignore>Redirecting from <code>${from}</code> to "<code>${to}</code>"</a>
   </body>
 </html>`,
   )

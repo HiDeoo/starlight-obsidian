@@ -1,5 +1,9 @@
 import type { Element, ElementContent, Root } from 'hast'
+import { toString } from 'hast-util-to-string'
+import { h } from 'hastscript'
+import { escape } from 'html-escaper'
 import type { Literal } from 'mdast'
+import type { Options as RehypeAutolinkHeadingsOptions } from 'rehype-autolink-headings'
 import { CONTINUE, SKIP, visit } from 'unist-util-visit'
 
 const blockIdentifierRegex = /(?<identifier> *\^(?<name>[\w-]+))$/
@@ -25,16 +29,34 @@ export function rehypeStarlightObsidian() {
         const lastGrandChild = lastChild.children.at(-1)
 
         if (lastChild.tagName === 'p') {
-          transformBlockIdentifier(node, lastGrandChild)
+          return transformBlockIdentifier(node, lastGrandChild)
         } else if (lastGrandChild?.type === 'element' && lastGrandChild.tagName === 'li') {
-          transformBlockIdentifier(node, lastGrandChild.children.at(-1))
+          return transformBlockIdentifier(node, lastGrandChild.children.at(-1))
         }
       } else if (node.tagName === 'p' || node.tagName === 'li') {
-        transformBlockIdentifier(node, node.children.at(-1))
+        return transformBlockIdentifier(node, node.children.at(-1))
       }
 
       return CONTINUE
     })
+  }
+}
+
+// https://hideoo.dev/notes/starlight-heading-links
+// https://github.com/withastro/docs/blob/main/plugins/rehype-autolink.ts
+// https://amberwilson.co.uk/blog/are-your-anchor-links-accessible/
+export function getRehypeAutolinkHeadingsOptions(): RehypeAutolinkHeadingsOptions {
+  return {
+    behavior: 'after',
+    content: (heading) => {
+      return [
+        h('span', { ariaHidden: 'true' }, '§'),
+        h('span', { class: 'sr-only' }, `Section titled ${escape(toString(heading))}`),
+      ]
+    },
+    group: ({ tagName }) =>
+      h('div', { class: `sl-obs-section sl-obs-section-level-${tagName.slice(1)}`, tabIndex: -1 }),
+    properties: { class: 'sl-obs-heading-link' },
   }
 }
 

@@ -112,9 +112,10 @@ nlx playwright install --with-deps chromium
 
 ## Configure the plugin
 
-The Starlight Obsidian plugin can be configured in your Starlight [configuration](https://starlight.astro.build/reference/configuration/#plugins) in the `astro.config.mjs` file:
+The Starlight Obsidian plugin can be configured in your Starlight [configuration](https://starlight.astro.build/reference/configuration/#plugins) in the `astro.config.mjs` file.
+The minimal configuration requires a `vault` option to point to the path of your Obsidian vault.
 
-```diff lang="js"
+```diff lang="js" "../path/to/obsidian/vault"
 // astro.config.mjs
 import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
@@ -143,4 +144,5 @@ export default defineConfig({
 })
 ```
 
+To preview the generated pages, you can [start the development server](https://starlight.astro.build/getting-started/#start-the-development-server).
 The Starlight Obsidian plugin behavior can be tweaked using various [configuration options](/configuration).
