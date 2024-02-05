@@ -50,6 +50,16 @@ This option can be used to ignore [files](https://help.obsidian.md/Files+and+fol
 
 The name of the output directory containing the generated Obsidian vault pages relative to the `src/content/docs/` directory.
 
+### `skipGeneration`
+
+**Type:** `boolean`  
+**Default:** `false`
+
+Whether the Starlight Obsidian plugin should skip the generation of the Obsidian vault pages.
+
+This is useful to disable generating the Obsidian vault pages when deploying on platforms that do not have access to the Obsidian vault.
+This will require you to build and commit the pages locally ahead of time.
+
 ### `sidebar`
 
 **Type:** [`StarlightObsidianSidebarConfig`](#sidebar-configuration)
