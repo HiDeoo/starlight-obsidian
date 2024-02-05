@@ -136,7 +136,9 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
         }
 
         if (config.skipGeneration) {
-          logger.warn(`Skipping generation of Starlight pages from Obsidian vault as the plugin is disabled.`)
+          logger.warn(
+            `Skipping generation of Starlight pages from Obsidian vault as the 'skipGeneration' option is enabled.`,
+          )
         } else {
           try {
             const start = performance.now()
