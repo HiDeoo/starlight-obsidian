@@ -38,6 +38,15 @@ const starlightObsidianConfigSchema = z.object({
    */
   output: z.string().default('notes'),
   /**
+   * Whether the Starlight Obsidian plugin should skip the generation of the Obsidian vault pages.
+   *
+   * This is useful to disable generating the Obsidian vault pages when deploying on platforms that do not have access
+   * to the Obsidian vault. This will require you to build and commit the pages locally ahead of time.
+   *
+   * @default false
+   */
+  skipGeneration: z.boolean().default(false),
+  /**
    * The generated vault pages sidebar group configuration.
    */
   sidebar: z
@@ -126,20 +135,24 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
           }
         }
 
-        try {
-          const start = performance.now()
-          logger.info('Generating Starlight pages from Obsidian vault…')
+        if (config.skipGeneration) {
+          logger.warn(`Skipping generation of Starlight pages from Obsidian vault as the plugin is disabled.`)
+        } else {
+          try {
+            const start = performance.now()
+            logger.info('Generating Starlight pages from Obsidian vault…')
 
-          const vault = await getVault(config)
-          const obsidianPaths = await getObsidianPaths(vault, config.ignore)
-          await addObsidianFiles(config, vault, obsidianPaths, logger)
+            const vault = await getVault(config)
+            const obsidianPaths = await getObsidianPaths(vault, config.ignore)
+            await addObsidianFiles(config, vault, obsidianPaths, logger)
 
-          const duration = Math.round(performance.now() - start)
-          logger.info(`Starlight pages generated from Obsidian vault in ${duration}ms.`)
-        } catch (error) {
-          logger.error(error instanceof Error ? error.message : String(error))
+            const duration = Math.round(performance.now() - start)
+            logger.info(`Starlight pages generated from Obsidian vault in ${duration}ms.`)
+          } catch (error) {
+            logger.error(error instanceof Error ? error.message : String(error))
 
-          throwUserError('Failed to generate Starlight pages from Obsidian vault.')
+            throwUserError('Failed to generate Starlight pages from Obsidian vault.')
+          }
         }
 
         addIntegration(starlightObsidianIntegration(config))
