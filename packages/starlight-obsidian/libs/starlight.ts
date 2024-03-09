@@ -8,7 +8,7 @@ import type { StarlightObsidianConfig } from '..'
 
 import { copyFile, ensureDirectory, removeDirectory } from './fs'
 import { transformMarkdownToString } from './markdown'
-import { getObsidianVaultFiles, isObsidianFile, type Vault, type VaultFile } from './obsidian'
+import { getObsidianVaultFiles, isObsidianFile, type ObsidianFrontmatter, type Vault, type VaultFile } from './obsidian'
 import { getExtension } from './path'
 
 const assetsPath = 'src/assets'
@@ -46,6 +46,24 @@ const obsidianToStarlightCalloutTypeMap: Record<string, string> = {
   quote: 'note',
   cite: 'note',
 }
+
+// https://github.com/withastro/starlight/blob/main/packages/starlight/schema.ts
+const starlightFrontmatterKeys = [
+  'title',
+  // The `description` property is ignored as it's part of the Obsidian frontmatter too.
+  'slug',
+  'editUrl',
+  'head',
+  'tableOfContents',
+  'template',
+  'hero',
+  'banner',
+  'lastUpdated',
+  'prev',
+  'next',
+  'pagefind',
+  'sidebar',
+]
 
 export function getSidebarGroupPlaceholder(): SidebarManualGroup {
   return {
@@ -135,6 +153,18 @@ export function isAssetFile(filePath: string): boolean {
   return getExtension(filePath) !== '.bmp' && isObsidianFile(filePath, 'image')
 }
 
+export function getStarlightLikeFrontmatter(rawFrontmatter: ObsidianFrontmatter['raw']): Record<string, unknown> {
+  const frontmatter: Record<string, unknown> = {}
+
+  for (const key of starlightFrontmatterKeys) {
+    if (key in rawFrontmatter) {
+      frontmatter[key] = rawFrontmatter[key]
+    }
+  }
+
+  return frontmatter
+}
+
 async function addContent(
   config: StarlightObsidianConfig,
   vault: Vault,
@@ -151,6 +181,7 @@ async function addContent(
       type,
     } = await transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
       files: vaultFiles,
+      copyStarlightFrontmatter: config.copyStarlightFrontmatter,
       output: config.output,
       vault,
     })

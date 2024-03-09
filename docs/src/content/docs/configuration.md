@@ -87,6 +87,16 @@ Add links to Starlight headings to make it easier to share a link to a specific 
 
 By default, Starlight will include an “Overview” heading at the top of each page’s table of contents. If your Obsidian vault pages already include a top-level heading named “Overview”, you can set this option to `'title'` to instead use the page title as the top-level heading in the table of contents.
 
+### `copyStarlightFrontmatter`
+
+**Type:** `boolean`  
+**Default:** `false`
+
+By default, all unsupported [properties](/guides/features/#properties) are ignored and not exported. Set this option to `true` to copy all known [Starlight frontmatter fields](https://starlight.astro.build/reference/frontmatter/) from an Obsidian note to the associated generated page.
+
+This is useful if you want to customize the generated Starlight pages from Obsidian.
+Note that the values are not validated and are copied as-is so it's up to you to ensure they are compatible with Starlight.
+
 ## Sidebar configuration
 
 The sidebar configuration is an object used to configure the generated vault pages sidebar group.
