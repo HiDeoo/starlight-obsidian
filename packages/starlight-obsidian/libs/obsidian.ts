@@ -155,7 +155,8 @@ export function isObsidianFile(filePath: string, type?: 'image' | 'audio' | 'vid
 
 export function parseObsidianFrontmatter(content: string): ObsidianFrontmatter | undefined {
   try {
-    return obsidianFrontmatterSchema.parse(yaml.parse(content))
+    const raw: unknown = yaml.parse(content)
+    return { ...obsidianFrontmatterSchema.parse(raw), raw: raw as ObsidianFrontmatter['raw'] }
   } catch {
     return
   }
@@ -222,4 +223,6 @@ export interface VaultFile extends BaseVaultFile {
   isEqualStem(otherStem: string): boolean
 }
 
-export type ObsidianFrontmatter = z.output<typeof obsidianFrontmatterSchema>
+export type ObsidianFrontmatter = z.output<typeof obsidianFrontmatterSchema> & {
+  raw: Record<string | number, unknown>
+}

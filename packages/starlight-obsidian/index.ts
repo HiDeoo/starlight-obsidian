@@ -22,6 +22,17 @@ const starlightObsidianConfigSchema = z.object({
    */
   configFolder: z.string().startsWith('.').default('.obsidian'),
   /**
+   * Whether the Starlight Obsidian plugin should copy known Starlight frontmatter fields from Obsidian notes to the
+   * generated pages.
+   *
+   * This is useful if you want to customize the generated Starlight pages from Obsidian. Note that the values are not
+   * validated and are copied as-is so it's up to you to ensure they are compatible with Starlight.
+   *
+   * @default false
+   * @see https://starlight.astro.build/reference/frontmatter/
+   */
+  copyStarlightFrontmatter: z.boolean().default(false),
+  /**
    * A list of glob patterns to ignore when generating the Obsidian vault pages.
    * This option can be used to ignore files or folders.
    *

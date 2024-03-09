@@ -25,8 +25,12 @@ export function getFixtureConfig(
   config: Partial<StarlightObsidianConfig> = {},
 ): StarlightObsidianConfig {
   return {
+    autoLinkHeadings: false,
     configFolder: '.obsidian',
+    copyStarlightFrontmatter: false,
     ignore: [],
+    skipGeneration: false,
+    tableOfContentsOverview: 'default',
     output: 'notes',
     sidebar: {
       collapsed: false,
@@ -57,6 +61,7 @@ export async function transformFixtureMdFile(
   const md = await getFixtureFile(fixtureName, filePath)
   const fileName = path.basename(filePath)
   const result = await transformMarkdownToString(fixtureFilePath, md, {
+    copyStarlightFrontmatter: options.context?.copyStarlightFrontmatter ?? false,
     files: options.context?.files ?? [
       createVaultFile({
         fileName,

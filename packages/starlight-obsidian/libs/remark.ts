@@ -29,7 +29,7 @@ import {
   type VaultFile,
 } from './obsidian'
 import { extractPathAndAnchor, getExtension, isAnchor } from './path'
-import { getStarlightCalloutType, isAssetFile } from './starlight'
+import { getStarlightCalloutType, getStarlightLikeFrontmatter, isAssetFile } from './starlight'
 
 const generateAssetImportId = customAlphabet('abcdefghijklmnopqrstuvwxyz', 6)
 
@@ -420,21 +420,28 @@ async function handleMermaid(tree: Root, file: VFile) {
 }
 
 function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFrontmatter) {
-  const frontmatter: Frontmatter = {
+  let frontmatter: Frontmatter = {
     title: file.stem,
     editUrl: false,
   }
 
+  if (obsidianFrontmatter && file.data.copyStarlightFrontmatter) {
+    const starlightLikeFrontmatter = getStarlightLikeFrontmatter(obsidianFrontmatter.raw)
+    frontmatter = { ...frontmatter, ...starlightLikeFrontmatter }
+  }
+
   if (file.data.includeKatexStyles) {
-    frontmatter.head = [
-      {
-        tag: 'link',
-        attrs: {
-          rel: 'stylesheet',
-          href: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css',
-        },
+    if (!frontmatter.head) {
+      frontmatter.head = []
+    }
+
+    frontmatter.head.push({
+      tag: 'link',
+      attrs: {
+        rel: 'stylesheet',
+        href: 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css',
       },
-    ]
+    })
   }
 
   const ogImage = obsidianFrontmatter?.cover ?? obsidianFrontmatter?.image
@@ -634,6 +641,7 @@ function ensureTransformContext(file: VFile): asserts file is VFile & { data: Tr
 export interface TransformContext {
   aliases?: string[]
   assetImports?: [id: string, path: string][]
+  copyStarlightFrontmatter?: boolean
   files: VaultFile[]
   includeKatexStyles?: boolean
   includeTwitterComponent?: boolean

@@ -1,12 +1,15 @@
 import { expect, test } from 'vitest'
 
-import { transformFixtureMdFile } from './utils'
+import { getObsidianPaths, getObsidianVaultFiles, getVault } from '../libs/obsidian'
 
-test('strips unsupported known and unknown properties', async () => {
+import { getFixtureConfig, transformFixtureMdFile } from './utils'
+
+test('strips unsupported known, unknown properties, and known Starlight frontmatter fields', async () => {
   const result = await transformFixtureMdFile('basics', 'Unsupported properties.md', { includeFrontmatter: true })
 
   expect(result.content).not.toMatch(/unknown/)
   expect(result.content).not.toMatch(/cssclasses/)
+  expect(result.content).not.toMatch(/pagefind/)
 })
 
 test('includes supported properties', async () => {
@@ -44,4 +47,30 @@ head:
 
 Test
 `)
+})
+
+test('includes known Starlight frontmatter fields if the option is enabled', async () => {
+  const fixtureName = 'basics'
+  const vault = await getVault(getFixtureConfig(fixtureName))
+  const paths = await getObsidianPaths(vault)
+  const files = getObsidianVaultFiles(vault, paths)
+  const options = {
+    context: { copyStarlightFrontmatter: true, files, output: 'notes', vault },
+    includeFrontmatter: true,
+  }
+
+  const result = await transformFixtureMdFile(fixtureName, 'Starlight properties.md', options)
+
+  expect(result.content).toMatchInlineSnapshot(`
+    "---
+    title: Custom Starlight Title
+    editUrl: false
+    slug: custom-starlight-slug
+    tableOfContents: false
+    description: This is a custom description
+    ---
+
+    Test
+    "
+  `)
 })
