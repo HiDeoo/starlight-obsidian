@@ -38,7 +38,7 @@ const commentReplacementRegex = /%%(?<comment>(?:(?!%%).)+)%%/gs
 const wikilinkReplacementRegex = /!?\[\[(?<url>(?:(?![[\]|]).)+)(?:\|(?<maybeText>(?:(?![[\]]).)+))?]]/g
 const tagReplacementRegex = /(?:^|\s)#(?<tag>[\w/-]+)/g
 const calloutRegex = /^\[!(?<type>\w+)][+-]? ?(?<title>.*)$/
-const imageSizeRegex = /^(?<altText>.*)\|(?:(?<widthOnly>\d+)|(?:(?<width>\d+)x(?<height>\d+)))$/
+const imageSizeRegex = /^(?:(?<altText>.*)\|)?(?:(?<widthOnly>\d+)|(?:(?<width>\d+)x(?<height>\d+)))$/
 
 const asideDelimiter = ':::'
 
@@ -534,6 +534,7 @@ function handleImagesWithSize(node: Image, context: VisitorContext, type: 'asset
     return
   }
 
+  const imgAltText = altText ?? ''
   const imgWidth = widthOnly ?? width
   const imgHeight = height ?? 'auto'
   // Workaround Starlight `auto` height default style.
@@ -542,7 +543,7 @@ function handleImagesWithSize(node: Image, context: VisitorContext, type: 'asset
   if (type === 'external') {
     replaceNode(context, {
       type: 'html',
-      value: `<img src="${node.url}" alt="${altText}" width="${imgWidth}" height="${imgHeight}"${imgStyle} />`,
+      value: `<img src="${node.url}" alt="${imgAltText}" width="${imgWidth}" height="${imgHeight}"${imgStyle} />`,
     })
   } else {
     const importId = generateAssetImportId()
@@ -556,7 +557,7 @@ function handleImagesWithSize(node: Image, context: VisitorContext, type: 'asset
     replaceNode(
       context,
       createMdxNode(
-        `<Image src={${importId}} alt="${altText}" width="${imgWidth}" height="${imgHeight}"${imgStyle} />`,
+        `<Image src={${importId}} alt="${imgAltText}" width="${imgWidth}" height="${imgHeight}"${imgStyle} />`,
       ),
     )
   }
