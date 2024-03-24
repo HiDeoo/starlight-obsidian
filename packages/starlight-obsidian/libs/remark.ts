@@ -358,7 +358,7 @@ function handleBlockquotes(node: Blockquote, context: VisitorContext) {
     return SKIP
   }
 
-  const [firstLine, ...otherLines] = firstGrandChild.value.split('\n')
+  const [firstLine, ...otherLines] = firstGrandChild.value.split(/\r?\n/)
 
   if (!firstLine) {
     return SKIP
@@ -485,7 +485,7 @@ function getRelativeFilePath(file: VFile, relativePath: string) {
 function getAssetPath(file: VFile, relativePath: string) {
   ensureTransformContext(file)
 
-  return path.posix.join('../../..', path.relative(file.dirname, file.data.vault.path), 'assets', relativePath)
+  return path.posix.join('../../..', path.posix.relative(file.dirname, file.data.vault.path), 'assets', relativePath)
 }
 
 function getFilePathFromVaultFile(vaultFile: VaultFile, url: string) {

@@ -9,7 +9,7 @@ import yaml from 'yaml'
 import type { StarlightObsidianConfig } from '..'
 
 import { isDirectory, isFile } from './fs'
-import { getExtension, isAnchor, slugifyPath, stripExtension } from './path'
+import { getExtension, isAnchor, slashify, slugifyPath, stripExtension } from './path'
 import { throwUserError } from './plugin'
 import { isAssetFile } from './starlight'
 
@@ -56,7 +56,7 @@ export async function getVault(config: StarlightObsidianConfig): Promise<Vault> 
 
   return {
     options,
-    path: vaultPath,
+    path: slashify(vaultPath),
   }
 }
 
