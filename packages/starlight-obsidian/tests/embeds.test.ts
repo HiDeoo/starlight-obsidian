@@ -111,6 +111,8 @@ test('transforms external images with dimensions', async () => {
     <img src="https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg" alt="External image with a width" width="50" height="auto" />
 
     <img src="https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg" alt="External image with a width and a height" width="50" height="200" style="height: 200px !important;" />
+
+    <img src="https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg" alt="" width="100" height="auto" />
     "
   `)
 })
@@ -125,4 +127,5 @@ test('transforms internal images with dimensions', async () => {
   expect(result.content).toMatch(
     /^<Image src={\w+} alt="An image with a width and a height" width="100" height="200" style="height: 200px !important;" \/>$/m,
   )
+  expect(result.content).toMatch(/^<Image src={\w+} alt="" width="125" height="auto" \/>$/m)
 })
