@@ -37,3 +37,18 @@ export function slugifyPath(filePath: string) {
     })
     .join('/')
 }
+
+// https://github.com/sindresorhus/slash
+export function slashify(filePath: string) {
+  const isExtendedLengthPath = filePath.startsWith('\\\\?\\')
+
+  if (isExtendedLengthPath) {
+    return filePath
+  }
+
+  return filePath.replaceAll('\\', '/')
+}
+
+export function osPath(filePath: string) {
+  return filePath.replaceAll('/', path.sep)
+}

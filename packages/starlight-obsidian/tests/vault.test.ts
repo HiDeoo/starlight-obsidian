@@ -10,7 +10,7 @@ test('returns a vault with an absolute path', async () => {
   const vault = await getVault(getFixtureConfig('basics'))
 
   expect(path.isAbsolute(vault.path)).toBe(true)
-  expect(vault.path).toMatch(/fixtures\/basics$/)
+  expect(vault.path).toMatch(/fixtures[/\\]basics$/)
 })
 
 test('throws if the specified vault path is not a directory', async () => {

@@ -6,7 +6,7 @@ import { slug } from 'github-slugger'
 import type { StarlightObsidianConfig } from '..'
 import { transformMarkdownToString } from '../libs/markdown'
 import { createVaultFile } from '../libs/obsidian'
-import { stripExtension } from '../libs/path'
+import { slashify, stripExtension } from '../libs/path'
 import type { TransformContext } from '../libs/remark'
 
 export const linkSyntaxAndFormats = [
@@ -57,7 +57,7 @@ export async function transformFixtureMdFile(
   options: { context?: TransformContext; includeFrontmatter?: boolean } = {},
 ): ReturnType<typeof transformMarkdownToString> {
   const fixturePath = path.resolve(getFixturePath(fixtureName))
-  const fixtureFilePath = path.join(fixturePath, filePath)
+  const fixtureFilePath = slashify(path.join(fixturePath, filePath))
   const md = await getFixtureFile(fixtureName, filePath)
   const fileName = path.basename(filePath)
   const result = await transformMarkdownToString(fixtureFilePath, md, {
@@ -74,7 +74,10 @@ export async function transformFixtureMdFile(
       }),
     ],
     output: options.context?.output ?? 'notes',
-    vault: options.context?.vault ?? { options: { linkFormat: 'shortest', linkSyntax: 'wikilink' }, path: fixturePath },
+    vault: options.context?.vault ?? {
+      options: { linkFormat: 'shortest', linkSyntax: 'wikilink' },
+      path: slashify(fixturePath),
+    },
   })
 
   if (!options.includeFrontmatter) {
