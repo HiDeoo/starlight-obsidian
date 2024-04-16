@@ -15,3 +15,5 @@
 ![duplicate file name](duplicate%20file%20name.md)
 
 ![duplicate file name](nested%20folder/duplicate%20file%20name.md)
+
+![unique file name](unique%20file%20name.md)
