@@ -15,3 +15,5 @@
 ![[folder/duplicate file name|duplicate file name]]
 
 ![[folder/nested folder/duplicate file name|duplicate file name]]
+
+![[unique file name]]

@@ -15,3 +15,5 @@
 ![[../duplicate file name|duplicate file name]]
 
 ![[duplicate file name]]
+
+![[../unique file name|unique file name]]

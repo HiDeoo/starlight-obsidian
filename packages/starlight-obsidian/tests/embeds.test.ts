@@ -27,6 +27,12 @@ const expectedCustomFileMd = `<audio class="sl-obs-embed-audio" controls src="/n
 > ## test
 >
 > content in nested folder
+
+> <strong>unique file name</strong>
+>
+> ## test
+>
+> unique content
 `
 
 function getExpectedAssetMd(depth: number) {

@@ -595,8 +595,9 @@ function getMarkdownFileNode(file: VFile, fileUrl: string): RootContent {
     file.data.vault.options.linkFormat === 'relative' ? getRelativeFilePath(file, fileUrl) : fileUrl,
   )
   const url = path.posix.join(path.posix.sep, `${filePath}${fileExt}`)
-
-  const matchingFile = file.data.files.find((vaultFile) => vaultFile.path === url)
+  const matchingFile = file.data.files.find(
+    (vaultFile) => vaultFile.path === url || vaultFile.isEqualStem(filePath) || vaultFile.isEqualFileName(filePath),
+  )
 
   if (!matchingFile) {
     return { type: 'text', value: '' }
