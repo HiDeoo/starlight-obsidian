@@ -1,3 +1,4 @@
+import { fromMarkdown } from 'mdast-util-from-markdown'
 import { remark } from 'remark'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
@@ -23,8 +24,10 @@ export async function transformMarkdownToString(
   }
 }
 
-export function transformMarkdownToAST(filePath: string, markdown: string, context: TransformContext) {
-  return processor.parse(getVFile(filePath, markdown, context))
+export async function transformMarkdownToAST(filePath: string, markdown: string, context: TransformContext) {
+  const { content } = await transformMarkdownToString(filePath, markdown, context)
+
+  return fromMarkdown(content)
 }
 
 function getVFile(filePath: string, markdown: string, context: TransformContext) {

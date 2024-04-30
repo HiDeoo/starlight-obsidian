@@ -135,3 +135,36 @@ test('transforms internal images with dimensions', async () => {
   )
   expect(result.content).toMatch(/^<Image src={\w+} alt="" width="125" height="auto" \/>$/m)
 })
+
+test('applies transformers to embedded notes', async () => {
+  const fixtureName = 'basics'
+  const vault = await getVault(getFixtureConfig(fixtureName))
+  const paths = await getObsidianPaths(vault)
+  const files = getObsidianVaultFiles(vault, paths)
+  const options = {
+    context: { copyStarlightFrontmatter: true, files, output: 'notes', vault },
+    includeFrontmatter: true,
+  }
+
+  const result = await transformFixtureMdFile('basics', 'Note embeds.md', options)
+
+  expect(result.content).toMatchInlineSnapshot(`
+    "---
+    title: Note embeds
+    editUrl: false
+    ---
+
+    > <strong>Embeds</strong>
+    >
+    > ![An image.png](../../../assets/notes/an-image.png)
+    >
+    > <audio class="sl-obs-embed-audio" controls src="/notes/A sound.mp3"></audio>
+    >
+    > <video class="sl-obs-embed-video" controls src="/notes/A Video.webm"></video>
+    >
+    > <iframe class="sl-obs-embed-pdf" src="/notes/A PDF.pdf"></iframe>
+    >
+    > <iframe src="https://example.org/"></iframe>
+    "
+  `)
+})

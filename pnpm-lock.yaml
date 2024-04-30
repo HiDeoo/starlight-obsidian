@@ -77,6 +77,9 @@ importers:
       '@astrojs/markdown-remark':
         specifier: 4.2.1
         version: 4.2.1
+      decode-uri-component:
+        specifier: 0.4.1
+        version: 0.4.1
       github-slugger:
         specifier: 2.0.0
         version: 2.0.0
@@ -101,6 +104,9 @@ importers:
       mdast-util-find-and-replace:
         specifier: 3.0.1
         version: 3.0.1
+      mdast-util-from-markdown:
+        specifier: 2.0.0
+        version: 2.0.0
       mdast-util-to-hast:
         specifier: 13.1.0
         version: 13.1.0
@@ -2695,6 +2701,11 @@ packages:
     resolution: {integrity: sha512-O8x12RzrUF8xyVcY0KJowWsmaJxQbmy0/EtnNtHRpsOcT7dFk5W598coHqBVpmWo1oQQfsCqfCmkZN5DJrZVdg==}
     dependencies:
       character-entities: 2.0.2
+
+  /decode-uri-component@0.4.1:
+    resolution: {integrity: sha512-+8VxcR21HhTy8nOt6jf20w0c9CADrw1O8d+VZ/YzzCt4bJ3uBjw+D1q2osAB8RnpwwaeYBxy0HyKQxD5JBMuuQ==}
+    engines: {node: '>=14.16'}
+    dev: false
 
   /decompress-response@6.0.0:
     resolution: {integrity: sha512-aW35yZM6Bb/4oJlZncMH2LCoZtJXTRxES17vE3hoRiowU2kWHaJKFkSBDnDR+cm9J+9QhXmREyIfv0pji9ejCQ==}
