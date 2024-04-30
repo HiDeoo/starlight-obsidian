@@ -33,6 +33,7 @@
     "html-escaper": "3.0.3",
     "is-absolute-url": "4.0.1",
     "mdast-util-find-and-replace": "3.0.1",
+    "mdast-util-from-markdown": "2.0.0",
     "mdast-util-to-hast": "13.1.0",
     "nanoid": "5.0.4",
     "rehype": "13.0.1",

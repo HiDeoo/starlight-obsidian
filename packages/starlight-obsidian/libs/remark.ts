@@ -53,6 +53,7 @@ export function remarkStarlightObsidian() {
 
     handleReplacements(tree, file)
     await handleMermaid(tree, file)
+    await handleImagesAndNoteEmbeds(tree, file)
 
     visit(tree, (node, index, parent) => {
       const context: VisitorContext = { file, index, parent }
@@ -65,9 +66,6 @@ export function remarkStarlightObsidian() {
         case 'link': {
           return handleLinks(node, context)
         }
-        case 'image': {
-          return handleImages(node, context)
-        }
         case 'blockquote': {
           return handleBlockquotes(node, context)
         }
@@ -77,7 +75,10 @@ export function remarkStarlightObsidian() {
       }
     })
 
-    handleFrontmatter(tree, file, obsidianFrontmatter)
+    if (!file.data.embedded) {
+      handleFrontmatter(tree, file, obsidianFrontmatter)
+    }
+
     handleImports(tree, file)
   }
 }
@@ -275,7 +276,7 @@ function handleLinks(node: Link, { file }: VisitorContext) {
   return SKIP
 }
 
-function handleImages(node: Image, context: VisitorContext) {
+async function handleImages(node: Image, context: VisitorContext) {
   const { file } = context
 
   ensureTransformContext(file)
@@ -299,7 +300,7 @@ function handleImages(node: Image, context: VisitorContext) {
   }
 
   if (isMarkdownFile(node.url, file)) {
-    replaceNode(context, getMarkdownFileNode(file, node.url))
+    replaceNode(context, await getMarkdownFileNode(file, node.url))
     return SKIP
   }
 
@@ -415,6 +416,21 @@ async function handleMermaid(tree: Root, file: VFile) {
       const processedHtml = await transformHtmlToString(html)
 
       replaceNode(context, { type: 'html', value: processedHtml })
+    }),
+  )
+}
+
+async function handleImagesAndNoteEmbeds(tree: Root, file: VFile) {
+  const imageNodes: [node: Image, context: VisitorContext][] = []
+
+  visit(tree, 'image', (node, index, parent) => {
+    imageNodes.push([node, { file, index, parent }])
+    return SKIP
+  })
+
+  await Promise.all(
+    imageNodes.map(async ([node, context]) => {
+      await handleImages(node, context)
     }),
   )
 }
@@ -587,7 +603,7 @@ function getCustomFileNode(filePath: string): RootContent {
   }
 }
 
-function getMarkdownFileNode(file: VFile, fileUrl: string): RootContent {
+async function getMarkdownFileNode(file: VFile, fileUrl: string): Promise<RootContent> {
   ensureTransformContext(file)
 
   const fileExt = file.data.vault.options.linkSyntax === 'wikilink' ? '.md' : ''
@@ -604,7 +620,7 @@ function getMarkdownFileNode(file: VFile, fileUrl: string): RootContent {
   }
 
   const content = fs.readFileSync(matchingFile.fsPath, 'utf8')
-  const root = transformMarkdownToAST(matchingFile.fsPath, content, file.data)
+  const root = await transformMarkdownToAST(matchingFile.fsPath, content, { ...file.data, embedded: true })
 
   return {
     type: 'blockquote',
@@ -644,6 +660,7 @@ export interface TransformContext {
   aliases?: string[]
   assetImports?: [id: string, path: string][]
   copyStarlightFrontmatter?: boolean
+  embedded?: boolean
   files: VaultFile[]
   includeKatexStyles?: boolean
   includeTwitterComponent?: boolean
