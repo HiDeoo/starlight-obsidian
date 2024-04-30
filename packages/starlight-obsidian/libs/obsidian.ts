@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { z } from 'astro/zod'
+import decodeUriComponent from 'decode-uri-component'
 import { slug } from 'github-slugger'
 import { globby } from 'globby'
 import yaml from 'yaml'
@@ -108,14 +109,14 @@ export function slugifyObsidianPath(obsidianPath: string) {
       const isLastSegment = index === segments.length - 1
 
       if (!isLastSegment) {
-        return slug(decodeURIComponent(segment))
+        return slug(decodeUriComponent(segment))
       } else if (isObsidianFile(segment) && !isAssetFile(segment)) {
-        return decodeURIComponent(segment)
+        return decodeUriComponent(segment)
       } else if (isAssetFile(segment)) {
-        return `${slug(decodeURIComponent(stripExtension(segment)))}${getExtension(segment)}`
+        return `${slug(decodeUriComponent(stripExtension(segment)))}${getExtension(segment)}`
       }
 
-      return slug(decodeURIComponent(stripExtension(segment)))
+      return slug(decodeUriComponent(stripExtension(segment)))
     })
     .join('/')
 }

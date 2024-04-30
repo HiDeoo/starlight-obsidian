@@ -24,6 +24,7 @@
     "@astro-community/astro-embed-twitter": "0.5.3",
     "@astro-community/astro-embed-youtube": "0.4.4",
     "@astrojs/markdown-remark": "4.2.1",
+    "decode-uri-component": "0.4.1",
     "github-slugger": "2.0.0",
     "globby": "14.0.0",
     "hast-util-to-html": "9.0.0",
