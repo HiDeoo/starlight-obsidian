@@ -14,14 +14,14 @@ test('returns a vault with an absolute path', async () => {
 })
 
 test('throws if the specified vault path is not a directory', async () => {
-  await expect(getVault(getFixtureConfig('unknown'))).rejects.toThrowErrorMatchingInlineSnapshot(
-    `[AstroUserError: The provided vault path is not a directory.]`,
+  await expect(getVault(getFixtureConfig('unknown'))).rejects.toThrowError(
+    /The provided vault path is not a directory.\n> Provided path: /,
   )
 })
 
 test('throws if the specified vault path is not a valid vault directory', async () => {
-  await expect(getVault(getFixtureConfig('not-a-vault'))).rejects.toThrowErrorMatchingInlineSnapshot(
-    `[AstroUserError: The provided vault path is not a valid Obsidian vault directory.]`,
+  await expect(getVault(getFixtureConfig('not-a-vault'))).rejects.toThrowError(
+    /The provided vault path is not a valid Obsidian vault directory and does not include an '.obsidian\/app\.json' file\.\n> Provided path: /,
   )
 })
 
