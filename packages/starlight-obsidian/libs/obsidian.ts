@@ -46,11 +46,13 @@ export async function getVault(config: StarlightObsidianConfig): Promise<Vault> 
   const vaultPath = path.resolve(config.vault)
 
   if (!(await isDirectory(vaultPath))) {
-    throwUserError('The provided vault path is not a directory.')
+    throwUserError(`The provided vault path is not a directory.\n> Provided path: ${vaultPath}`)
   }
 
   if (!(await isVaultDirectory(config, vaultPath))) {
-    throwUserError('The provided vault path is not a valid Obsidian vault directory.')
+    throwUserError(
+      `The provided vault path is not a valid Obsidian vault directory and does not include an '.obsidian/app.json' file.\n> Provided path: ${vaultPath}`,
+    )
   }
 
   const options = await getVaultOptions(config, vaultPath)
