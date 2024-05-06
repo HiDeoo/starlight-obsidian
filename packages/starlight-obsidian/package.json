@@ -1,6 +1,6 @@
 {
   "name": "starlight-obsidian",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "license": "MIT",
   "description": "Starlight plugin to publish Obsidian vaults.",
   "author": "HiDeoo <github@hideoo.dev> (https://hideoo.dev)",
