@@ -1,3 +1,8 @@
+---
+foo: bar
+baz: true
+---
+
 ![[An image.png]]
 
 ![[A sound.mp3]]
