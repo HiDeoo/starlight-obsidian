@@ -75,10 +75,7 @@ export function remarkStarlightObsidian() {
       }
     })
 
-    if (!file.data.embedded) {
-      handleFrontmatter(tree, file, obsidianFrontmatter)
-    }
-
+    handleFrontmatter(tree, file, obsidianFrontmatter)
     handleImports(tree, file)
   }
 }
@@ -101,6 +98,21 @@ function getObsidianFrontmatter(tree: Root) {
 }
 
 function handleFrontmatter(tree: Root, file: VFile, obsidianFrontmatter?: ObsidianFrontmatter) {
+  // Remove the existing frontmatter, if any, for embedded notes.
+  if (file.data.embedded) {
+    // The frontmatter is always at the root of the tree.
+    for (const [index, node] of tree.children.entries()) {
+      if (node.type !== 'yaml') {
+        continue
+      }
+
+      tree.children.splice(index, 1)
+      break
+    }
+
+    return
+  }
+
   let hasFrontmatter = false
 
   // The frontmatter is always at the root of the tree.
