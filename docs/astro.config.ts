@@ -34,6 +34,7 @@ export default defineConfig({
             { label: 'Project Structure', link: '/guides/project-structure/' },
             { label: 'Ignoring Content', link: '/guides/ignoring-content/' },
             { label: 'Features', link: '/guides/features/' },
+            { label: 'Deployment', link: '/guides/deployment/' },
           ],
         },
         obsidianSidebarGroup,
