@@ -58,7 +58,9 @@ The name of the output directory containing the generated Obsidian vault pages r
 Whether the Starlight Obsidian plugin should skip the generation of the Obsidian vault pages.
 
 This is useful to disable generating the Obsidian vault pages when deploying on platforms that do not have access to the Obsidian vault.
-This will require you to build and commit the pages locally ahead of time.
+This will require you to [build](https://docs.astro.build/en/reference/cli-reference/#astro-build) and commit vault pages before deploying your site.
+
+Read more about deploying your site in the [“Deployment”](/guides/deployment/) guide.
 
 ### `sidebar`
 
