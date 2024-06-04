@@ -23,16 +23,18 @@ const obsidianFrontmatterSchema = z.object({
   aliases: z
     .array(z.string())
     .optional()
+    .nullable()
     .transform((aliases) => aliases?.map((alias) => slug(alias))),
-  cover: z.string().optional(),
-  description: z.string().optional(),
-  image: z.string().optional(),
-  permalink: z.string().optional(),
+  cover: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+  image: z.string().optional().nullable(),
+  permalink: z.string().optional().nullable(),
   publish: z
     .union([z.boolean(), z.literal('true'), z.literal('false')])
     .optional()
+    .nullable()
     .transform((publish) => publish === undefined || publish === 'true' || publish === true),
-  tags: z.array(z.string()).optional(),
+  tags: z.array(z.string()).optional().nullable(),
 })
 
 const imageFileFormats = new Set(['.avif', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
