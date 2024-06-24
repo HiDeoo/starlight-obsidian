@@ -49,12 +49,12 @@
     "yaml": "2.3.4"
   },
   "devDependencies": {
-    "@astrojs/starlight": "0.16.0",
+    "@astrojs/starlight": "0.24.4",
     "@types/hast": "3.0.3",
     "@types/html-escaper": "3.0.2",
     "@types/mdast": "4.0.3",
     "@types/unist": "3.0.2",
-    "astro": "4.2.1",
+    "astro": "4.11.1",
     "typescript": "5.3.3",
     "vitest": "1.2.1"
   },
