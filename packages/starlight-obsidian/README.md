@@ -15,17 +15,13 @@
 
 ## Getting Started
 
-Want to get started immediately? Check out the [getting started guide](https://starlight-obsidian.vercel.app/getting-started/).
+Want to get started immediately? Check out the [getting started guide](https://starlight-obsidian.vercel.app/getting-started/) or check out the [demo](https://starlight-obsidian.vercel.app/demo/hello/) to see the plugin in action.
 
 ## Features
 
 A [Starlight](https://starlight.astro.build) plugin to publish [Obsidian](https://obsidian.md) vaults to a Starlight website.
 
-Check out the [demo](https://starlight-obsidian.vercel.app/demo/hello/) for a preview of the generated pages.
-
-> **Warning**
->
-> The Starlight Obsidian plugin is in early development. If you find something that's not working, [open an issue](https://github.com/HiDeoo/starlight-obsidian/issues/new/choose) on GitHub.
+> [!NOTE]
 >
 > You should also always check that the rendered pages are correct and only include the content you want to publish before publishing your website.
 

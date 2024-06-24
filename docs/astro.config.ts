@@ -37,6 +37,10 @@ export default defineConfig({
             { label: 'Deployment', link: '/guides/deployment/' },
           ],
         },
+        {
+          label: 'Resources',
+          items: [{ label: 'Plugins and Tools', link: '/resources/starlight/' }],
+        },
         obsidianSidebarGroup,
       ],
       social: {
