@@ -497,7 +497,7 @@ function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFron
     frontmatter.tags = obsidianFrontmatter.tags
   }
 
-  return yaml.stringify(frontmatter).trim()
+  return yaml.stringify(frontmatter, { version: '1.1' }).trim()
 }
 
 function getFileUrl(output: StarlightObsidianConfig['output'], filePath: string, anchor?: string) {

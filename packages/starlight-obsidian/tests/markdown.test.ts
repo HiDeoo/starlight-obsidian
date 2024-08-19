@@ -39,6 +39,10 @@ test('sets the proper title', async () => {
   result = await transformFixtureMdFile('basics', 'Basic syntax (comments).md', { includeFrontmatter: true })
 
   expect(result.content).toMatch(/^title: Basic syntax \(comments\)$/m)
+
+  result = await transformFixtureMdFile('basics', '2024-08-19.md', { includeFrontmatter: true })
+
+  expect(result.content).toMatch(/^title: "2024-08-19"$/m)
 })
 
 test('disables edit links', async () => {
