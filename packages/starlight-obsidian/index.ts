@@ -124,6 +124,7 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
         }
 
         const updatedStarlightConfig: Partial<StarlightUserConfig> = {
+          components: starlightConfig.components,
           customCss,
           sidebar: getSidebarFromConfig(config, starlightConfig.sidebar),
         }
