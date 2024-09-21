@@ -67,6 +67,7 @@ test('includes known Starlight frontmatter fields if the option is enabled', asy
     editUrl: false
     slug: custom-starlight-slug
     tableOfContents: false
+    lastUpdated: 2024-09-21
     description: This is a custom description
     ---
 
