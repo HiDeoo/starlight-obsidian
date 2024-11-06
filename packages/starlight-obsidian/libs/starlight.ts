@@ -62,6 +62,7 @@ const starlightFrontmatterKeys = [
   'prev',
   'next',
   'pagefind',
+  'draft',
   'sidebar',
 ]
 
