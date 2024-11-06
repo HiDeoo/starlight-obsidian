@@ -22,16 +22,24 @@ const starlightObsidianConfigSchema = z.object({
    */
   configFolder: z.string().startsWith('.').default('.obsidian'),
   /**
-   * Whether the Starlight Obsidian plugin should copy known Starlight frontmatter fields from Obsidian notes to the
-   * generated pages.
+   * Defines which frontmatter fields the Starlight Obsidian plugin should copy from Obsidian notes to the generated
+   * pages.
    *
-   * This is useful if you want to customize the generated Starlight pages from Obsidian. Note that the values are not
-   * validated and are copied as-is so it's up to you to ensure they are compatible with Starlight.
+   * By default (`none`), all unsupported properties are ignored and not exported. Set this option to `starlight` to
+   * copy all known Starlight frontmatter fields from an Obsidian note to the associated generated page or to `all` to
+   * copy all frontmatter fields.
    *
-   * @default false
+   * This option is useful if you want to customize the generated Starlight pages from Obsidian. Note that the values
+   * are not validated and are copied as-is so it's up to you to ensure they are compatible with Starlight.
+   *
+   * @default 'none'
    * @see https://starlight.astro.build/reference/frontmatter/
    */
-  copyStarlightFrontmatter: z.boolean().default(false),
+  copyFrontmatter: z.union([z.literal('none'), z.literal('starlight'), z.literal('all')]).default('none'),
+  /**
+   * @deprecated Use the {@link StarlightObsidianUserConfig.copyFrontmatter} option instead.
+   */
+  copyStarlightFrontmatter: z.never().optional(),
   /**
    * A list of glob patterns to ignore when generating the Obsidian vault pages.
    * This option can be used to ignore files or folders.
@@ -102,6 +110,17 @@ export default function starlightObsidianPlugin(userConfig: StarlightObsidianUse
   const parsedConfig = starlightObsidianConfigSchema.safeParse(userConfig)
 
   if (!parsedConfig.success) {
+    const isUsingDeprecatedCopyStarlightFrontmatter = parsedConfig.error.issues.some(
+      (issue) => issue.path.join('.') === 'copyStarlightFrontmatter',
+    )
+
+    if (isUsingDeprecatedCopyStarlightFrontmatter) {
+      throwUserError(
+        'The `copyStarlightFrontmatter` option has been deprecated in favor of the `copyFrontmatter` option.',
+        'For more information see https://starlight-obsidian.vercel.app/configuration/#copyfrontmatter',
+      )
+    }
+
     throwUserError(
       `The provided plugin configuration is invalid.\n${parsedConfig.error.issues.map((issue) => issue.message).join('\n')}`,
     )

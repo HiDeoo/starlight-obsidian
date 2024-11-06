@@ -82,7 +82,7 @@ Some features may never be supported due to various reasons, e.g. accessibility 
 ## Properties
 
 By deault, all unsupported properties are ignored and not exported.
-This behavior can be changed by setting the [`copyStarlightFrontmatter`](/configuration/#copystarlightfrontmatter) option to `true` to include all known [Starlight frontmatter fields](https://starlight.astro.build/reference/frontmatter/).
+This behavior can be changed by setting the [`copyFrontmatter`](/configuration/#copyfrontmatter) option to `starlight` to include all known [Starlight frontmatter fields](https://starlight.astro.build/reference/frontmatter/) or `all` to include all frontmatter fields.
 
 | Name                                                                                              | Supported |
 | :------------------------------------------------------------------------------------------------ | :-------: |

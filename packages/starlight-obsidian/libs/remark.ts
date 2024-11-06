@@ -453,9 +453,14 @@ function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFron
     editUrl: false,
   }
 
-  if (obsidianFrontmatter && file.data.copyStarlightFrontmatter) {
-    const starlightLikeFrontmatter = getStarlightLikeFrontmatter(obsidianFrontmatter.raw)
-    frontmatter = { ...frontmatter, ...starlightLikeFrontmatter }
+  if (obsidianFrontmatter && (file.data.copyFrontmatter === 'starlight' || file.data.copyFrontmatter === 'all')) {
+    if (file.data.copyFrontmatter === 'starlight') {
+      const starlightLikeFrontmatter = getStarlightLikeFrontmatter(obsidianFrontmatter.raw)
+      frontmatter = { ...frontmatter, ...starlightLikeFrontmatter }
+    } else {
+      const { cover, image, description, permalink, tags, ...restFrontmatter } = obsidianFrontmatter.raw
+      frontmatter = { ...frontmatter, ...restFrontmatter }
+    }
   }
 
   if (file.data.includeKatexStyles) {
@@ -479,10 +484,13 @@ function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFron
       frontmatter.head = []
     }
 
-    frontmatter.head.push(
-      { tag: 'meta', attrs: { property: 'og:image', content: ogImage } },
-      { tag: 'meta', attrs: { name: 'twitter:image', content: ogImage } },
-    )
+    if (!frontmatter.head.some((tag) => tag.attrs['property'] === 'og:image')) {
+      frontmatter.head.push({ tag: 'meta', attrs: { property: 'og:image', content: ogImage } })
+    }
+
+    if (!frontmatter.head.some((tag) => tag.attrs['property'] === 'twitter:image')) {
+      frontmatter.head.push({ tag: 'meta', attrs: { name: 'twitter:image', content: ogImage } })
+    }
   }
 
   if (obsidianFrontmatter?.description && obsidianFrontmatter.description.length > 0) {
@@ -674,7 +682,7 @@ function ensureTransformContext(file: VFile): asserts file is VFile & { data: Tr
 export interface TransformContext {
   aliases?: string[]
   assetImports?: [id: string, path: string][]
-  copyStarlightFrontmatter?: boolean
+  copyFrontmatter: StarlightObsidianConfig['copyFrontmatter']
   embedded?: boolean
   files: VaultFile[]
   includeKatexStyles?: boolean

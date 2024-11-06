@@ -56,7 +56,7 @@ test.each(linkSyntaxAndFormats)('transforms embed URLs in %s with the %s format'
   const vault = await getVault(getFixtureConfig(fixtureName))
   const paths = await getObsidianPaths(vault)
   const files = getObsidianVaultFiles(vault, paths)
-  const options = { context: { files, output: 'notes', vault } }
+  const options = { context: { copyFrontmatter: 'none', files, output: 'notes', vault } as const }
 
   let result = await transformFixtureMdFile(fixtureName, 'root embeds.md', options)
 
@@ -142,7 +142,7 @@ test('applies transformers to embedded notes', async () => {
   const paths = await getObsidianPaths(vault)
   const files = getObsidianVaultFiles(vault, paths)
   const options = {
-    context: { copyStarlightFrontmatter: true, files, output: 'notes', vault },
+    context: { copyFrontmatter: 'starlight', files, output: 'notes', vault } as const,
     includeFrontmatter: true,
   }
 

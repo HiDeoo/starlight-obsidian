@@ -27,7 +27,7 @@ export function getFixtureConfig(
   return {
     autoLinkHeadings: false,
     configFolder: '.obsidian',
-    copyStarlightFrontmatter: false,
+    copyFrontmatter: 'none',
     ignore: [],
     skipGeneration: false,
     tableOfContentsOverview: 'default',
@@ -61,7 +61,7 @@ export async function transformFixtureMdFile(
   const md = await getFixtureFile(fixtureName, filePath)
   const fileName = path.basename(filePath)
   const result = await transformMarkdownToString(fixtureFilePath, md, {
-    copyStarlightFrontmatter: options.context?.copyStarlightFrontmatter ?? false,
+    copyFrontmatter: options.context?.copyFrontmatter ?? 'none',
     files: options.context?.files ?? [
       createVaultFile({
         fileName,
