@@ -62,6 +62,7 @@ const starlightFrontmatterKeys = [
   'prev',
   'next',
   'pagefind',
+  'draft',
   'sidebar',
 ]
 
@@ -181,7 +182,7 @@ async function addContent(
       type,
     } = await transformMarkdownToString(vaultFile.fsPath, obsidianContent, {
       files: vaultFiles,
-      copyStarlightFrontmatter: config.copyStarlightFrontmatter,
+      copyFrontmatter: config.copyFrontmatter,
       output: config.output,
       vault,
     })

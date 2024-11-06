@@ -55,7 +55,7 @@ test('includes known Starlight frontmatter fields if the option is enabled', asy
   const paths = await getObsidianPaths(vault)
   const files = getObsidianVaultFiles(vault, paths)
   const options = {
-    context: { copyStarlightFrontmatter: true, files, output: 'notes', vault },
+    context: { copyFrontmatter: 'starlight', files, output: 'notes', vault } as const,
     includeFrontmatter: true,
   }
 
@@ -66,8 +66,54 @@ test('includes known Starlight frontmatter fields if the option is enabled', asy
     title: Custom Starlight Title
     editUrl: false
     slug: custom-starlight-slug
+    head:
+      - tag: meta
+        attrs:
+          property: og:image
+          content: https://example.com/og-image.png
+      - tag: meta
+        attrs:
+          name: twitter:image
+          content: https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg
     tableOfContents: false
     lastUpdated: 2024-09-21
+    description: This is a custom description
+    ---
+
+    Test
+    "
+  `)
+})
+
+test('includes all frontmatter fields if the option is enabled', async () => {
+  const fixtureName = 'basics'
+  const vault = await getVault(getFixtureConfig(fixtureName))
+  const paths = await getObsidianPaths(vault)
+  const files = getObsidianVaultFiles(vault, paths)
+  const options = {
+    context: { copyFrontmatter: 'all', files, output: 'notes', vault } as const,
+    includeFrontmatter: true,
+  }
+
+  const result = await transformFixtureMdFile(fixtureName, 'Starlight properties.md', options)
+
+  expect(result.content).toMatchInlineSnapshot(`
+    "---
+    title: Custom Starlight Title
+    editUrl: false
+    slug: custom-starlight-slug
+    unknown: this is a custom property
+    tableOfContents: false
+    lastUpdated: 2024-09-21
+    head:
+      - tag: meta
+        attrs:
+          property: og:image
+          content: https://example.com/og-image.png
+      - tag: meta
+        attrs:
+          name: twitter:image
+          content: https://history-computer.com/ModernComputer/Basis/images/Engelbart.jpg
     description: This is a custom description
     ---
 
