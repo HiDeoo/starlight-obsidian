@@ -8,15 +8,13 @@
   "scripts": {
     "test": "pnpm --stream -r test",
     "lint": "pnpm -r lint",
-    "prepare": "husky install"
+    "format": "pnpm -r format"
   },
   "devDependencies": {
     "@hideoo/eslint-config": "2.0.2",
     "@hideoo/prettier-config": "2.0.0",
     "@hideoo/tsconfig": "2.0.1",
     "eslint": "8.56.0",
-    "husky": "8.0.3",
-    "lint-staged": "15.2.0",
     "prettier": "3.2.2",
     "prettier-plugin-astro": "0.13.0",
     "typescript": "5.3.3"
@@ -40,9 +38,5 @@
     "type": "git",
     "url": "https://github.com/HiDeoo/starlight-obsidian.git"
   },
-  "bugs": "https://github.com/HiDeoo/starlight-obsidian/issues",
-  "lint-staged": {
-    "**/*": "prettier -w -u --cache",
-    "**/*.{js,jsx,ts,tsx,cjs,mjs}": "eslint --cache --max-warnings=0"
-  }
+  "bugs": "https://github.com/HiDeoo/starlight-obsidian/issues"
 }
