@@ -44,6 +44,7 @@ export default defineConfig({
         obsidianSidebarGroup,
       ],
       social: {
+        blueSky: 'https://bsky.app/profile/hideoo.dev',
         github: 'https://github.com/HiDeoo/starlight-obsidian',
       },
       title: 'Starlight Obsidian',
