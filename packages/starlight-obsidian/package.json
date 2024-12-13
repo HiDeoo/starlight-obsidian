@@ -54,6 +54,7 @@
     "@types/hast": "3.0.3",
     "@types/html-escaper": "3.0.2",
     "@types/mdast": "4.0.3",
+    "@types/node": "18.19.68",
     "@types/unist": "3.0.2",
     "astro": "4.11.1",
     "typescript": "5.3.3",
@@ -68,7 +69,8 @@
   },
   "packageManager": "pnpm@8.14.1",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "sideEffects": false,
   "keywords": [
