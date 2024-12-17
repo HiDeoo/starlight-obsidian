@@ -18,54 +18,50 @@
   },
   "scripts": {
     "test": "vitest",
-    "lint": "eslint . --cache --max-warnings=0",
-    "format": "prettier -w --cache --ignore-unknown ."
+    "lint": "eslint . --cache --max-warnings=0"
   },
   "dependencies": {
-    "@astro-community/astro-embed-twitter": "0.5.3",
-    "@astro-community/astro-embed-youtube": "0.4.4",
-    "@astrojs/markdown-remark": "4.2.1",
-    "decode-uri-component": "0.4.1",
-    "github-slugger": "2.0.0",
-    "globby": "14.0.0",
-    "hast-util-to-html": "9.0.0",
-    "hast-util-to-string": "3.0.0",
-    "hastscript": "9.0.0",
-    "html-escaper": "3.0.3",
-    "is-absolute-url": "4.0.1",
-    "mdast-util-find-and-replace": "3.0.1",
-    "mdast-util-from-markdown": "2.0.0",
-    "mdast-util-to-hast": "13.1.0",
-    "nanoid": "5.0.4",
-    "rehype": "13.0.1",
-    "rehype-autolink-headings": "7.1.0",
-    "rehype-katex": "7.0.0",
-    "rehype-mermaid": "2.1.0",
-    "remark": "15.0.1",
-    "remark-frontmatter": "5.0.0",
-    "remark-gfm": "4.0.0",
-    "remark-math": "6.0.0",
-    "unist-util-visit": "5.0.0",
-    "vfile": "6.0.1",
-    "yaml": "2.3.4"
+    "@astro-community/astro-embed-twitter": "^0.5.8",
+    "@astro-community/astro-embed-youtube": "^0.5.6",
+    "@astrojs/markdown-remark": "^6.0.0",
+    "decode-uri-component": "^0.4.1",
+    "github-slugger": "^2.0.0",
+    "globby": "^14.0.2",
+    "hast-util-to-html": "^9.0.4",
+    "hast-util-to-string": "^3.0.1",
+    "hastscript": "^9.0.0",
+    "html-escaper": "^3.0.3",
+    "is-absolute-url": "^4.0.1",
+    "mdast-util-find-and-replace": "^3.0.1",
+    "mdast-util-from-markdown": "^2.0.2",
+    "mdast-util-to-hast": "^13.2.0",
+    "nanoid": "^5.0.9",
+    "rehype": "^13.0.2",
+    "rehype-autolink-headings": "^7.1.0",
+    "rehype-katex": "^7.0.1",
+    "rehype-mermaid": "^2.1.0",
+    "remark": "^15.0.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.0",
+    "remark-math": "^6.0.0",
+    "unist-util-visit": "^5.0.0",
+    "vfile": "^6.0.3",
+    "yaml": "^2.6.1"
   },
   "devDependencies": {
-    "@astrojs/starlight": "0.24.4",
-    "@types/hast": "3.0.3",
-    "@types/html-escaper": "3.0.2",
-    "@types/mdast": "4.0.3",
-    "@types/node": "18.19.68",
-    "@types/unist": "3.0.2",
-    "astro": "4.11.1",
-    "typescript": "5.3.3",
-    "vitest": "1.2.1"
+    "@types/hast": "^3.0.4",
+    "@types/html-escaper": "^3.0.2",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^18.19.68",
+    "@types/unist": "^3.0.3",
+    "typescript": "^5.7.2",
+    "vitest": "2.1.6"
   },
   "peerDependencies": {
-    "@astrojs/starlight": ">=0.15.0",
-    "astro": ">=4.0.0"
+    "@astrojs/starlight": ">=0.30.0"
   },
   "engines": {
-    "node": ">=18.14.1"
+    "node": ">=18.17.1"
   },
   "packageManager": "pnpm@8.14.1",
   "publishConfig": {
@@ -84,7 +80,8 @@
   "homepage": "https://github.com/HiDeoo/starlight-obsidian",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HiDeoo/starlight-obsidian.git"
+    "url": "https://github.com/HiDeoo/starlight-obsidian.git",
+    "directory": "packages/starlight-obsidian"
   },
   "bugs": "https://github.com/HiDeoo/starlight-obsidian/issues"
 }

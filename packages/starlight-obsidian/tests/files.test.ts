@@ -102,8 +102,8 @@ Test`)
 
   const redirect = /<meta http-equiv="refresh" content="0;url=\/notes\/folder\/foo">/
 
-  expect(writeFileSpy.mock.calls.at(1)).toMatch(redirect)
-  expect(writeFileSpy.mock.calls.at(2)).toMatch(redirect)
+  expect(writeFileSpy.mock.calls.at(1)?.[1]).toMatch(redirect)
+  expect(writeFileSpy.mock.calls.at(2)?.[1]).toMatch(redirect)
 })
 
 test("skips files with the `publish` property set to `false` or `'false'`", async () => {
