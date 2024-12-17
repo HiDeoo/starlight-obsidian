@@ -7,8 +7,11 @@
 .vscode-test-web
 build
 coverage
+docs/src/content/docs/demo
 dist
 dist-ssr
+example/src/assets
+example/src/content/docs/notes
 fixtures/**/*.json
 out
 pnpm-lock.yaml

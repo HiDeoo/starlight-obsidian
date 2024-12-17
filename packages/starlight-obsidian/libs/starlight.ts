@@ -280,7 +280,7 @@ function throwVaultFileError(error: unknown, vaultFile: VaultFile): never {
 }
 
 function isSidebarGroup(item: SidebarGroup): item is SidebarManualGroup {
-  return 'items' in item
+  return typeof item === 'object' && 'items' in item
 }
 
 interface OutputPaths {

@@ -377,7 +377,7 @@ function handleBlockquotes(node: Blockquote, context: VisitorContext) {
     return SKIP
   }
 
-  const match = firstLine.match(calloutRegex)
+  const match = calloutRegex.exec(firstLine)
 
   const { title, type } = match?.groups ?? {}
 
@@ -566,7 +566,7 @@ function handleImagesWithSize(node: Image, context: VisitorContext, type: 'asset
     return
   }
 
-  const match = node.alt.match(imageSizeRegex)
+  const match = imageSizeRegex.exec(node.alt)
   const { altText, width, widthOnly, height } = match?.groups ?? {}
 
   if (widthOnly === undefined && width === undefined) {

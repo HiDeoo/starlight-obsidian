@@ -224,8 +224,8 @@ interface BaseVaultFile {
 }
 
 export interface VaultFile extends BaseVaultFile {
-  isEqualFileName(otherFileName: string): boolean
-  isEqualStem(otherStem: string): boolean
+  isEqualFileName: (otherFileName: string) => boolean
+  isEqualStem: (otherStem: string) => boolean
 }
 
 export type ObsidianFrontmatter = z.output<typeof obsidianFrontmatterSchema> & {

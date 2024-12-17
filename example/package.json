@@ -9,17 +9,16 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "eslint . --cache --max-warnings=0",
-    "format": "prettier -w --cache --ignore-unknown ."
+    "lint": "eslint . --cache --max-warnings=0"
   },
   "dependencies": {
-    "@astrojs/starlight": "0.24.4",
-    "astro": "4.11.1",
-    "sharp": "0.33.2",
+    "@astrojs/starlight": "^0.30.2",
+    "astro": "^5.0.9",
+    "sharp": "^0.33.5",
     "starlight-obsidian": "workspace:*"
   },
   "engines": {
-    "node": ">=18.14.1"
+    "node": ">=18.17.1"
   },
   "packageManager": "pnpm@8.14.1",
   "private": true,
@@ -35,7 +34,8 @@
   "homepage": "https://github.com/HiDeoo/starlight-obsidian",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HiDeoo/starlight-obsidian.git"
+    "url": "https://github.com/HiDeoo/starlight-obsidian.git",
+    "directory": "example"
   },
   "bugs": "https://github.com/HiDeoo/starlight-obsidian/issues"
 }

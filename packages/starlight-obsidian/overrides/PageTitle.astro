@@ -6,6 +6,7 @@ import Tags from '../components/Tags.astro'
 
 const { entry } = Astro.props
 
+// @ts-expect-error - This plugin does not extend Starlight's schema so tags are unknown.
 const tags = entry['data']['tags']
 const showTags = tags !== undefined && tags.length > 0
 ---

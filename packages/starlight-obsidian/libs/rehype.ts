@@ -82,7 +82,7 @@ function isNodeWithValue(node: ElementContent | undefined): node is NodeWithValu
 }
 
 function getBlockIdentifer(node: NodeWithValue): { length: number; name: string } | undefined {
-  const match = node.value.match(blockIdentifierRegex)
+  const match = blockIdentifierRegex.exec(node.value)
   const identifier = match?.groups?.['identifier']
   const name = match?.groups?.['name']
 

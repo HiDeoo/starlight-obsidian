@@ -114,6 +114,7 @@ A named footnote[^note].
 test
 
 [^1]: This is the referenced text.
+
 [^2]:
     Add 2 spaces at the start of each new line.
     This lets you write footnotes that span multiple lines.
