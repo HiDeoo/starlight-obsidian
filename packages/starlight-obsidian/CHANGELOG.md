@@ -1,5 +1,11 @@
 # starlight-obsidian
 
+## 0.7.0
+
+### Minor Changes
+
+- [#37](https://github.com/HiDeoo/starlight-obsidian/pull/37) [`96f7cef`](https://github.com/HiDeoo/starlight-obsidian/commit/96f7cef43c4a08923c24221fbfb95b4ef840779f) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Adds support for running [multiple instances](https://starlight-obsidian.vercel.app/guides/multiple-instances/) of the plugin for different Obsidian vaults and configurations.
+
 ## 0.6.0
 
 ### Minor Changes
