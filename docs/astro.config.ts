@@ -23,18 +23,16 @@ export default defineConfig({
       sidebar: [
         {
           label: 'Start Here',
-          items: [
-            { label: 'Getting Started', link: '/getting-started/' },
-            { label: 'Configuration', link: '/configuration/' },
-          ],
+          items: ['getting-started', 'configuration'],
         },
         {
           label: 'Guides',
           items: [
-            { label: 'Project Structure', link: '/guides/project-structure/' },
-            { label: 'Ignoring Content', link: '/guides/ignoring-content/' },
-            { label: 'Features', link: '/guides/features/' },
-            { label: 'Deployment', link: '/guides/deployment/' },
+            'guides/project-structure',
+            'guides/ignoring-content',
+            'guides/features',
+            'guides/deployment',
+            'guides/multiple-instances',
           ],
         },
         {

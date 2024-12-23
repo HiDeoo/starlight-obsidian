@@ -1,3 +1,5 @@
+import { randomBytes } from 'node:crypto'
+
 import type { StarlightPlugin, StarlightUserConfig } from '@astrojs/starlight/types'
 import type { AstroIntegrationLogger } from 'astro'
 import { z } from 'astro/zod'
@@ -5,7 +7,7 @@ import { z } from 'astro/zod'
 import { starlightObsidianIntegration } from './libs/integration'
 import { getObsidianPaths, getVault } from './libs/obsidian'
 import { throwUserError } from './libs/plugin'
-import { addObsidianFiles, getSidebarFromConfig, getSidebarGroupPlaceholder } from './libs/starlight'
+import { addObsidianFiles, getSidebarFromConfig, getSidebarGroupPlaceholder, type SidebarGroup } from './libs/starlight'
 
 const starlightObsidianConfigSchema = z.object({
   /**
@@ -104,100 +106,119 @@ const starlightObsidianConfigSchema = z.object({
   vault: z.string(),
 })
 
+let pluginsCount = 0
+
 export const obsidianSidebarGroup = getSidebarGroupPlaceholder()
 
 export default function starlightObsidianPlugin(userConfig: StarlightObsidianUserConfig): StarlightPlugin {
-  const parsedConfig = starlightObsidianConfigSchema.safeParse(userConfig)
+  return makeStarlightObsidianPlugin(obsidianSidebarGroup)(userConfig)
+}
 
-  if (!parsedConfig.success) {
-    const isUsingDeprecatedCopyStarlightFrontmatter = parsedConfig.error.issues.some(
-      (issue) => issue.path.join('.') === 'copyStarlightFrontmatter',
-    )
+export function createStarlightObsidianPlugin(): [plugin: typeof starlightObsidianPlugin, sidebarGroup: SidebarGroup] {
+  const sidebarGroup = getSidebarGroupPlaceholder(Symbol(randomBytes(24).toString('base64url')))
+  return [makeStarlightObsidianPlugin(sidebarGroup), sidebarGroup]
+}
 
-    if (isUsingDeprecatedCopyStarlightFrontmatter) {
+function makeStarlightObsidianPlugin(
+  sidebarGroup: SidebarGroup,
+): (userConfig: StarlightObsidianUserConfig) => StarlightPlugin {
+  pluginsCount++
+
+  return function starlightObsidianPlugin(userConfig) {
+    const parsedConfig = starlightObsidianConfigSchema.safeParse(userConfig)
+
+    if (!parsedConfig.success) {
+      const isUsingDeprecatedCopyStarlightFrontmatter = parsedConfig.error.issues.some(
+        (issue) => issue.path.join('.') === 'copyStarlightFrontmatter',
+      )
+
+      if (isUsingDeprecatedCopyStarlightFrontmatter) {
+        throwUserError(
+          'The `copyStarlightFrontmatter` option has been deprecated in favor of the `copyFrontmatter` option.',
+          'For more information see https://starlight-obsidian.vercel.app/configuration/#copyfrontmatter',
+        )
+      }
+
       throwUserError(
-        'The `copyStarlightFrontmatter` option has been deprecated in favor of the `copyFrontmatter` option.',
-        'For more information see https://starlight-obsidian.vercel.app/configuration/#copyfrontmatter',
+        `The provided plugin configuration is invalid.\n${parsedConfig.error.issues.map((issue) => issue.message).join('\n')}`,
       )
     }
 
-    throwUserError(
-      `The provided plugin configuration is invalid.\n${parsedConfig.error.issues.map((issue) => issue.message).join('\n')}`,
-    )
-  }
+    const config = parsedConfig.data
 
-  const config = parsedConfig.data
+    return {
+      name: 'starlight-obsidian-plugin',
+      hooks: {
+        async setup({ addIntegration, command, config: starlightConfig, logger, updateConfig }) {
+          if (command !== 'build' && command !== 'dev') {
+            return
+          }
 
-  return {
-    name: 'starlight-obsidian-plugin',
-    hooks: {
-      async setup({ addIntegration, command, config: starlightConfig, logger, updateConfig }) {
-        if (command !== 'build' && command !== 'dev') {
-          return
-        }
+          const customCss = [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles/common']
 
-        const customCss = [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles/common']
+          if (config.autoLinkHeadings) {
+            customCss.push('starlight-obsidian/styles/autolinks-headings')
+          }
 
-        if (config.autoLinkHeadings) {
-          customCss.push('starlight-obsidian/styles/autolinks-headings')
-        }
+          const updatedStarlightConfig: Partial<StarlightUserConfig> = {
+            components: starlightConfig.components,
+            customCss,
+            sidebar: getSidebarFromConfig(config, starlightConfig.sidebar, sidebarGroup),
+          }
 
-        const updatedStarlightConfig: Partial<StarlightUserConfig> = {
-          components: starlightConfig.components,
-          customCss,
-          sidebar: getSidebarFromConfig(config, starlightConfig.sidebar),
-        }
+          if (!updatedStarlightConfig.components) {
+            updatedStarlightConfig.components = {}
+          }
 
-        if (!updatedStarlightConfig.components) {
-          updatedStarlightConfig.components = {}
-        }
-
-        if (starlightConfig.components?.PageTitle) {
-          logComponentOverrideWarning(logger, 'PageTitle')
-        } else {
-          updatedStarlightConfig.components.PageTitle = 'starlight-obsidian/overrides/PageTitle.astro'
-        }
-
-        if (config.tableOfContentsOverview === 'title') {
-          if (starlightConfig.components?.PageSidebar) {
-            logComponentOverrideWarning(logger, 'PageSidebar')
+          if (starlightConfig.components?.PageTitle) {
+            logComponentOverrideWarning(logger, 'PageTitle')
           } else {
-            updatedStarlightConfig.components.PageSidebar = 'starlight-obsidian/overrides/PageSidebar.astro'
+            updatedStarlightConfig.components.PageTitle = 'starlight-obsidian/overrides/PageTitle.astro'
           }
-        }
 
-        if (config.skipGeneration) {
-          logger.warn(
-            `Skipping generation of Starlight pages from Obsidian vault as the 'skipGeneration' option is enabled.`,
-          )
-        } else {
-          try {
-            const start = performance.now()
-            logger.info('Generating Starlight pages from Obsidian vault…')
-
-            const vault = await getVault(config)
-            const obsidianPaths = await getObsidianPaths(vault, config.ignore)
-            await addObsidianFiles(config, vault, obsidianPaths, logger)
-
-            const duration = Math.round(performance.now() - start)
-            logger.info(`Starlight pages generated from Obsidian vault in ${duration}ms.`)
-          } catch (error) {
-            logger.error(error instanceof Error ? error.message : String(error))
-
-            throwUserError('Failed to generate Starlight pages from Obsidian vault.')
+          if (config.tableOfContentsOverview === 'title') {
+            if (starlightConfig.components?.PageSidebar) {
+              logComponentOverrideWarning(logger, 'PageSidebar')
+            } else {
+              updatedStarlightConfig.components.PageSidebar = 'starlight-obsidian/overrides/PageSidebar.astro'
+            }
           }
-        }
 
-        addIntegration(starlightObsidianIntegration(config))
-        updateConfig(updatedStarlightConfig)
+          if (config.skipGeneration) {
+            logger.warn(
+              `Skipping generation of Starlight pages from Obsidian vault as the 'skipGeneration' option is enabled.`,
+            )
+          } else {
+            try {
+              const start = performance.now()
+              logger.info(`Generating Starlight pages from Obsidian vault at '${config.vault}'…`)
+
+              const vault = await getVault(config)
+              const obsidianPaths = await getObsidianPaths(vault, config.ignore)
+              await addObsidianFiles(config, vault, obsidianPaths, logger)
+
+              const duration = Math.round(performance.now() - start)
+              logger.info(`Starlight pages generated from Obsidian vault at '${config.vault}' in ${duration}ms.`)
+            } catch (error) {
+              logger.error(error instanceof Error ? error.message : String(error))
+
+              throwUserError(`Failed to generate Starlight pages from Obsidian vault at '${config.vault}'.`)
+            }
+          }
+
+          addIntegration(starlightObsidianIntegration(config))
+          updateConfig(updatedStarlightConfig)
+        },
       },
-    },
+    }
   }
 }
 
 function logComponentOverrideWarning(logger: AstroIntegrationLogger, component: string) {
-  logger.warn(`It looks like you already have a \`${component}\` component override in your Starlight configuration.`)
-  logger.warn(`To use \`starlight-obsidian\`, remove the override for the \`${component}\` component.\n`)
+  if (pluginsCount < 2) {
+    logger.warn(`It looks like you already have a \`${component}\` component override in your Starlight configuration.`)
+    logger.warn(`To use \`starlight-obsidian\`, remove the override for the \`${component}\` component.\n`)
+  }
 }
 
 export type StarlightObsidianUserConfig = z.input<typeof starlightObsidianConfigSchema>

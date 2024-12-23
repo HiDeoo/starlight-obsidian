@@ -66,23 +66,24 @@ const starlightFrontmatterKeys = [
   'sidebar',
 ]
 
-export function getSidebarGroupPlaceholder(): SidebarManualGroup {
+export function getSidebarGroupPlaceholder(label = starlightObsidianSidebarGroupLabel): SidebarManualGroup {
   return {
     items: [],
-    label: starlightObsidianSidebarGroupLabel.toString(),
+    label: label.toString(),
   }
 }
 
 export function getSidebarFromConfig(
   config: StarlightObsidianConfig,
   sidebar: StarlightUserConfig['sidebar'],
+  sidebarGroupPlaceholder: SidebarGroup,
 ): StarlightUserConfig['sidebar'] {
   if (!sidebar || sidebar.length === 0) {
     return sidebar
   }
 
-  function replaceSidebarGroupPlaceholder(group: SidebarManualGroup): SidebarGroup {
-    if (group.label === starlightObsidianSidebarGroupLabel.toString()) {
+  function replaceSidebarGroupPlaceholder(group: SidebarManualGroup): SidebarItem {
+    if (group.label === sidebarGroupPlaceholder.label) {
       return {
         autogenerate: {
           collapsed: config.sidebar.collapsedFolders ?? config.sidebar.collapsed,
@@ -279,7 +280,7 @@ function throwVaultFileError(error: unknown, vaultFile: VaultFile): never {
   throw new Error(`${vaultFile.path} — ${error instanceof Error ? error.message : String(error)}`, { cause: error })
 }
 
-function isSidebarGroup(item: SidebarGroup): item is SidebarManualGroup {
+function isSidebarGroup(item: SidebarItem): item is SidebarManualGroup {
   return typeof item === 'object' && 'items' in item
 }
 
@@ -294,4 +295,5 @@ interface SidebarManualGroup {
   label: string
 }
 
-type SidebarGroup = NonNullable<StarlightUserConfig['sidebar']>[number]
+type SidebarItem = NonNullable<StarlightUserConfig['sidebar']>[number]
+export type SidebarGroup = Exclude<SidebarItem, string>
