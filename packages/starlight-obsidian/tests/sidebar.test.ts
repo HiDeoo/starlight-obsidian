@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 
 import { obsidianSidebarGroup } from '..'
-import { getSidebarFromConfig } from '../libs/starlight'
+import { getSidebarFromConfig, getSidebarGroupPlaceholder } from '../libs/starlight'
 
 import { getFixtureConfig } from './utils'
 
@@ -13,25 +13,26 @@ const gettingStartedLink = {
 test('does nothing with an undefined sidebar', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getSidebarFromConfig(config, undefined)).toBeUndefined()
+  expect(getSidebarFromConfig(config, undefined, obsidianSidebarGroup)).toBeUndefined()
 })
 
 test('does nothing with an empty sidebar', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getSidebarFromConfig(config, [])).toEqual([])
+  expect(getSidebarFromConfig(config, [], obsidianSidebarGroup)).toEqual([])
 })
 
 test('does nothing for a sidebar without a placeholder', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getSidebarFromConfig(config, [gettingStartedLink])).toEqual([gettingStartedLink])
+  expect(getSidebarFromConfig(config, [gettingStartedLink], obsidianSidebarGroup)).toEqual([gettingStartedLink])
 })
 
 test('replaces a placeholder at the top level', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup])).toMatchInlineSnapshot(`
+  expect(getSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup], obsidianSidebarGroup))
+    .toMatchInlineSnapshot(`
     [
       {
         "label": "Getting Started",
@@ -53,12 +54,16 @@ test('replaces a nested placeholder', () => {
   const config = getFixtureConfig('basics')
 
   expect(
-    getSidebarFromConfig(config, [
-      {
-        label: 'Guides',
-        items: [obsidianSidebarGroup, gettingStartedLink],
-      },
-    ]),
+    getSidebarFromConfig(
+      config,
+      [
+        {
+          label: 'Guides',
+          items: [obsidianSidebarGroup, gettingStartedLink],
+        },
+      ],
+      obsidianSidebarGroup,
+    ),
   ).toMatchInlineSnapshot(`
     [
       {
@@ -86,14 +91,18 @@ test('replaces multiple placeholders', () => {
   const config = getFixtureConfig('basics')
 
   expect(
-    getSidebarFromConfig(config, [
-      gettingStartedLink,
-      {
-        label: 'Guides',
-        items: [gettingStartedLink, obsidianSidebarGroup],
-      },
+    getSidebarFromConfig(
+      config,
+      [
+        gettingStartedLink,
+        {
+          label: 'Guides',
+          items: [gettingStartedLink, obsidianSidebarGroup],
+        },
+        obsidianSidebarGroup,
+      ],
       obsidianSidebarGroup,
-    ]),
+    ),
   ).toMatchInlineSnapshot(`
     [
       {
@@ -135,7 +144,7 @@ test('uses a custom options if any', () => {
     sidebar: { collapsed: true, collapsedFolders: false, label: 'Custom label' },
   })
 
-  expect(getSidebarFromConfig(config, [obsidianSidebarGroup])).toMatchInlineSnapshot(`
+  expect(getSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup)).toMatchInlineSnapshot(`
     [
       {
         "autogenerate": {
@@ -144,6 +153,57 @@ test('uses a custom options if any', () => {
         },
         "collapsed": true,
         "label": "Custom label",
+      },
+    ]
+  `)
+})
+
+test('replaces multiple placeholders for multiple plugin instances', () => {
+  const config = getFixtureConfig('basics')
+
+  const otherSidebarGroup = getSidebarGroupPlaceholder(Symbol('test'))
+
+  expect(
+    getSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup, otherSidebarGroup], obsidianSidebarGroup),
+  ).toMatchInlineSnapshot(`
+    [
+      {
+        "label": "Getting Started",
+        "link": "/guides/getting-started/",
+      },
+      {
+        "autogenerate": {
+          "collapsed": false,
+          "directory": "notes",
+        },
+        "collapsed": false,
+        "label": "Notes",
+      },
+      {
+        "items": [],
+        "label": "Symbol(test)",
+      },
+    ]
+  `)
+
+  expect(getSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup, otherSidebarGroup], otherSidebarGroup))
+    .toMatchInlineSnapshot(`
+    [
+      {
+        "label": "Getting Started",
+        "link": "/guides/getting-started/",
+      },
+      {
+        "items": [],
+        "label": "Symbol(StarlightObsidianSidebarGroupLabel)",
+      },
+      {
+        "autogenerate": {
+          "collapsed": false,
+          "directory": "notes",
+        },
+        "collapsed": false,
+        "label": "Notes",
       },
     ]
   `)
