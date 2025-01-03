@@ -5,7 +5,18 @@ import twitterMatcher from '@astro-community/astro-embed-twitter/matcher'
 import youtubeMatcher from '@astro-community/astro-embed-youtube/matcher'
 import { toHtml } from 'hast-util-to-html'
 import isAbsoluteUrl from 'is-absolute-url'
-import type { BlockContent, Blockquote, Code, Html, Image, Link, Parent, Root, RootContent } from 'mdast'
+import type {
+  BlockContent,
+  Blockquote,
+  Code,
+  Html,
+  Image,
+  Link,
+  Parent,
+  PhrasingContent,
+  Root,
+  RootContent,
+} from 'mdast'
 import { findAndReplace } from 'mdast-util-find-and-replace'
 import { toHast } from 'mdast-util-to-hast'
 import { customAlphabet } from 'nanoid'
@@ -385,7 +396,23 @@ function handleBlockquotes(node: Blockquote, context: VisitorContext) {
     return SKIP
   }
 
-  const asideTitle = title && title.length > 0 ? `[${title.trim()}]` : ''
+  const hasTitle = title && title.length > 0
+  const asideTitle = hasTitle ? `[${title.trim()}` : ''
+  let didEndAsideTitle = false
+
+  let asideFirstLine = `${asideDelimiter}${getStarlightCalloutType(type)}${asideTitle}`
+  if (otherLines.length > 0) {
+    if (hasTitle) {
+      asideFirstLine += ']'
+      didEndAsideTitle = true
+    }
+    asideFirstLine += `\n${otherLines.join('\n')}`
+  } else if (otherGrandChildren.length === 0) {
+    asideFirstLine += ']\n'
+    didEndAsideTitle = true
+  } else {
+    asideFirstLine += ' '
+  }
 
   const aside: RootContent[] = [
     {
@@ -393,9 +420,22 @@ function handleBlockquotes(node: Blockquote, context: VisitorContext) {
       children: [
         {
           type: 'html',
-          value: `${asideDelimiter}${getStarlightCalloutType(type)}${asideTitle}\n${otherLines.join('\n')}`,
+          value: asideFirstLine,
         },
-        ...otherGrandChildren,
+        ...(hasTitle
+          ? otherGrandChildren.flatMap<PhrasingContent>((otherGrandChild) => {
+              if (didEndAsideTitle) return otherGrandChild
+              if (otherGrandChild.type !== 'text') return otherGrandChild
+              const containsNewLine = /\r?\n/.test(otherGrandChild.value)
+              if (!containsNewLine) return otherGrandChild
+              const [firstLine, ...otherLines] = otherGrandChild.value.split(/\r?\n/)
+              didEndAsideTitle = true
+              return [
+                { type: 'text', value: `${firstLine}]\n` },
+                { type: 'text', value: otherLines.join('\n') },
+              ]
+            })
+          : otherGrandChildren),
         ...(otherChildren.length === 0 ? [{ type: 'html', value: `\n${asideDelimiter}` } satisfies RootContent] : []),
       ],
     },

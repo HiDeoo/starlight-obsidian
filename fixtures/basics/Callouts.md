@@ -5,7 +5,7 @@ This is a sentence.
 > It supports **Markdown**, [[Math|Wikilinks]], and embeds!
 > ![[An image.png]]
 
-> [!tip] Callouts can have custom titles
+> [!tip] Callouts can have custom titles with [[Math|links]] too
 > Like this one.
 
 > [!tip] Title-only callout

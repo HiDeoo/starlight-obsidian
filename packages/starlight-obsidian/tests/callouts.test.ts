@@ -14,7 +14,7 @@ test('transforms callouts', async () => {
     ![An image.png](../../../assets/notes/an-image.png)
     :::
 
-    :::tip[Callouts can have custom titles]
+    :::tip[Callouts can have custom titles with [links](/notes/math) too]
     Like this one.
     :::
 
