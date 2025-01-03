@@ -1,5 +1,11 @@
 # starlight-obsidian
 
+## 0.7.1
+
+### Patch Changes
+
+- [#41](https://github.com/HiDeoo/starlight-obsidian/pull/41) [`ab86671`](https://github.com/HiDeoo/starlight-obsidian/commit/ab8667139930cad8322ed494a760547e896e7a27) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Fixes an issue with custom aside titles including links.
+
 ## 0.7.0
 
 ### Minor Changes
