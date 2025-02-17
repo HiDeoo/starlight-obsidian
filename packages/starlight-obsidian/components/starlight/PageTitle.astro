@@ -1,0 +1,11 @@
+---
+import Tags from '../Tags.astro'
+
+const { entry } = Astro.locals.starlightRoute
+
+// @ts-expect-error - This plugin does not extend Starlight's schema so tags are unknown.
+const tags = entry['data']['tags']
+const showTags = tags !== undefined && tags.length > 0
+---
+
+{showTags && <Tags {tags} />}

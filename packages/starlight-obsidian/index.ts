@@ -106,7 +106,7 @@ const starlightObsidianConfigSchema = z.object({
   vault: z.string(),
 })
 
-let pluginsCount = 0
+let overridesInjected = false
 
 export const obsidianSidebarGroup = getSidebarGroupPlaceholder()
 
@@ -122,7 +122,7 @@ export function createStarlightObsidianPlugin(): [plugin: typeof starlightObsidi
 function makeStarlightObsidianPlugin(
   sidebarGroup: SidebarGroup,
 ): (userConfig: StarlightObsidianUserConfig) => StarlightPlugin {
-  pluginsCount++
+  overridesInjected = true
 
   return function starlightObsidianPlugin(userConfig) {
     const parsedConfig = starlightObsidianConfigSchema.safeParse(userConfig)
@@ -149,9 +149,20 @@ function makeStarlightObsidianPlugin(
     return {
       name: 'starlight-obsidian-plugin',
       hooks: {
-        async setup({ addIntegration, command, config: starlightConfig, logger, updateConfig }) {
+        async 'config:setup'({
+          addIntegration,
+          addRouteMiddleware,
+          command,
+          config: starlightConfig,
+          logger,
+          updateConfig,
+        }) {
           if (command !== 'build' && command !== 'dev') {
             return
+          }
+
+          if (config.tableOfContentsOverview === 'title') {
+            addRouteMiddleware({ entrypoint: 'starlight-obsidian/middleware' })
           }
 
           const customCss = [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles/common']
@@ -161,27 +172,12 @@ function makeStarlightObsidianPlugin(
           }
 
           const updatedStarlightConfig: Partial<StarlightUserConfig> = {
-            components: starlightConfig.components,
+            components: {
+              ...starlightConfig.components,
+              ...overrideStarlightComponent(starlightConfig.components, logger, 'PageTitle'),
+            },
             customCss,
             sidebar: getSidebarFromConfig(config, starlightConfig.sidebar, sidebarGroup),
-          }
-
-          if (!updatedStarlightConfig.components) {
-            updatedStarlightConfig.components = {}
-          }
-
-          if (starlightConfig.components?.PageTitle) {
-            logComponentOverrideWarning(logger, 'PageTitle')
-          } else {
-            updatedStarlightConfig.components.PageTitle = 'starlight-obsidian/overrides/PageTitle.astro'
-          }
-
-          if (config.tableOfContentsOverview === 'title') {
-            if (starlightConfig.components?.PageSidebar) {
-              logComponentOverrideWarning(logger, 'PageSidebar')
-            } else {
-              updatedStarlightConfig.components.PageSidebar = 'starlight-obsidian/overrides/PageSidebar.astro'
-            }
           }
 
           if (config.skipGeneration) {
@@ -214,10 +210,26 @@ function makeStarlightObsidianPlugin(
   }
 }
 
-function logComponentOverrideWarning(logger: AstroIntegrationLogger, component: string) {
-  if (pluginsCount < 2) {
-    logger.warn(`It looks like you already have a \`${component}\` component override in your Starlight configuration.`)
-    logger.warn(`To use \`starlight-obsidian\`, remove the override for the \`${component}\` component.\n`)
+function overrideStarlightComponent(
+  components: StarlightUserConfig['components'],
+  logger: AstroIntegrationLogger,
+  component: keyof NonNullable<StarlightUserConfig['components']>,
+) {
+  if (components?.[component]) {
+    if (!overridesInjected) {
+      logger.warn(
+        `It looks like you already have a \`${component}\` component override in your Starlight configuration.`,
+      )
+      logger.warn(
+        `To use \`starlight-obsidian\`, either remove your override or update it to render the content from \`starlight-obsidian/components/${component}.astro\`.`,
+      )
+    }
+
+    return {}
+  }
+
+  return {
+    [component]: `starlight-obsidian/overrides/${component}.astro`,
   }
 }
 

@@ -7,9 +7,10 @@
   "type": "module",
   "exports": {
     ".": "./index.ts",
+    "./components/PageTitle.astro": "./components/starlight/PageTitle.astro",
     "./components/Twitter.astro": "./components/Twitter.astro",
     "./components/Youtube.astro": "./components/Youtube.astro",
-    "./overrides/PageSidebar.astro": "./overrides/PageSidebar.astro",
+    "./middleware": "./middleware.ts",
     "./overrides/PageTitle.astro": "./overrides/PageTitle.astro",
     "./schema": "./schema.ts",
     "./styles/common": "./styles/common.css",
@@ -58,7 +59,7 @@
     "vitest": "2.1.6"
   },
   "peerDependencies": {
-    "@astrojs/starlight": ">=0.30.0"
+    "@astrojs/starlight": ">=0.32.0"
   },
   "engines": {
     "node": ">=18.17.1"

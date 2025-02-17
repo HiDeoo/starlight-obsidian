@@ -1,15 +1,8 @@
 ---
 import Default from '@astrojs/starlight/components/PageTitle.astro'
-import type { Props } from '@astrojs/starlight/props'
 
-import Tags from '../components/Tags.astro'
-
-const { entry } = Astro.props
-
-// @ts-expect-error - This plugin does not extend Starlight's schema so tags are unknown.
-const tags = entry['data']['tags']
-const showTags = tags !== undefined && tags.length > 0
+import StarlightObsidianPageTitle from '../components/starlight/PageTitle.astro'
 ---
 
-<Default {...Astro.props}><slot /></Default>
-{showTags && <Tags {tags} />}
+<Default><slot /></Default>
+<StarlightObsidianPageTitle><slot /></StarlightObsidianPageTitle>
