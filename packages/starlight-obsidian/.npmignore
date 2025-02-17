@@ -1,5 +1,6 @@
 .eslintcache
 .prettierignore
+eslint.config.mjs
 tests
 tsconfig.json
 tsconfig.tsbuildinfo
