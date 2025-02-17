@@ -1,5 +1,19 @@
 # starlight-obsidian
 
+## 0.8.0
+
+### Minor Changes
+
+- [#45](https://github.com/HiDeoo/starlight-obsidian/pull/45) [`8d1b58c`](https://github.com/HiDeoo/starlight-obsidian/commit/8d1b58cc761ccf380f1dfad25f9b784a7ae4f6bf) Thanks [@HiDeoo](https://github.com/HiDeoo)! - ⚠️ **BREAKING CHANGE:** The minimum supported version of Starlight is now version `0.32.0`.
+
+  Please use the `@astrojs/upgrade` command to upgrade your project:
+
+  ```sh
+  npx @astrojs/upgrade
+  ```
+
+- [#45](https://github.com/HiDeoo/starlight-obsidian/pull/45) [`8d1b58c`](https://github.com/HiDeoo/starlight-obsidian/commit/8d1b58cc761ccf380f1dfad25f9b784a7ae4f6bf) Thanks [@HiDeoo](https://github.com/HiDeoo)! - ⚠️ **BREAKING CHANGE:** The Starlight Obsidian plugin no longer [overrides](https://starlight.astro.build/guides/overriding-components/) the [`<PageSidebar>` component](https://starlight.astro.build/reference/overrides/#pagesidebar). If you were manually rendering `starlight-obsidian/overrides/PageSidebar.astro` in a custom override, you can now remove it.
+
 ## 0.7.1
 
 ### Patch Changes
