@@ -158,3 +158,11 @@ test('formats link URLs', async () => {
 `)
   }
 })
+
+test('uses resource links instead of auto links', async () => {
+  const result = await transformFixtureMdFile('basics', 'Internal images with dimensions.md')
+
+  expect(result.content).toMatch(
+    /^Link to \[https:\/\/starlight.astro.build\/]\(https:\/\/starlight.astro.build\/\) which/m,
+  )
+})
