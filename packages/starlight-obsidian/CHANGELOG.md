@@ -1,5 +1,11 @@
 # starlight-obsidian
 
+## 0.8.1
+
+### Patch Changes
+
+- [#47](https://github.com/HiDeoo/starlight-obsidian/pull/47) [`290b2ee`](https://github.com/HiDeoo/starlight-obsidian/commit/290b2ee81556be17dbd5ba01854696b6e6c540a2) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Fixes a potential issue with autolinks in MDX by enforcing the use of resource links.
+
 ## 0.8.0
 
 ### Minor Changes
