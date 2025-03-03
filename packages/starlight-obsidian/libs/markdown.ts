@@ -7,7 +7,12 @@ import { VFile } from 'vfile'
 
 import { remarkStarlightObsidian, type TransformContext } from './remark'
 
-const processor = remark().use(remarkGfm).use(remarkMath).use(remarkFrontmatter).use(remarkStarlightObsidian)
+const processor = remark()
+  .data('settings', { resourceLink: true })
+  .use(remarkGfm)
+  .use(remarkMath)
+  .use(remarkFrontmatter)
+  .use(remarkStarlightObsidian)
 
 export async function transformMarkdownToString(
   filePath: string,
