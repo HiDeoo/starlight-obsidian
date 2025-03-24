@@ -14,6 +14,8 @@ This is another paragraph.
 
 ###### This is a heading 6
 
+## Another heading 2
+
 **Bold text**
 
 **Bold text alternative**

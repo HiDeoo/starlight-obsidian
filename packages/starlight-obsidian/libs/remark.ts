@@ -20,7 +20,7 @@ import type {
 import { findAndReplace } from 'mdast-util-find-and-replace'
 import { toHast } from 'mdast-util-to-hast'
 import { customAlphabet } from 'nanoid'
-import { CONTINUE, SKIP, visit } from 'unist-util-visit'
+import { CONTINUE, EXIT, SKIP, visit } from 'unist-util-visit'
 import type { VFile } from 'vfile'
 import yaml from 'yaml'
 
@@ -669,9 +669,13 @@ function getCustomFileNode(filePath: string): RootContent {
 async function getMarkdownFileNode(file: VFile, fileUrl: string): Promise<RootContent> {
   ensureTransformContext(file)
 
+  const [fileName, ...anchorSegments] = fileUrl.split('#')
+  const fileAnchor = anchorSegments.join('#')
   const fileExt = file.data.vault.options.linkSyntax === 'wikilink' ? '.md' : ''
   const filePath = decodeURIComponent(
-    file.data.vault.options.linkFormat === 'relative' ? getRelativeFilePath(file, fileUrl) : fileUrl,
+    file.data.vault.options.linkFormat === 'relative'
+      ? getRelativeFilePath(file, fileName ?? fileUrl)
+      : (fileName ?? fileUrl),
   )
   const url = path.posix.join(path.posix.sep, `${filePath}${fileExt}`)
   const matchingFile = file.data.files.find(
@@ -684,6 +688,10 @@ async function getMarkdownFileNode(file: VFile, fileUrl: string): Promise<RootCo
 
   const content = fs.readFileSync(matchingFile.fsPath, 'utf8')
   const root = await transformMarkdownToAST(matchingFile.fsPath, content, { ...file.data, embedded: true })
+
+  if (fileAnchor) {
+    root.children = extractMarkdownSection(root, fileAnchor)
+  }
 
   return {
     type: 'blockquote',
@@ -703,6 +711,35 @@ function replaceNode({ index, parent }: VisitorContext, replacement: RootContent
   }
 
   parent.children.splice(index, 1, ...(Array.isArray(replacement) ? replacement : [replacement]))
+}
+
+function extractMarkdownSection(root: Root, sectionAnchor: string) {
+  const children: Root['children'] = []
+
+  visit(root, (node, index, parent) => {
+    switch (node.type) {
+      case 'heading': {
+        if (!parent || index === undefined) return CONTINUE
+        const headingText = node.children.find((child) => child.type === 'text')?.value
+        if (headingText !== sectionAnchor) return CONTINUE
+
+        children.push(node)
+
+        let nextNode = parent.children[index + 1]
+        while (nextNode && (nextNode.type !== 'heading' || nextNode.depth > node.depth)) {
+          children.push(nextNode)
+          nextNode = parent.children[index + children.length]
+        }
+
+        return EXIT
+      }
+      default: {
+        return CONTINUE
+      }
+    }
+  })
+
+  return children
 }
 
 // We are using `Html` node instead of real MDX nodes because we are not using `remark-mdx` due to the fact that it

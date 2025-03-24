@@ -165,6 +165,18 @@ test('applies transformers to embedded notes', async () => {
     > <iframe class="sl-obs-embed-pdf" src="/notes/A PDF.pdf"></iframe>
     >
     > <iframe src="https://example.org/"></iframe>
+
+    > <strong>Basic syntax</strong>
+    >
+    > ## This is a heading 2
+    >
+    > ### This is a heading 3
+    >
+    > #### This is a heading 4
+    >
+    > ##### This is a heading 5
+    >
+    > ###### This is a heading 6
     "
   `)
 })
