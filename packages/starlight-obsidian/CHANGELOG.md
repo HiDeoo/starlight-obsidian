@@ -1,5 +1,11 @@
 # starlight-obsidian
 
+## 0.8.2
+
+### Patch Changes
+
+- [#51](https://github.com/HiDeoo/starlight-obsidian/pull/51) [`b067e02`](https://github.com/HiDeoo/starlight-obsidian/commit/b067e026613abe8aaed9b3de673a5ae93e70525e) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Fixes an issue with embedded note sections not being rendered correctly.
+
 ## 0.8.1
 
 ### Patch Changes
