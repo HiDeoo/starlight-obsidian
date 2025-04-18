@@ -1,12 +1,10 @@
-import { rehypeHeadingIds } from '@astrojs/markdown-remark'
 import type { AstroIntegration } from 'astro'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeKatex from 'rehype-katex'
 import remarkMath from 'remark-math'
 
 import type { StarlightObsidianConfig } from '..'
 
-import { getRehypeAutolinkHeadingsOptions, rehypeStarlightObsidian } from './rehype'
+import { rehypeStarlightObsidian } from './rehype'
 import { vitePluginStarlightObsidianConfig } from './vite'
 
 export function starlightObsidianIntegration(config: StarlightObsidianConfig): AstroIntegration {
@@ -16,13 +14,7 @@ export function starlightObsidianIntegration(config: StarlightObsidianConfig): A
       'astro:config:setup': ({ updateConfig }) => {
         updateConfig({
           markdown: {
-            rehypePlugins: [
-              ...(config.autoLinkHeadings
-                ? [rehypeHeadingIds, [rehypeAutolinkHeadings, getRehypeAutolinkHeadingsOptions()]]
-                : []),
-              rehypeStarlightObsidian,
-              rehypeKatex,
-            ],
+            rehypePlugins: [rehypeStarlightObsidian, rehypeKatex],
             remarkPlugins: [remarkMath],
           },
           vite: {

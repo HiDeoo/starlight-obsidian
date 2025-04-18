@@ -14,7 +14,6 @@
     "./overrides/PageTitle.astro": "./overrides/PageTitle.astro",
     "./schema": "./schema.ts",
     "./styles/common": "./styles/common.css",
-    "./styles/autolinks-headings": "./styles/autolinks-headings.css",
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -24,21 +23,16 @@
   "dependencies": {
     "@astro-community/astro-embed-twitter": "^0.5.8",
     "@astro-community/astro-embed-youtube": "^0.5.6",
-    "@astrojs/markdown-remark": "^6.0.0",
     "decode-uri-component": "^0.4.1",
     "github-slugger": "^2.0.0",
     "globby": "^14.0.2",
     "hast-util-to-html": "^9.0.4",
-    "hast-util-to-string": "^3.0.1",
-    "hastscript": "^9.0.0",
-    "html-escaper": "^3.0.3",
     "is-absolute-url": "^4.0.1",
     "mdast-util-find-and-replace": "^3.0.1",
     "mdast-util-from-markdown": "^2.0.2",
     "mdast-util-to-hast": "^13.2.0",
     "nanoid": "^5.0.9",
     "rehype": "^13.0.2",
-    "rehype-autolink-headings": "^7.1.0",
     "rehype-katex": "^7.0.1",
     "rehype-mermaid": "^2.1.0",
     "remark": "^15.0.1",
@@ -51,7 +45,6 @@
   },
   "devDependencies": {
     "@types/hast": "^3.0.4",
-    "@types/html-escaper": "^3.0.2",
     "@types/mdast": "^4.0.4",
     "@types/node": "^18.19.68",
     "@types/unist": "^3.0.3",
@@ -59,7 +52,7 @@
     "vitest": "2.1.6"
   },
   "peerDependencies": {
-    "@astrojs/starlight": ">=0.32.0"
+    "@astrojs/starlight": ">=0.34.0"
   },
   "engines": {
     "node": ">=18.17.1"
