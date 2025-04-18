@@ -25,7 +25,6 @@ export function getFixtureConfig(
   config: Partial<StarlightObsidianConfig> = {},
 ): StarlightObsidianConfig {
   return {
-    autoLinkHeadings: false,
     configFolder: '.obsidian',
     copyFrontmatter: 'none',
     ignore: [],
