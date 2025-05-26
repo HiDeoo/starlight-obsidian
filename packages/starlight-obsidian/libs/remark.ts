@@ -50,6 +50,7 @@ const wikilinkReplacementRegex = /!?\[\[(?<url>(?:(?![[\]|]).)+)(?:\|(?<maybeTex
 const tagReplacementRegex = /(?:^|\s)#(?<tag>[\w/-]+)/g
 const calloutRegex = /^\[!(?<type>\w+)][+-]? ?(?<title>.*)$/
 const imageSizeRegex = /^(?:(?<altText>.*)\|)?(?:(?<widthOnly>\d+)|(?:(?<width>\d+)x(?<height>\d+)))$/
+const mdxNonClosingVoidElementRegex = /<(?<tag>br|hr)(?<attrs>[^/>]*)>/g
 
 const asideDelimiter = ':::'
 
@@ -88,6 +89,10 @@ export function remarkStarlightObsidian() {
 
     handleFrontmatter(tree, file, obsidianFrontmatter)
     handleImports(tree, file)
+
+    if (file.data.isMdx) {
+      closeVoidElements(tree)
+    }
   }
 }
 
@@ -748,6 +753,19 @@ function extractMarkdownSection(root: Root, sectionAnchor: string) {
 // that they could still use Starlight Obsidian.
 function createMdxNode(value: string): Html {
   return { type: 'html', value }
+}
+
+// We are not using `remark-mdx` due to the fact that it makes the parsing step way more strict. During our inital
+// testing round, we found out that a few users had pretty poorly formatted Markdown files (usually the result of
+// various Obisidian migration tools) and we wanted to make sure that they could still use Starlight Obsidian.
+// In MDX files, if the source content contains non-closing void elements, we need to convert them to self-closing
+// ones, e.g. `<br>` to `<br/>`.
+// At the moment, we only support `br` and `hr` elements, but based on feedback, we can eventually support all of them.
+function closeVoidElements(tree: Root) {
+  visit(tree, 'html', (node) => {
+    node.value = node.value.replaceAll(mdxNonClosingVoidElementRegex, '<$<tag>$<attrs>/>')
+    return SKIP
+  })
 }
 
 function ensureTransformContext(file: VFile): asserts file is VFile & { data: TransformContext; dirname: string } {
