@@ -6,4 +6,11 @@
 
 ![[An image.png|125]]
 
-Link to https://starlight.astro.build/ which could cause an issue in MDX with autolinks (`<link>`).
+Link to https://starlight.astro.build/ which could cause an issue in MDX with autolinks (`<link>`) followed by some void elements:
+
+<br />
+<br>
+<hr />
+<hr>
+
+And the end of the file.

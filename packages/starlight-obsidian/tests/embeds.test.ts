@@ -136,6 +136,13 @@ test('transforms internal images with dimensions', async () => {
   expect(result.content).toMatch(/^<Image src={\w+} alt="" width="125" height="auto" \/>$/m)
 })
 
+test('closes void elements in MDX files', async () => {
+  const result = await transformFixtureMdFile('basics', 'Internal images with dimensions.md')
+
+  expect(result.content).not.toMatch(/^<br>$/m)
+  expect(result.content).not.toMatch(/^<hr>$/m)
+})
+
 test('applies transformers to embedded notes', async () => {
   const fixtureName = 'basics'
   const vault = await getVault(getFixtureConfig(fixtureName))
