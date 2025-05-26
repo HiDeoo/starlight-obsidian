@@ -1,5 +1,11 @@
 # starlight-obsidian
 
+## 0.9.1
+
+### Patch Changes
+
+- [#56](https://github.com/HiDeoo/starlight-obsidian/pull/56) [`ff18bbd`](https://github.com/HiDeoo/starlight-obsidian/commit/ff18bbd6b2614e5e817fdca2005825ea1841e0a0) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Fixes a potential syntax issue when converting Obsidian vault files containing void elements to MDX format.
+
 ## 0.9.0
 
 ### Minor Changes
