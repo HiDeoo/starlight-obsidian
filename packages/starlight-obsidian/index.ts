@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto'
+import { resolve } from 'node:path'
 
 import type { StarlightPlugin, StarlightUserConfig } from '@astrojs/starlight/types'
 import type { AstroIntegrationLogger } from 'astro'
@@ -143,6 +144,7 @@ function makeStarlightObsidianPlugin(
     return {
       name: 'starlight-obsidian-plugin',
       hooks: {
+
         async 'config:setup'({
           addIntegration,
           addRouteMiddleware,
@@ -192,6 +194,30 @@ function makeStarlightObsidianPlugin(
 
           addIntegration(starlightObsidianIntegration(config))
           updateConfig(updatedStarlightConfig)
+        },
+        async 'astro:server:setup'({ server, refreshContent, logger }) {
+            if (server.config.mode !== "development") {
+                return;
+            }
+
+            const fullVaultPath = resolve(__dirname, config.vault);
+            // server.watcher.add() accept path which we want to watch.
+            server.watcher.add(fullVaultPath);
+            server.watcher
+                .on("add", async (pathAdded) => {
+                    if (pathAdded.startsWith(fullVaultPath)) {
+                        const vault = await getVault(config)
+                        const obsidianPaths = await getObsidianPaths(vault, config.ignore)
+                        return addObsidianFiles(config, vault, obsidianPaths, logger)
+                    }
+                })
+                .on("change", async (pathChanged) => {
+                    if (pathChanged.startsWith(fullVaultPath)) {
+                        const vault = await getVault(config)
+                        const obsidianPaths = await getObsidianPaths(vault, config.ignore)
+                        return addObsidianFiles(config, vault, obsidianPaths, logger)
+                    }
+                });
         },
       },
     }
