@@ -1,6 +1,8 @@
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 
-import { transformFixtureMdFile } from './utils'
+import { getObsidianPaths, getObsidianVaultFiles, getVault } from '../libs/obsidian'
+
+import { getFixtureConfig, transformFixtureMdFile } from './utils'
 
 test('highlights text', async () => {
   const result = await transformFixtureMdFile('basics', 'Basic syntax (highlights).md')
@@ -99,6 +101,41 @@ test('renders math and includes katex styles', async () => {
     $$
 
     This is an inline math expression $e^{2i\\pi} = 1$.
+
+    This is a sentence with some dollar signs, e.g. from $5 to maybe $10.
+    "
+  `)
+})
+
+test('renders math without single dollar text math support', async () => {
+  const vault = await getVault(getFixtureConfig('basics'))
+  const paths = await getObsidianPaths(vault)
+  const files = getObsidianVaultFiles(vault, paths)
+
+  // Reset the modules registry so that re-importing `./utils` re-evaluates the module and reset
+  // any cached processor. Re-importing the module is necessary because top-level imports
+  // cannot be re-evaluated.
+  vi.resetModules()
+  // Re-import the module to re-evaluate it.
+  const { transformFixtureMdFile } = await import('./utils')
+
+  const result = await transformFixtureMdFile('basics', 'Math (no-single-dollar).md', {
+    includeFrontmatter: false,
+    context: { copyFrontmatter: 'none', files, output: 'notes', singleDollarTextMath: false, vault },
+  })
+
+  expect(result.content).toMatchInlineSnapshot(`
+    "Test
+
+    $$
+    \\begin{vmatrix}a & b\\\\
+    c & d
+    \\end{vmatrix}=ad-bc
+    $$
+
+    This is an inline math expression $$e^{2i\\pi} = 1$$.
+
+    This is a sentence with some dollar signs, e.g. from $5 to maybe $10.
     "
   `)
 })

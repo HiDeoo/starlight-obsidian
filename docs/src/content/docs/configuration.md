@@ -93,6 +93,24 @@ Set this option to `starlight` to copy all known [Starlight frontmatter fields](
 This option is useful if you want to customize the generated Starlight pages from Obsidian.
 Note that the values are not validated and are copied as-is so it's up to you to ensure they are compatible with Starlight.
 
+### `math`
+
+**Type:** `{ singleDollarTextMath?: boolean }`  
+**Default:** `{ singleDollarTextMath: true }`
+
+Configure the Starlight Obsidian plugin's [math](https://help.obsidian.md/advanced-syntax#Math) processing.
+
+#### `singleDollarTextMath`
+
+**Type:** `boolean`  
+**Default:** `true`
+
+Controls whether or not the Starlight Obsidian plugin should support inline math expressions using single dollar signs (`$`).
+Using single dollar signs for inline math expressions in CommonMark can [interfere](https://github.com/micromark/micromark-extension-math/issues/6#issuecomment-1938838687) with “normal” dollars in text.
+
+If you are working with content that contains many dollar signs in text, e.g. financial documents, you may want to set this option to `false` to disable the support for inline math expressions using single dollar signs.
+When disabled, you can still use double dollar signs (`$$`) for both inline and block math expressions.
+
 ## Sidebar configuration
 
 The sidebar configuration is an object used to configure the generated vault pages sidebar group.

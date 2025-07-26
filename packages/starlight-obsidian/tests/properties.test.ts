@@ -55,7 +55,7 @@ test('includes known Starlight frontmatter fields if the option is enabled', asy
   const paths = await getObsidianPaths(vault)
   const files = getObsidianVaultFiles(vault, paths)
   const options = {
-    context: { copyFrontmatter: 'starlight', files, output: 'notes', vault } as const,
+    context: { copyFrontmatter: 'starlight', files, output: 'notes', singleDollarTextMath: true, vault } as const,
     includeFrontmatter: true,
   }
 
@@ -91,7 +91,7 @@ test('includes all frontmatter fields if the option is enabled', async () => {
   const paths = await getObsidianPaths(vault)
   const files = getObsidianVaultFiles(vault, paths)
   const options = {
-    context: { copyFrontmatter: 'all', files, output: 'notes', vault } as const,
+    context: { copyFrontmatter: 'all', files, output: 'notes', singleDollarTextMath: true, vault } as const,
     includeFrontmatter: true,
   }
 

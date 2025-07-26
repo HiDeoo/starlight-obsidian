@@ -35,6 +35,10 @@ export function getFixtureConfig(
       collapsed: false,
       label: 'Notes',
     },
+    math: {
+      singleDollarTextMath: true,
+      ...config.math,
+    },
     vault: getFixturePath(fixtureName),
     ...config,
   }
@@ -73,6 +77,7 @@ export async function transformFixtureMdFile(
       }),
     ],
     output: options.context?.output ?? 'notes',
+    singleDollarTextMath: options.context?.singleDollarTextMath ?? true,
     vault: options.context?.vault ?? {
       options: { linkFormat: 'shortest', linkSyntax: 'wikilink' },
       path: slashify(fixturePath),

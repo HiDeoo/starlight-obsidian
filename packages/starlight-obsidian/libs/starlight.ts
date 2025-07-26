@@ -185,6 +185,7 @@ async function addContent(
       files: vaultFiles,
       copyFrontmatter: config.copyFrontmatter,
       output: config.output,
+      singleDollarTextMath: config.math.singleDollarTextMath,
       vault,
     })
 
