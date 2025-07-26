@@ -1,5 +1,13 @@
 # starlight-obsidian
 
+## 0.10.0
+
+### Minor Changes
+
+- [#61](https://github.com/HiDeoo/starlight-obsidian/pull/61) [`c4150ef`](https://github.com/HiDeoo/starlight-obsidian/commit/c4150ef713e327f218c5ee0023ba3831e51cfccd) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Adds a new configuration option `math.singleDollarTextMath` to control whether or not inline math expressions using single dollar signs should be supported or not.
+
+  This option can be useful to disable support for single dollar inline math expressions which can conflict with “normal” dollars in CommonMark.
+
 ## 0.9.1
 
 ### Patch Changes
