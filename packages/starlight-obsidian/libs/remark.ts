@@ -785,6 +785,7 @@ export interface TransformContext {
   includeYoutubeComponent?: boolean
   isMdx?: true
   output: StarlightObsidianConfig['output']
+  singleDollarTextMath: StarlightObsidianConfig['math']['singleDollarTextMath']
   skip?: true
   vault: Vault
 }

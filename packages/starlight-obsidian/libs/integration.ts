@@ -15,7 +15,8 @@ export function starlightObsidianIntegration(config: StarlightObsidianConfig): A
         updateConfig({
           markdown: {
             rehypePlugins: [rehypeStarlightObsidian, rehypeKatex],
-            remarkPlugins: [remarkMath],
+
+            remarkPlugins: [[remarkMath, { singleDollarTextMath: config.math.singleDollarTextMath }]],
           },
           vite: {
             plugins: [vitePluginStarlightObsidianConfig(config)],

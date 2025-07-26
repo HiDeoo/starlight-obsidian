@@ -7,19 +7,14 @@ import { VFile } from 'vfile'
 
 import { remarkStarlightObsidian, type TransformContext } from './remark'
 
-const processor = remark()
-  .data('settings', { resourceLink: true })
-  .use(remarkGfm)
-  .use(remarkMath)
-  .use(remarkFrontmatter)
-  .use(remarkStarlightObsidian)
+let processor: ReturnType<typeof remark> | undefined
 
 export async function transformMarkdownToString(
   filePath: string,
   markdown: string,
   context: TransformContext,
 ): Promise<TransformResult> {
-  const file = await processor.process(getVFile(filePath, markdown, context))
+  const file = await getProcessor(context).process(getVFile(filePath, markdown, context))
 
   return {
     aliases: file.data.aliases,
@@ -33,6 +28,17 @@ export async function transformMarkdownToAST(filePath: string, markdown: string,
   const { content } = await transformMarkdownToString(filePath, markdown, context)
 
   return fromMarkdown(content)
+}
+
+function getProcessor(context: TransformContext): ReturnType<typeof remark> {
+  processor ??= remark()
+    .data('settings', { resourceLink: true })
+    .use(remarkGfm)
+    .use(remarkMath, { singleDollarTextMath: context.singleDollarTextMath })
+    .use(remarkFrontmatter)
+    .use(remarkStarlightObsidian)
+
+  return processor
 }
 
 function getVFile(filePath: string, markdown: string, context: TransformContext) {

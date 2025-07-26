@@ -46,6 +46,20 @@ const starlightObsidianConfigSchema = z.object({
    */
   ignore: z.array(z.string()).default([]),
   /**
+   * Configures math processing options.
+   */
+  math: z
+    .object({
+      /**
+       * Whether or not to support inline math expressions using single dollar signs.
+       *
+       * @default true
+       * @see https://github.com/micromark/micromark-extension-math/issues/6#issuecomment-1938838687
+       */
+      singleDollarTextMath: z.boolean().default(true),
+    })
+    .default({}),
+  /**
    * The name of the output directory containing the generated Obsidian vault pages relative to the `src/content/docs/`
    * directory.
    *

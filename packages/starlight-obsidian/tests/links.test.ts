@@ -20,7 +20,9 @@ test('formats link URLs', async () => {
     const vault = await getVault(getFixtureConfig(fixtureName))
     const paths = await getObsidianPaths(vault)
     const files = getObsidianVaultFiles(vault, paths)
-    const options = { context: { copyFrontmatter: 'none', files, output: 'notes', vault } as const }
+    const options = {
+      context: { copyFrontmatter: 'none', files, output: 'notes', singleDollarTextMath: true, vault } as const,
+    }
 
     let result = await transformFixtureMdFile(fixtureName, 'root 1.md', options)
 
