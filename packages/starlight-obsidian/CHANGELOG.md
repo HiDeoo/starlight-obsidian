@@ -1,5 +1,11 @@
 # starlight-obsidian
 
+## 0.10.1
+
+### Patch Changes
+
+- [#63](https://github.com/HiDeoo/starlight-obsidian/pull/63) [`3e638d4`](https://github.com/HiDeoo/starlight-obsidian/commit/3e638d43b191da7685d59d3bc7d86ec3de4a922f) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Setups trusted publishing using OpenID Connect (OIDC) authentication — no code changes.
+
 ## 0.10.0
 
 ### Minor Changes
