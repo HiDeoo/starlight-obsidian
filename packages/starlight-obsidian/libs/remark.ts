@@ -569,7 +569,12 @@ function getRelativeFilePath(file: VFile, relativePath: string) {
 function getAssetPath(file: VFile, relativePath: string) {
   ensureTransformContext(file)
 
-  return path.posix.join('../../..', path.posix.relative(file.dirname, file.data.vault.path), 'assets', relativePath)
+  // When output is '' or '/', files are at 2 levels deep (src/content/docs/file.mdx)
+  // Otherwise files are at 3 levels deep (src/content/docs/notes/file.mdx)
+  const outputDepth = file.data.output === '' || file.data.output === '/'
+    ? '../..'
+    : '../../..'
+  return path.posix.join(outputDepth, path.posix.relative(file.dirname, file.data.vault.path), 'assets', relativePath)
 }
 
 function getFilePathFromVaultFile(vaultFile: VaultFile, url: string) {
