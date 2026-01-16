@@ -52,3 +52,17 @@ export function slashify(filePath: string) {
 export function osPath(filePath: string) {
   return filePath.replaceAll('/', path.sep)
 }
+
+function stripLeadingSlash(href: string) {
+  if (href.startsWith('/')) href = href.slice(1)
+  return href
+}
+
+function stripTrailingSlash(href: string) {
+  if (href.endsWith('/')) href = href.slice(0, -1)
+  return href
+}
+
+export function stripLeadingAndTrailingSlashes(href: string): string {
+  return stripTrailingSlash(stripLeadingSlash(href))
+}

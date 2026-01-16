@@ -6,6 +6,7 @@ import { z } from 'astro/zod'
 
 import { starlightObsidianIntegration } from './libs/integration'
 import { getObsidianPaths, getVault } from './libs/obsidian'
+import { stripLeadingAndTrailingSlashes } from './libs/path'
 import { throwUserError } from './libs/plugin'
 import { addObsidianFiles, getSidebarFromConfig, getSidebarGroupPlaceholder, type SidebarGroup } from './libs/starlight'
 
@@ -65,7 +66,18 @@ const starlightObsidianConfigSchema = z.object({
    *
    * @default 'notes'
    */
-  output: z.string().default('notes'),
+  output: z
+    .string()
+    .default('notes')
+    .refine(
+      (value) => {
+        const label = stripLeadingAndTrailingSlashes(value)
+        return label !== '' && label !== '.' && !label.startsWith('..')
+      },
+      {
+        message: "The `output` directory cannot be empty, '.', or start with '..'.",
+      },
+    ),
   /**
    * Whether the Starlight Obsidian plugin should skip the generation of the Obsidian vault pages.
    *
