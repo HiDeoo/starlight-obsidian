@@ -91,6 +91,7 @@ export function getSidebarFromConfig(
         },
         collapsed: config.sidebar.collapsed,
         label: config.sidebar.label,
+        translations: config.sidebar.translations,
       }
     }
 

@@ -110,6 +110,12 @@ const starlightObsidianConfigSchema = z.object({
        * @default 'Notes'
        */
       label: z.string().default('Notes'),
+      /**
+       * The generated vault pages sidebar group label translations.
+       *
+       * @default {}
+       */
+      translations: z.record(z.string()).default({}),
     })
     .default({}),
   /**

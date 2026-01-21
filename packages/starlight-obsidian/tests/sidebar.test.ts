@@ -45,6 +45,7 @@ test('replaces a placeholder at the top level', () => {
         },
         "collapsed": false,
         "label": "Notes",
+        "translations": {},
       },
     ]
   `)
@@ -75,6 +76,7 @@ test('replaces a nested placeholder', () => {
             },
             "collapsed": false,
             "label": "Notes",
+            "translations": {},
           },
           {
             "label": "Getting Started",
@@ -122,6 +124,7 @@ test('replaces multiple placeholders', () => {
             },
             "collapsed": false,
             "label": "Notes",
+            "translations": {},
           },
         ],
         "label": "Guides",
@@ -133,6 +136,7 @@ test('replaces multiple placeholders', () => {
         },
         "collapsed": false,
         "label": "Notes",
+        "translations": {},
       },
     ]
   `)
@@ -141,7 +145,7 @@ test('replaces multiple placeholders', () => {
 test('uses a custom options if any', () => {
   const config = getFixtureConfig('basics', {
     output: 'custom-output',
-    sidebar: { collapsed: true, collapsedFolders: false, label: 'Custom label' },
+    sidebar: { collapsed: true, collapsedFolders: false, label: 'Custom label', translations: {} },
   })
 
   expect(getSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup)).toMatchInlineSnapshot(`
@@ -153,6 +157,7 @@ test('uses a custom options if any', () => {
         },
         "collapsed": true,
         "label": "Custom label",
+        "translations": {},
       },
     ]
   `)
@@ -178,6 +183,7 @@ test('replaces multiple placeholders for multiple plugin instances', () => {
         },
         "collapsed": false,
         "label": "Notes",
+        "translations": {},
       },
       {
         "items": [],
@@ -204,6 +210,37 @@ test('replaces multiple placeholders for multiple plugin instances', () => {
         },
         "collapsed": false,
         "label": "Notes",
+        "translations": {},
+      },
+    ]
+    `)
+})
+
+test('uses custom translations if any', () => {
+  const config = getFixtureConfig('basics', {
+    sidebar: {
+      collapsed: false,
+      label: 'Notes',
+      translations: {
+        fr: 'Notes',
+        es: 'Notas',
+      },
+    },
+  })
+
+  expect(getSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup)).toMatchInlineSnapshot(`
+    [
+      {
+        "autogenerate": {
+          "collapsed": false,
+          "directory": "notes",
+        },
+        "collapsed": false,
+        "label": "Notes",
+        "translations": {
+          "es": "Notas",
+          "fr": "Notes",
+        },
       },
     ]
   `)
