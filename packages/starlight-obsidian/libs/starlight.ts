@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import type { StarlightUserConfig } from '@astrojs/starlight/types'
+import type { HookParameters, StarlightUserConfig } from '@astrojs/starlight/types'
 import type { AstroIntegrationLogger } from 'astro'
 
 import type { StarlightObsidianConfig } from '..'
@@ -75,24 +75,39 @@ export function getSidebarGroupPlaceholder(label = starlightObsidianSidebarGroup
 
 export function getSidebarFromConfig(
   config: StarlightObsidianConfig,
-  sidebar: StarlightUserConfig['sidebar'],
+  starlightConfig: HookParameters<'config:setup'>['config'],
   sidebarGroupPlaceholder: SidebarGroup,
 ): StarlightUserConfig['sidebar'] {
-  if (!sidebar || sidebar.length === 0) {
-    return sidebar
+  if (!starlightConfig.sidebar || starlightConfig.sidebar.length === 0) {
+    return starlightConfig.sidebar
   }
 
   function replaceSidebarGroupPlaceholder(group: SidebarManualGroup): SidebarItem {
     if (group.label === sidebarGroupPlaceholder.label) {
-      return {
+      const defaultLocaleConfig = starlightConfig.locales?.[starlightConfig.defaultLocale ?? 'root']
+      const label =
+        typeof config.sidebar.label === 'string'
+          ? config.sidebar.label
+          : config.sidebar.label[defaultLocaleConfig?.lang ?? 'en']
+
+      if (!label || label.length === 0) {
+        throw new Error('The generated vault pages sidebar group label must have a key for the default language.')
+      }
+
+      const group: SidebarGroup = {
         autogenerate: {
           collapsed: config.sidebar.collapsedFolders ?? config.sidebar.collapsed,
           directory: config.output,
         },
         collapsed: config.sidebar.collapsed,
-        label: config.sidebar.label,
-        translations: config.sidebar.translations,
+        label,
       }
+
+      if (typeof config.sidebar.label !== 'string') {
+        group['translations'] = config.sidebar.label
+      }
+
+      return group
     }
 
     if (isSidebarGroup(group)) {
@@ -107,7 +122,7 @@ export function getSidebarFromConfig(
     return group
   }
 
-  return sidebar.map((item) => {
+  return starlightConfig.sidebar.map((item) => {
     return isSidebarGroup(item) ? replaceSidebarGroupPlaceholder(item) : item
   })
 }

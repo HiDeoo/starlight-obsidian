@@ -13,25 +13,25 @@ const gettingStartedLink = {
 test('does nothing with an undefined sidebar', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getSidebarFromConfig(config, undefined, obsidianSidebarGroup)).toBeUndefined()
+  expect(getTestSidebarFromConfig(config, undefined, obsidianSidebarGroup)).toBeUndefined()
 })
 
 test('does nothing with an empty sidebar', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getSidebarFromConfig(config, [], obsidianSidebarGroup)).toEqual([])
+  expect(getTestSidebarFromConfig(config, [], obsidianSidebarGroup)).toEqual([])
 })
 
 test('does nothing for a sidebar without a placeholder', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getSidebarFromConfig(config, [gettingStartedLink], obsidianSidebarGroup)).toEqual([gettingStartedLink])
+  expect(getTestSidebarFromConfig(config, [gettingStartedLink], obsidianSidebarGroup)).toEqual([gettingStartedLink])
 })
 
 test('replaces a placeholder at the top level', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup], obsidianSidebarGroup))
+  expect(getTestSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup], obsidianSidebarGroup))
     .toMatchInlineSnapshot(`
     [
       {
@@ -45,7 +45,6 @@ test('replaces a placeholder at the top level', () => {
         },
         "collapsed": false,
         "label": "Notes",
-        "translations": {},
       },
     ]
   `)
@@ -55,7 +54,7 @@ test('replaces a nested placeholder', () => {
   const config = getFixtureConfig('basics')
 
   expect(
-    getSidebarFromConfig(
+    getTestSidebarFromConfig(
       config,
       [
         {
@@ -76,7 +75,6 @@ test('replaces a nested placeholder', () => {
             },
             "collapsed": false,
             "label": "Notes",
-            "translations": {},
           },
           {
             "label": "Getting Started",
@@ -93,7 +91,7 @@ test('replaces multiple placeholders', () => {
   const config = getFixtureConfig('basics')
 
   expect(
-    getSidebarFromConfig(
+    getTestSidebarFromConfig(
       config,
       [
         gettingStartedLink,
@@ -124,7 +122,6 @@ test('replaces multiple placeholders', () => {
             },
             "collapsed": false,
             "label": "Notes",
-            "translations": {},
           },
         ],
         "label": "Guides",
@@ -136,7 +133,6 @@ test('replaces multiple placeholders', () => {
         },
         "collapsed": false,
         "label": "Notes",
-        "translations": {},
       },
     ]
   `)
@@ -145,10 +141,10 @@ test('replaces multiple placeholders', () => {
 test('uses a custom options if any', () => {
   const config = getFixtureConfig('basics', {
     output: 'custom-output',
-    sidebar: { collapsed: true, collapsedFolders: false, label: 'Custom label', translations: {} },
+    sidebar: { collapsed: true, collapsedFolders: false, label: 'Custom label' },
   })
 
-  expect(getSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup)).toMatchInlineSnapshot(`
+  expect(getTestSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup)).toMatchInlineSnapshot(`
     [
       {
         "autogenerate": {
@@ -157,7 +153,6 @@ test('uses a custom options if any', () => {
         },
         "collapsed": true,
         "label": "Custom label",
-        "translations": {},
       },
     ]
   `)
@@ -169,7 +164,11 @@ test('replaces multiple placeholders for multiple plugin instances', () => {
   const otherSidebarGroup = getSidebarGroupPlaceholder(Symbol('test'))
 
   expect(
-    getSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup, otherSidebarGroup], obsidianSidebarGroup),
+    getTestSidebarFromConfig(
+      config,
+      [gettingStartedLink, obsidianSidebarGroup, otherSidebarGroup],
+      obsidianSidebarGroup,
+    ),
   ).toMatchInlineSnapshot(`
     [
       {
@@ -183,7 +182,6 @@ test('replaces multiple placeholders for multiple plugin instances', () => {
         },
         "collapsed": false,
         "label": "Notes",
-        "translations": {},
       },
       {
         "items": [],
@@ -192,8 +190,9 @@ test('replaces multiple placeholders for multiple plugin instances', () => {
     ]
   `)
 
-  expect(getSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup, otherSidebarGroup], otherSidebarGroup))
-    .toMatchInlineSnapshot(`
+  expect(
+    getTestSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup, otherSidebarGroup], otherSidebarGroup),
+  ).toMatchInlineSnapshot(`
     [
       {
         "label": "Getting Started",
@@ -210,7 +209,6 @@ test('replaces multiple placeholders for multiple plugin instances', () => {
         },
         "collapsed": false,
         "label": "Notes",
-        "translations": {},
       },
     ]
     `)
@@ -220,15 +218,14 @@ test('uses custom translations if any', () => {
   const config = getFixtureConfig('basics', {
     sidebar: {
       collapsed: false,
-      label: 'Notes',
-      translations: {
-        fr: 'Notes',
+      label: {
+        en: 'Notes',
         es: 'Notas',
       },
     },
   })
 
-  expect(getSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup)).toMatchInlineSnapshot(`
+  expect(getTestSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup)).toMatchInlineSnapshot(`
     [
       {
         "autogenerate": {
@@ -238,10 +235,36 @@ test('uses custom translations if any', () => {
         "collapsed": false,
         "label": "Notes",
         "translations": {
+          "en": "Notes",
           "es": "Notas",
-          "fr": "Notes",
         },
       },
     ]
   `)
 })
+
+test('throws if using translations without a key for the default language', () => {
+  const config = getFixtureConfig('basics', {
+    sidebar: {
+      collapsed: false,
+      label: {
+        fr: 'Notes',
+        es: 'Notas',
+      },
+    },
+  })
+
+  expect(() =>
+    getTestSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup),
+  ).toThrowErrorMatchingInlineSnapshot(
+    `[Error: The generated vault pages sidebar group label must have a key for the default language.]`,
+  )
+})
+
+function getTestSidebarFromConfig(
+  config: Parameters<typeof getSidebarFromConfig>[0],
+  sidebar: Parameters<typeof getSidebarFromConfig>[1]['sidebar'],
+  placeholder: Parameters<typeof getSidebarFromConfig>[2],
+) {
+  return getSidebarFromConfig(config, { title: 'Test', sidebar }, placeholder)
+}

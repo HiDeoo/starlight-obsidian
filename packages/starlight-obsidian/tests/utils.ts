@@ -34,7 +34,6 @@ export function getFixtureConfig(
     sidebar: {
       collapsed: false,
       label: 'Notes',
-      translations: {},
     },
     math: {
       singleDollarTextMath: true,
