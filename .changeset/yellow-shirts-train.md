@@ -2,4 +2,4 @@
 'starlight-obsidian': minor
 ---
 
-Added support for sidebar internationalization and corresponding tests.
+Adds support for translating the generated vault pages sidebar group label.
