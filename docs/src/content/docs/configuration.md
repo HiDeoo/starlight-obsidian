@@ -118,10 +118,24 @@ It accepts the following options:
 
 ### `label`
 
-**Type:** `string`  
+**Type:** `string | Record<string, string>`  
 **Default:** `'Notes'`
 
 The generated vault pages sidebar group label.
+
+The value can be a string, or for multilingual sites, an object with values for each different locale.
+When using the object form, the keys must be BCP-47 tags (e.g. `en`, `fr`, or `zh-CN`):
+
+```ts
+starlightObsidian({
+  sidebar: {
+    label: {
+      en: 'Notes',
+      es: 'Notas',
+    },
+  },
+})
+```
 
 ### `collapsed`
 

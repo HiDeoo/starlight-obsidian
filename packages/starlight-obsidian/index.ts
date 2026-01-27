@@ -107,9 +107,12 @@ const starlightObsidianConfigSchema = z.object({
       /**
        * The generated vault pages sidebar group label.
        *
+       * The value can be a string, or for multilingual sites, an object with values for each different locale.
+       * When using the object form, the keys must be BCP-47 tags (e.g. `en`, `ar`, or `zh-CN`).
+       *
        * @default 'Notes'
        */
-      label: z.string().default('Notes'),
+      label: z.union([z.string(), z.record(z.string())]).default('Notes'),
     })
     .default({}),
   /**
@@ -191,7 +194,7 @@ function makeStarlightObsidianPlugin(
               ...overrideStarlightComponent(starlightConfig.components, logger, 'PageTitle'),
             },
             customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles/common'],
-            sidebar: getSidebarFromConfig(config, starlightConfig.sidebar, sidebarGroup),
+            sidebar: getSidebarFromConfig(config, starlightConfig, sidebarGroup),
           }
 
           if (config.skipGeneration) {
