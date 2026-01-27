@@ -1,5 +1,13 @@
 # starlight-obsidian
 
+## 0.11.0
+
+### Minor Changes
+
+- [#67](https://github.com/HiDeoo/starlight-obsidian/pull/67) [`2969770`](https://github.com/HiDeoo/starlight-obsidian/commit/296977054e79da21b3b081f245b9e4ed69d26066) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Improves error message when the `output` directory configuration option is invalid.
+
+- [#69](https://github.com/HiDeoo/starlight-obsidian/pull/69) [`619d371`](https://github.com/HiDeoo/starlight-obsidian/commit/619d371f1a14d48cf68702f28245ac42deee4a39) Thanks [@AsterisMono](https://github.com/AsterisMono)! - Adds support for translating the generated vault pages sidebar group label.
+
 ## 0.10.1
 
 ### Patch Changes
