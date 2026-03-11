@@ -12,15 +12,15 @@
     "lint": "eslint . --cache --max-warnings=0"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.34.0",
-    "astro": "^5.7.4",
-    "sharp": "^0.33.5",
+    "@astrojs/starlight": "^0.38.0",
+    "astro": "^6.0.3",
+    "sharp": "^0.34.5",
     "starlight-obsidian": "workspace:*"
   },
   "engines": {
-    "node": ">=18.17.1"
+    "node": ">=22.12.0"
   },
-  "packageManager": "pnpm@8.14.1",
+  "packageManager": "pnpm@10.32.1",
   "private": true,
   "sideEffects": false,
   "keywords": [

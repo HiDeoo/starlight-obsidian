@@ -509,9 +509,7 @@ function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFron
   }
 
   if (file.data.includeKatexStyles) {
-    if (!frontmatter.head) {
-      frontmatter.head = []
-    }
+    frontmatter.head ??= []
 
     frontmatter.head.push({
       tag: 'link',
@@ -525,9 +523,7 @@ function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFron
   const ogImage = obsidianFrontmatter?.cover ?? obsidianFrontmatter?.image
 
   if (ogImage && isAbsoluteUrl(ogImage)) {
-    if (!frontmatter.head) {
-      frontmatter.head = []
-    }
+    frontmatter.head ??= []
 
     if (!frontmatter.head.some((tag) => tag.attrs['property'] === 'og:image')) {
       frontmatter.head.push({ tag: 'meta', attrs: { property: 'og:image', content: ogImage } })
@@ -632,9 +628,7 @@ function handleImagesWithSize(node: Image, context: VisitorContext, type: 'asset
   } else {
     const importId = generateAssetImportId()
 
-    if (!context.file.data.assetImports) {
-      context.file.data.assetImports = []
-    }
+    context.file.data.assetImports ??= []
 
     context.file.data.assetImports.push([importId, node.url])
 

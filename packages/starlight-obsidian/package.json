@@ -21,43 +21,43 @@
     "lint": "eslint . --cache --max-warnings=0"
   },
   "dependencies": {
-    "@astro-community/astro-embed-twitter": "^0.5.8",
-    "@astro-community/astro-embed-youtube": "^0.5.6",
+    "@astro-community/astro-embed-twitter": "^0.5.11",
+    "@astro-community/astro-embed-youtube": "^0.5.10",
     "decode-uri-component": "^0.4.1",
     "github-slugger": "^2.0.0",
-    "globby": "^14.0.2",
-    "hast-util-to-html": "^9.0.4",
-    "is-absolute-url": "^4.0.1",
-    "mdast-util-find-and-replace": "^3.0.1",
-    "mdast-util-from-markdown": "^2.0.2",
-    "mdast-util-to-hast": "^13.2.0",
-    "nanoid": "^5.0.9",
+    "globby": "^16.1.1",
+    "hast-util-to-html": "^9.0.5",
+    "is-absolute-url": "^5.0.0",
+    "mdast-util-find-and-replace": "^3.0.2",
+    "mdast-util-from-markdown": "^2.0.3",
+    "mdast-util-to-hast": "^13.2.1",
+    "nanoid": "^5.1.6",
     "rehype": "^13.0.2",
     "rehype-katex": "^7.0.1",
     "rehype-mermaid": "^2.1.0",
     "remark": "^15.0.1",
     "remark-frontmatter": "^5.0.0",
-    "remark-gfm": "^4.0.0",
+    "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
-    "unist-util-visit": "^5.0.0",
+    "unist-util-visit": "^5.1.0",
     "vfile": "^6.0.3",
-    "yaml": "^2.6.1"
+    "yaml": "^2.8.2"
   },
   "devDependencies": {
     "@types/hast": "^3.0.4",
     "@types/mdast": "^4.0.4",
-    "@types/node": "^18.19.68",
+    "@types/node": "^22.19.15",
     "@types/unist": "^3.0.3",
-    "typescript": "^5.7.2",
-    "vitest": "2.1.6"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "peerDependencies": {
     "@astrojs/starlight": ">=0.34.0"
   },
   "engines": {
-    "node": ">=18.17.1"
+    "node": ">=22.12.0"
   },
-  "packageManager": "pnpm@8.14.1",
+  "packageManager": "pnpm@10.32.1",
   "publishConfig": {
     "access": "public"
   },

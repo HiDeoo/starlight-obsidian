@@ -15,8 +15,7 @@ export function rehypeStarlightObsidian() {
         const lastChild = node.children.at(-1)
 
         if (
-          !lastChild ||
-          lastChild.type !== 'element' ||
+          lastChild?.type !== 'element' ||
           !(lastChild.tagName === 'p' || lastChild.tagName === 'ul' || lastChild.tagName === 'ol')
         ) {
           return CONTINUE

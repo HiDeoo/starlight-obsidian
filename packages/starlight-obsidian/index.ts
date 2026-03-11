@@ -59,7 +59,7 @@ const starlightObsidianConfigSchema = z.object({
        */
       singleDollarTextMath: z.boolean().default(true),
     })
-    .default({}),
+    .prefault({}),
   /**
    * The name of the output directory containing the generated Obsidian vault pages relative to the `src/content/docs/`
    * directory.
@@ -112,9 +112,9 @@ const starlightObsidianConfigSchema = z.object({
        *
        * @default 'Notes'
        */
-      label: z.union([z.string(), z.record(z.string())]).default('Notes'),
+      label: z.union([z.string(), z.record(z.string(), z.string())]).default('Notes'),
     })
-    .default({}),
+    .prefault({}),
   /**
    * Determines if the table of contents top-level heading should be the Starlight default one ("Overview") or the page
    * title.
