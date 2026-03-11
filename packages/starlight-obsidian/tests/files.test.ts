@@ -80,6 +80,7 @@ test('does not copy canvas', async () => {
 })
 
 test('emits aliases', async () => {
+  readFileSpy.mockReset()
   readFileSpy = vi.spyOn(fs, 'readFile').mockResolvedValueOnce(`{}`).mockResolvedValue(`---
 aliases:
   - foo
@@ -107,6 +108,7 @@ Test`)
 })
 
 test("skips files with the `publish` property set to `false` or `'false'`", async () => {
+  readFileSpy.mockReset()
   readFileSpy = vi
     .spyOn(fs, 'readFile')
     .mockResolvedValueOnce(`{}`)
