@@ -1,5 +1,15 @@
 # starlight-obsidian
 
+## 0.12.0
+
+### Minor Changes
+
+- [#70](https://github.com/HiDeoo/starlight-obsidian/pull/70) [`877dbb6`](https://github.com/HiDeoo/starlight-obsidian/commit/877dbb65ac7beff9e3110db1ac1ba5ec936de342) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Adds support for Astro v6, drops support for Astro v5.
+
+  ⚠️ **BREAKING CHANGE:** The minimum supported version of Starlight is now `0.38.0`.
+
+  Please follow the [upgrade guide](https://github.com/withastro/starlight/releases/tag/%40astrojs%2Fstarlight%400.38.0) to update your project.
+
 ## 0.11.0
 
 ### Minor Changes
