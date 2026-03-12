@@ -1,5 +1,11 @@
 # starlight-obsidian
 
+## 0.12.1
+
+### Patch Changes
+
+- [#72](https://github.com/HiDeoo/starlight-obsidian/pull/72) [`daada18`](https://github.com/HiDeoo/starlight-obsidian/commit/daada18956b50ea84dd52045ca54016860e5823e) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Improves the error message logged when the plugin configuration is invalid.
+
 ## 0.12.0
 
 ### Minor Changes
