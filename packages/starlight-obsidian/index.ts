@@ -75,7 +75,7 @@ const starlightObsidianConfigSchema = z.object({
         return label !== '' && label !== '.' && !label.startsWith('..')
       },
       {
-        message: "The `output` directory cannot be empty, '.', or start with '..'.",
+        error: "The `output` directory cannot be empty, '.', or start with '..'.",
       },
     ),
   /**
@@ -163,7 +163,10 @@ function makeStarlightObsidianPlugin(
       }
 
       throwUserError(
-        `The provided plugin configuration is invalid.\n${parsedConfig.error.issues.map((issue) => issue.message).join('\n')}`,
+        `Invalid starlight-obsidian configuration:
+
+${z.prettifyError(parsedConfig.error)}
+`,
       )
     }
 
