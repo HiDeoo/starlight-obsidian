@@ -12,9 +12,9 @@
     "lint": "eslint . --cache --max-warnings=0"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.38.0",
+    "@astrojs/starlight": "^0.39.0",
     "@hideoo/starlight-plugins-docs-components": "^0.4.2",
-    "astro": "^6.0.3",
+    "astro": "^6.3.0",
     "sharp": "^0.34.5",
     "starlight-obsidian": "workspace:*"
   },

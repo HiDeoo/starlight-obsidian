@@ -9,7 +9,7 @@ The Starlight Obsidian plugin can be configured inside the `astro.config.mjs` co
 // astro.config.mjs
 import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
-import starlightObsidian, { obsidianSidebarGroup } from 'starlight-obsidian'
+import starlightObsidian, { obsidianSidebarEntries } from 'starlight-obsidian'
 
 export default defineConfig({
   integrations: [
@@ -66,7 +66,7 @@ Read more about deploying your site in the [“Deployment”](/guides/deployment
 
 **Type:** [`StarlightObsidianSidebarConfig`](#sidebar-configuration)
 
-The generated vault pages [sidebar group configuration](#sidebar-configuration).
+The generated vault pages [sidebar entries configuration](#sidebar-configuration).
 
 ### `configFolder`
 
@@ -113,40 +113,12 @@ When disabled, you can still use double dollar signs (`$$`) for both inline and 
 
 ## Sidebar configuration
 
-The sidebar configuration is an object used to configure the generated vault pages sidebar group.
+The sidebar configuration is an object used to configure the generated vault pages sidebar entries.
 It accepts the following options:
-
-### `label`
-
-**Type:** `string | Record<string, string>`  
-**Default:** `'Notes'`
-
-The generated vault pages sidebar group label.
-
-The value can be a string, or for multilingual sites, an object with values for each different locale.
-When using the object form, the keys must be BCP-47 tags (e.g. `en`, `fr`, or `zh-CN`):
-
-```ts
-starlightObsidian({
-  sidebar: {
-    label: {
-      en: 'Notes',
-      es: 'Notas',
-    },
-  },
-})
-```
-
-### `collapsed`
-
-**Type:** `boolean`  
-**Default:** `false`
-
-Whether the generated vault pages root sidebar group should be collapsed by default.
 
 ### `collapsedFolders`
 
 **Type:** `boolean`  
-**Default:** Default to the value of the [`collapsed`](#collapsed) sidebar option.
+**Default:** `false`
 
-Whether the sidebar groups of your vault nested folders should be collapsed by default.
+Whether the sidebar groups generated from your vault nested folders should be collapsed by default.

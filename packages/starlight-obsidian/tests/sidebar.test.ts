@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 
-import { obsidianSidebarGroup } from '..'
-import { getSidebarFromConfig, getSidebarGroupPlaceholder } from '../libs/starlight'
+import starlightObsidianPlugin, { obsidianSidebarEntries } from '..'
+import { getSidebarFromConfig, getSidebarEntriesPlaceholder } from '../libs/starlight'
 
 import { getFixtureConfig } from './utils'
 
@@ -13,41 +13,39 @@ const gettingStartedLink = {
 test('does nothing with an undefined sidebar', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getTestSidebarFromConfig(config, undefined, obsidianSidebarGroup)).toBeUndefined()
+  expect(getTestSidebarFromConfig(config, undefined, obsidianSidebarEntries)).toBeUndefined()
 })
 
 test('does nothing with an empty sidebar', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getTestSidebarFromConfig(config, [], obsidianSidebarGroup)).toEqual([])
+  expect(getTestSidebarFromConfig(config, [], obsidianSidebarEntries)).toEqual([])
 })
 
 test('does nothing for a sidebar without a placeholder', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getTestSidebarFromConfig(config, [gettingStartedLink], obsidianSidebarGroup)).toEqual([gettingStartedLink])
+  expect(getTestSidebarFromConfig(config, [gettingStartedLink], obsidianSidebarEntries)).toEqual([gettingStartedLink])
 })
 
 test('replaces a placeholder at the top level', () => {
   const config = getFixtureConfig('basics')
 
-  expect(getTestSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup], obsidianSidebarGroup))
+  expect(getTestSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarEntries], obsidianSidebarEntries))
     .toMatchInlineSnapshot(`
-    [
-      {
-        "label": "Getting Started",
-        "link": "/guides/getting-started/",
-      },
-      {
-        "autogenerate": {
-          "collapsed": false,
-          "directory": "notes",
+      [
+        {
+          "label": "Getting Started",
+          "link": "/guides/getting-started/",
         },
-        "collapsed": false,
-        "label": "Notes",
-      },
-    ]
-  `)
+        {
+          "autogenerate": {
+            "collapsed": false,
+            "directory": "notes",
+          },
+        },
+      ]
+    `)
 })
 
 test('replaces a nested placeholder', () => {
@@ -59,10 +57,10 @@ test('replaces a nested placeholder', () => {
       [
         {
           label: 'Guides',
-          items: [obsidianSidebarGroup, gettingStartedLink],
+          items: [obsidianSidebarEntries, gettingStartedLink],
         },
       ],
-      obsidianSidebarGroup,
+      obsidianSidebarEntries,
     ),
   ).toMatchInlineSnapshot(`
     [
@@ -73,8 +71,6 @@ test('replaces a nested placeholder', () => {
               "collapsed": false,
               "directory": "notes",
             },
-            "collapsed": false,
-            "label": "Notes",
           },
           {
             "label": "Getting Started",
@@ -97,11 +93,11 @@ test('replaces multiple placeholders', () => {
         gettingStartedLink,
         {
           label: 'Guides',
-          items: [gettingStartedLink, obsidianSidebarGroup],
+          items: [gettingStartedLink, obsidianSidebarEntries],
         },
-        obsidianSidebarGroup,
+        obsidianSidebarEntries,
       ],
-      obsidianSidebarGroup,
+      obsidianSidebarEntries,
     ),
   ).toMatchInlineSnapshot(`
     [
@@ -120,8 +116,6 @@ test('replaces multiple placeholders', () => {
               "collapsed": false,
               "directory": "notes",
             },
-            "collapsed": false,
-            "label": "Notes",
           },
         ],
         "label": "Guides",
@@ -131,8 +125,6 @@ test('replaces multiple placeholders', () => {
           "collapsed": false,
           "directory": "notes",
         },
-        "collapsed": false,
-        "label": "Notes",
       },
     ]
   `)
@@ -141,18 +133,16 @@ test('replaces multiple placeholders', () => {
 test('uses a custom options if any', () => {
   const config = getFixtureConfig('basics', {
     output: 'custom-output',
-    sidebar: { collapsed: true, collapsedFolders: false, label: 'Custom label' },
+    sidebar: { collapsedFolders: true },
   })
 
-  expect(getTestSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup)).toMatchInlineSnapshot(`
+  expect(getTestSidebarFromConfig(config, [obsidianSidebarEntries], obsidianSidebarEntries)).toMatchInlineSnapshot(`
     [
       {
         "autogenerate": {
-          "collapsed": false,
+          "collapsed": true,
           "directory": "custom-output",
         },
-        "collapsed": true,
-        "label": "Custom label",
       },
     ]
   `)
@@ -161,13 +151,13 @@ test('uses a custom options if any', () => {
 test('replaces multiple placeholders for multiple plugin instances', () => {
   const config = getFixtureConfig('basics')
 
-  const otherSidebarGroup = getSidebarGroupPlaceholder(Symbol('test'))
+  const otherSidebarGroup = getSidebarEntriesPlaceholder(Symbol('test'))
 
   expect(
     getTestSidebarFromConfig(
       config,
-      [gettingStartedLink, obsidianSidebarGroup, otherSidebarGroup],
-      obsidianSidebarGroup,
+      [gettingStartedLink, obsidianSidebarEntries, otherSidebarGroup],
+      obsidianSidebarEntries,
     ),
   ).toMatchInlineSnapshot(`
     [
@@ -180,18 +170,21 @@ test('replaces multiple placeholders for multiple plugin instances', () => {
           "collapsed": false,
           "directory": "notes",
         },
-        "collapsed": false,
-        "label": "Notes",
       },
       {
-        "items": [],
-        "label": "Symbol(test)",
+        "autogenerate": {
+          "directory": "Symbol(test)",
+        },
       },
     ]
   `)
 
   expect(
-    getTestSidebarFromConfig(config, [gettingStartedLink, obsidianSidebarGroup, otherSidebarGroup], otherSidebarGroup),
+    getTestSidebarFromConfig(
+      config,
+      [gettingStartedLink, obsidianSidebarEntries, otherSidebarGroup],
+      otherSidebarGroup,
+    ),
   ).toMatchInlineSnapshot(`
     [
       {
@@ -199,65 +192,45 @@ test('replaces multiple placeholders for multiple plugin instances', () => {
         "link": "/guides/getting-started/",
       },
       {
-        "items": [],
-        "label": "Symbol(StarlightObsidianSidebarGroupLabel)",
+        "autogenerate": {
+          "directory": "Symbol(StarlightObsidianSidebarEntriesDirectory)",
+        },
       },
       {
         "autogenerate": {
           "collapsed": false,
           "directory": "notes",
-        },
-        "collapsed": false,
-        "label": "Notes",
-      },
-    ]
-    `)
-})
-
-test('uses custom translations if any', () => {
-  const config = getFixtureConfig('basics', {
-    sidebar: {
-      collapsed: false,
-      label: {
-        en: 'Notes',
-        es: 'Notas',
-      },
-    },
-  })
-
-  expect(getTestSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup)).toMatchInlineSnapshot(`
-    [
-      {
-        "autogenerate": {
-          "collapsed": false,
-          "directory": "notes",
-        },
-        "collapsed": false,
-        "label": "Notes",
-        "translations": {
-          "en": "Notes",
-          "es": "Notas",
         },
       },
     ]
   `)
 })
 
-test('throws if using translations without a key for the default language', () => {
-  const config = getFixtureConfig('basics', {
-    sidebar: {
-      collapsed: false,
-      label: {
-        fr: 'Notes',
-        es: 'Notas',
-      },
-    },
-  })
-
+test('throws when using the removed sidebar label option', () => {
   expect(() =>
-    getTestSidebarFromConfig(config, [obsidianSidebarGroup], obsidianSidebarGroup),
+    starlightObsidianPlugin({
+      sidebar: {
+        // @ts-expect-error - Testing removed option.
+        label: 'Notes',
+      },
+      vault: '../fixtures/basics',
+    }),
   ).toThrowErrorMatchingInlineSnapshot(
-    `[Error: The generated vault pages sidebar group label must have a key for the default language.]`,
+    `[AstroUserError: The \`sidebar.label\` and \`sidebar.collapsed\` options have been removed.]`,
+  )
+})
+
+test('throws when using the removed sidebar collapsed option', () => {
+  expect(() =>
+    starlightObsidianPlugin({
+      sidebar: {
+        // @ts-expect-error - Testing removed option.
+        collapsed: true,
+      },
+      vault: '../fixtures/basics',
+    }),
+  ).toThrowErrorMatchingInlineSnapshot(
+    `[AstroUserError: The \`sidebar.label\` and \`sidebar.collapsed\` options have been removed.]`,
   )
 })
 

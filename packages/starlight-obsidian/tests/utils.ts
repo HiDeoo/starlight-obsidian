@@ -32,8 +32,7 @@ export function getFixtureConfig(
     tableOfContentsOverview: 'default',
     output: 'notes',
     sidebar: {
-      collapsed: false,
-      label: 'Notes',
+      collapsedFolders: false,
     },
     math: {
       singleDollarTextMath: true,

@@ -47,7 +47,7 @@ import { PackageManagers } from '@hideoo/starlight-plugins-docs-components'
    // astro.config.mjs
    import starlight from '@astrojs/starlight'
    import { defineConfig } from 'astro/config'
-   +import starlightObsidian, { obsidianSidebarGroup } from 'starlight-obsidian'
+   +import starlightObsidian, { obsidianSidebarEntries } from 'starlight-obsidian'
 
    export default defineConfig({
      integrations: [
@@ -63,8 +63,11 @@ import { PackageManagers } from '@hideoo/starlight-plugins-docs-components'
              label: 'Guides',
              items: ['guides/example'],
            },
-   +        // Add the generated sidebar group to the sidebar.
-   +        obsidianSidebarGroup,
+   +        {
+   +          label: 'Notes',
+   +          // Add the generated Obsidian sidebar entries to this group.
+   +          items: [obsidianSidebarEntries],
+   +        },
          ],
          title: 'My Docs',
        }),
