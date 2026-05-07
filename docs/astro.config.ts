@@ -1,6 +1,6 @@
 import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
-import starlightObsidian, { obsidianSidebarGroup } from 'starlight-obsidian'
+import starlightObsidian, { obsidianSidebarEntries } from 'starlight-obsidian'
 
 const site =
   process.env['VERCEL_ENV'] !== 'production' && process.env['VERCEL_URL']
@@ -24,11 +24,6 @@ export default defineConfig({
       plugins: [
         starlightObsidian({
           output: 'demo',
-          sidebar: {
-            collapsed: true,
-            collapsedFolders: false,
-            label: 'Demo',
-          },
           vault: '../fixtures/demo',
         }),
       ],
@@ -51,7 +46,11 @@ export default defineConfig({
           label: 'Resources',
           items: [{ label: 'Plugins and Tools', link: '/resources/starlight/' }],
         },
-        obsidianSidebarGroup,
+        {
+          label: 'Demo',
+          items: [obsidianSidebarEntries],
+          collapsed: true,
+        },
       ],
       social: [
         { href: 'https://bsky.app/profile/hideoo.dev', icon: 'blueSky', label: 'Bluesky' },

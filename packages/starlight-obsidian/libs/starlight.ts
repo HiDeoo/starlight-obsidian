@@ -15,7 +15,7 @@ const assetsPath = 'src/assets'
 const docsPath = 'src/content/docs'
 const publicPath = 'public'
 
-const starlightObsidianSidebarGroupLabel = Symbol('StarlightObsidianSidebarGroupLabel')
+const starlightObsidianSidebarEntriesDirectory = Symbol('StarlightObsidianSidebarEntriesDirectory')
 
 const obsidianToStarlightCalloutTypeMap: Record<string, string> = {
   note: 'note',
@@ -66,65 +66,40 @@ const starlightFrontmatterKeys = [
   'sidebar',
 ]
 
-export function getSidebarGroupPlaceholder(label = starlightObsidianSidebarGroupLabel): SidebarManualGroup {
-  return {
-    items: [],
-    label: label.toString(),
-  }
+export function getSidebarEntriesPlaceholder(directory = starlightObsidianSidebarEntriesDirectory): SidebarAutoEntries {
+  return { autogenerate: { directory: directory.toString() } }
 }
 
 export function getSidebarFromConfig(
   config: StarlightObsidianConfig,
   starlightConfig: HookParameters<'config:setup'>['config'],
-  sidebarGroupPlaceholder: SidebarGroup,
+  sidebarEntriesPlaceholder: SidebarAutoEntries,
 ): StarlightUserConfig['sidebar'] {
   if (!starlightConfig.sidebar || starlightConfig.sidebar.length === 0) {
     return starlightConfig.sidebar
   }
 
-  function replaceSidebarGroupPlaceholder(group: SidebarManualGroup): SidebarItem {
-    if (group.label === sidebarGroupPlaceholder.label) {
-      const defaultLocaleConfig = starlightConfig.locales?.[starlightConfig.defaultLocale ?? 'root']
-      const label =
-        typeof config.sidebar.label === 'string'
-          ? config.sidebar.label
-          : config.sidebar.label[defaultLocaleConfig?.lang ?? 'en']
-
-      if (!label || label.length === 0) {
-        throw new Error('The generated vault pages sidebar group label must have a key for the default language.')
-      }
-
-      const group: SidebarGroup = {
-        autogenerate: {
-          collapsed: config.sidebar.collapsedFolders ?? config.sidebar.collapsed,
-          directory: config.output,
-        },
-        collapsed: config.sidebar.collapsed,
-        label,
-      }
-
-      if (typeof config.sidebar.label !== 'string') {
-        group['translations'] = config.sidebar.label
-      }
-
-      return group
-    }
-
-    if (isSidebarGroup(group)) {
+  function replaceSidebarEntriesPlaceholder(item: SidebarItem): SidebarItem {
+    if (isObsidianSidebarEntriesPlaceholder(item, sidebarEntriesPlaceholder)) {
       return {
-        ...group,
-        items: group.items.map((item) => {
-          return isSidebarGroup(item) ? replaceSidebarGroupPlaceholder(item) : item
-        }),
+        autogenerate: {
+          directory: config.output,
+          collapsed: config.sidebar.collapsedFolders,
+        },
       }
     }
 
-    return group
+    if (isSidebarGroup(item)) {
+      return {
+        ...item,
+        items: item.items.map(replaceSidebarEntriesPlaceholder),
+      }
+    }
+
+    return item
   }
 
-  return starlightConfig.sidebar.map((item) => {
-    return isSidebarGroup(item) ? replaceSidebarGroupPlaceholder(item) : item
-  })
+  return starlightConfig.sidebar.map(replaceSidebarEntriesPlaceholder)
 }
 
 export async function addObsidianFiles(
@@ -297,8 +272,19 @@ function throwVaultFileError(error: unknown, vaultFile: VaultFile): never {
   throw new Error(`${vaultFile.path} — ${error instanceof Error ? error.message : String(error)}`, { cause: error })
 }
 
-function isSidebarGroup(item: SidebarItem): item is SidebarManualGroup {
+function isSidebarGroup(item: SidebarItem): item is SidebarGroup {
   return typeof item === 'object' && 'items' in item
+}
+
+function isObsidianSidebarEntriesPlaceholder(
+  item: SidebarItem,
+  placeholder: SidebarAutoEntries,
+): item is SidebarAutoEntries {
+  return (
+    typeof item === 'object' &&
+    'autogenerate' in item &&
+    item.autogenerate.directory === placeholder.autogenerate.directory
+  )
 }
 
 interface OutputPaths {
@@ -307,10 +293,6 @@ interface OutputPaths {
   file: string
 }
 
-interface SidebarManualGroup {
-  items: SidebarManualGroup[]
-  label: string
-}
-
 type SidebarItem = NonNullable<StarlightUserConfig['sidebar']>[number]
-export type SidebarGroup = Exclude<SidebarItem, string>
+type SidebarGroup = Extract<SidebarItem, { items: unknown[] }>
+export type SidebarAutoEntries = Extract<SidebarItem, { autogenerate: unknown }>

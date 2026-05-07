@@ -8,7 +8,12 @@ import { starlightObsidianIntegration } from './libs/integration'
 import { getObsidianPaths, getVault } from './libs/obsidian'
 import { stripLeadingAndTrailingSlashes } from './libs/path'
 import { throwUserError } from './libs/plugin'
-import { addObsidianFiles, getSidebarFromConfig, getSidebarGroupPlaceholder, type SidebarGroup } from './libs/starlight'
+import {
+  addObsidianFiles,
+  getSidebarEntriesPlaceholder,
+  getSidebarFromConfig,
+  type SidebarAutoEntries,
+} from './libs/starlight'
 
 const starlightObsidianConfigSchema = z.object({
   /**
@@ -88,31 +93,24 @@ const starlightObsidianConfigSchema = z.object({
    */
   skipGeneration: z.boolean().default(false),
   /**
-   * The generated vault pages sidebar group configuration.
+   * The generated vault pages sidebar entries configuration.
    */
   sidebar: z
     .object({
       /**
-       * Whether the generated vault pages root sidebar group should be collapsed by default.
-       *
-       * @default false
+       * @deprecated Use the `collapsed` option of the Starlight sidebar group that contains the vault pages instead.
        */
-      collapsed: z.boolean().default(false),
+      collapsed: z.never().optional(),
       /**
        * Whether the sidebar groups of your vault nested folders should be collapsed by default.
        *
-       * Defaults to the value of the `collapsed` option.
+       * @default false
        */
-      collapsedFolders: z.boolean().optional(),
+      collapsedFolders: z.boolean().default(false),
       /**
-       * The generated vault pages sidebar group label.
-       *
-       * The value can be a string, or for multilingual sites, an object with values for each different locale.
-       * When using the object form, the keys must be BCP-47 tags (e.g. `en`, `ar`, or `zh-CN`).
-       *
-       * @default 'Notes'
+       * @deprecated Use the `label` option of the Starlight sidebar group that contains the vault pages instead.
        */
-      label: z.union([z.string(), z.record(z.string(), z.string())]).default('Notes'),
+      label: z.never().optional(),
     })
     .prefault({}),
   /**
@@ -131,19 +129,22 @@ const starlightObsidianConfigSchema = z.object({
 
 let overridesInjected = false
 
-export const obsidianSidebarGroup = getSidebarGroupPlaceholder()
+export const obsidianSidebarEntries = getSidebarEntriesPlaceholder()
 
 export default function starlightObsidianPlugin(userConfig: StarlightObsidianUserConfig): StarlightPlugin {
-  return makeStarlightObsidianPlugin(obsidianSidebarGroup)(userConfig)
+  return makeStarlightObsidianPlugin(obsidianSidebarEntries)(userConfig)
 }
 
-export function createStarlightObsidianPlugin(): [plugin: typeof starlightObsidianPlugin, sidebarGroup: SidebarGroup] {
-  const sidebarGroup = getSidebarGroupPlaceholder(Symbol(randomBytes(24).toString('base64url')))
-  return [makeStarlightObsidianPlugin(sidebarGroup), sidebarGroup]
+export function createStarlightObsidianPlugin(): [
+  plugin: typeof starlightObsidianPlugin,
+  sidebarEntries: SidebarAutoEntries,
+] {
+  const sidebarEntries = getSidebarEntriesPlaceholder(Symbol(randomBytes(24).toString('base64url')))
+  return [makeStarlightObsidianPlugin(sidebarEntries), sidebarEntries]
 }
 
 function makeStarlightObsidianPlugin(
-  sidebarGroup: SidebarGroup,
+  sidebarEntries: SidebarAutoEntries,
 ): (userConfig: StarlightObsidianUserConfig) => StarlightPlugin {
   overridesInjected = true
 
@@ -151,6 +152,18 @@ function makeStarlightObsidianPlugin(
     const parsedConfig = starlightObsidianConfigSchema.safeParse(userConfig)
 
     if (!parsedConfig.success) {
+      const isUsingRemovedSidebarGroupConfig = parsedConfig.error.issues.some((issue) => {
+        const path = issue.path.join('.')
+        return path === 'sidebar.label' || path === 'sidebar.collapsed'
+      })
+
+      if (isUsingRemovedSidebarGroupConfig) {
+        throwUserError(
+          'The `sidebar.label` and `sidebar.collapsed` options have been removed.',
+          'Create a group in your Starlight sidebar configuration, set the `label` and `collapsed` options on that group, and add `obsidianSidebarEntries` to its `items` array.\nFor more information see https://starlight.astro.build/guides/sidebar/#groups',
+        )
+      }
+
       const isUsingDeprecatedCopyStarlightFrontmatter = parsedConfig.error.issues.some(
         (issue) => issue.path.join('.') === 'copyStarlightFrontmatter',
       )
@@ -197,7 +210,7 @@ ${z.prettifyError(parsedConfig.error)}
               ...overrideStarlightComponent(starlightConfig.components, logger, 'PageTitle'),
             },
             customCss: [...(starlightConfig.customCss ?? []), 'starlight-obsidian/styles/common'],
-            sidebar: getSidebarFromConfig(config, starlightConfig, sidebarGroup),
+            sidebar: getSidebarFromConfig(config, starlightConfig, sidebarEntries),
           }
 
           if (config.skipGeneration) {

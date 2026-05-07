@@ -1,6 +1,6 @@
 import starlight from '@astrojs/starlight'
 import { defineConfig } from 'astro/config'
-import starlightObsidian, { obsidianSidebarGroup } from 'starlight-obsidian'
+import starlightObsidian, { obsidianSidebarEntries } from 'starlight-obsidian'
 
 export default defineConfig({
   integrations: [
@@ -24,7 +24,13 @@ export default defineConfig({
           // configFolder: '.custom-config',
         }),
       ],
-      sidebar: [{ label: 'Example Guide', link: '/guides/example/' }, obsidianSidebarGroup],
+      sidebar: [
+        { label: 'Example Guide', link: '/guides/example/' },
+        {
+          label: 'Notes',
+          items: [obsidianSidebarEntries],
+        },
+      ],
       title: 'Starlight Obsidian Example',
     }),
   ],

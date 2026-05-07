@@ -12,8 +12,8 @@
     "lint": "eslint . --cache --max-warnings=0"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.38.0",
-    "astro": "^6.0.3",
+    "@astrojs/starlight": "^0.39.0",
+    "astro": "^6.3.0",
     "sharp": "^0.34.5",
     "starlight-obsidian": "workspace:*"
   },
