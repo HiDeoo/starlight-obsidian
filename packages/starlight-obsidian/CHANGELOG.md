@@ -1,5 +1,17 @@
 # starlight-obsidian
 
+## 0.14.0
+
+### Minor Changes
+
+- [#77](https://github.com/HiDeoo/starlight-obsidian/pull/77) [`5818330`](https://github.com/HiDeoo/starlight-obsidian/commit/5818330456dd11d03f9787f4d9b6a4e68359d02d) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Adds support for Astro v7, drops support for Astro v6.
+
+  ⚠️ **BREAKING CHANGE:** The minimum supported version of Starlight is now `0.41.0`.
+
+  Please follow the [upgrade guide](https://github.com/withastro/starlight/releases/tag/%40astrojs%2Fstarlight%400.41.0) to update your project.
+
+- [#77](https://github.com/HiDeoo/starlight-obsidian/pull/77) [`5818330`](https://github.com/HiDeoo/starlight-obsidian/commit/5818330456dd11d03f9787f4d9b6a4e68359d02d) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Adds support for the Sätteri Markdown processor.
+
 ## 0.13.0
 
 ### Minor Changes
