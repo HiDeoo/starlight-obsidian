@@ -1,8 +1,7 @@
 import type { Element, ElementContent, Root } from 'hast'
-import type { Literal } from 'mdast'
 import { CONTINUE, SKIP, visit } from 'unist-util-visit'
 
-const blockIdentifierRegex = /(?<identifier> *\^(?<name>[\w-]+))$/
+import { getBlockIdentifier, getLastContentChild, isNodeWithValue } from './markdown'
 
 export function rehypeStarlightObsidian() {
   return function transformer(tree: Root) {
@@ -12,7 +11,7 @@ export function rehypeStarlightObsidian() {
       // Handle blockqoutes first as they are block which can contain paragraphs or list items and we want to hoist
       // the IDs to the blockquote element.
       if (node.tagName === 'blockquote') {
-        const lastChild = node.children.at(-1)
+        const lastChild = getLastContentChild(node.children)?.child
 
         if (
           lastChild?.type !== 'element' ||
@@ -21,15 +20,15 @@ export function rehypeStarlightObsidian() {
           return CONTINUE
         }
 
-        const lastGrandChild = lastChild.children.at(-1)
+        const lastGrandChild = getLastContentChild(lastChild.children)?.child
 
         if (lastChild.tagName === 'p') {
           return transformBlockIdentifier(node, lastGrandChild)
         } else if (lastGrandChild?.type === 'element' && lastGrandChild.tagName === 'li') {
-          return transformBlockIdentifier(node, lastGrandChild.children.at(-1))
+          return transformBlockIdentifier(node, getLastContentChild(lastGrandChild.children)?.child)
         }
       } else if (node.tagName === 'p' || node.tagName === 'li') {
-        return transformBlockIdentifier(node, node.children.at(-1))
+        return transformBlockIdentifier(node, getLastContentChild(node.children)?.child)
       }
 
       return CONTINUE
@@ -42,7 +41,7 @@ function transformBlockIdentifier(reference: Element, node: ElementContent | und
     return CONTINUE
   }
 
-  const identifier = getBlockIdentifer(node)
+  const identifier = getBlockIdentifier(node)
 
   if (!identifier) {
     return CONTINUE
@@ -53,21 +52,3 @@ function transformBlockIdentifier(reference: Element, node: ElementContent | und
 
   return SKIP
 }
-
-function isNodeWithValue(node: ElementContent | undefined): node is NodeWithValue {
-  return node !== undefined && 'value' in node
-}
-
-function getBlockIdentifer(node: NodeWithValue): { length: number; name: string } | undefined {
-  const match = blockIdentifierRegex.exec(node.value)
-  const identifier = match?.groups?.['identifier']
-  const name = match?.groups?.['name']
-
-  if (!identifier || !name) {
-    return undefined
-  }
-
-  return { length: identifier.length, name }
-}
-
-type NodeWithValue = ElementContent & Literal

@@ -1,6 +1,6 @@
 import { AstroError } from 'astro/errors'
 
-export function throwUserError(message: string, hint?: string): never {
+export function throwPluginError(message: string, hint?: string): never {
   throw new AstroError(
     message,
     hint ??

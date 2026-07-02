@@ -1,3 +1,5 @@
+import type { ElementContent } from 'hast'
+import type { Literal } from 'mdast'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { remark } from 'remark'
 import remarkFrontmatter from 'remark-frontmatter'
@@ -6,6 +8,8 @@ import remarkMath from 'remark-math'
 import { VFile } from 'vfile'
 
 import { remarkStarlightObsidian, type TransformContext } from './remark'
+
+const blockIdentifierRegex = /(?<identifier> *\^(?<name>[\w-]+))$/
 
 let processor: ReturnType<typeof remark> | undefined
 
@@ -49,9 +53,34 @@ function getVFile(filePath: string, markdown: string, context: TransformContext)
   })
 }
 
+export function isNodeWithValue(node: ElementContent | undefined): node is NodeWithValue {
+  return node !== undefined && 'value' in node
+}
+
+export function getBlockIdentifier(node: NodeWithValue): { length: number; name: string } | undefined {
+  const match = blockIdentifierRegex.exec(node.value)
+  const identifier = match?.groups?.['identifier']
+  const name = match?.groups?.['name']
+
+  if (!identifier || !name) {
+    return undefined
+  }
+
+  return { length: identifier.length, name }
+}
+
+export function getLastContentChild(children: ElementContent[]) {
+  const index = children.findLastIndex((child) => child.type !== 'text' || child.value.trim().length > 0)
+  if (index === -1) return undefined
+
+  return { child: children[index], index }
+}
+
 interface TransformResult {
   aliases: string[] | undefined
   content: string
   skip: boolean
   type: 'markdown' | 'mdx'
 }
+
+export type NodeWithValue = ElementContent & Literal

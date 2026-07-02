@@ -9,9 +9,9 @@ import yaml from 'yaml'
 
 import type { StarlightObsidianConfig } from '..'
 
+import { throwPluginError } from './error'
 import { isDirectory, isFile } from './fs'
 import { getExtension, isAnchor, slashify, slugifyPath, stripExtension } from './path'
-import { throwUserError } from './plugin'
 import { isAssetFile } from './starlight'
 
 const obsidianAppConfigSchema = z.object({
@@ -48,11 +48,11 @@ export async function getVault(config: StarlightObsidianConfig): Promise<Vault> 
   const vaultPath = path.resolve(config.vault)
 
   if (!(await isDirectory(vaultPath))) {
-    throwUserError(`The provided vault path is not a directory.\n> Provided path: ${vaultPath}`)
+    throwPluginError(`The provided vault path is not a directory.\n> Provided path: ${vaultPath}`)
   }
 
   if (!(await isVaultDirectory(config, vaultPath))) {
-    throwUserError(
+    throwPluginError(
       `The provided vault path is not a valid Obsidian vault directory and does not include an '.obsidian/app.json' file.\n> Provided path: ${vaultPath}`,
     )
   }

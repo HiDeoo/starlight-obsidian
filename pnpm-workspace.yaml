@@ -10,3 +10,5 @@ allowBuilds:
 
 # Prevent installing packages published in the last 3 days.
 minimumReleaseAge: 4320
+minimumReleaseAgeExclude:
+  - '@astrojs/starlight'

@@ -4,10 +4,10 @@ import type { StarlightPlugin, StarlightUserConfig } from '@astrojs/starlight/ty
 import type { AstroIntegrationLogger } from 'astro'
 import { z } from 'astro/zod'
 
+import { throwPluginError } from './libs/error'
 import { starlightObsidianIntegration } from './libs/integration'
 import { getObsidianPaths, getVault } from './libs/obsidian'
 import { stripLeadingAndTrailingSlashes } from './libs/path'
-import { throwUserError } from './libs/plugin'
 import {
   addObsidianFiles,
   getSidebarEntriesPlaceholder,
@@ -158,7 +158,7 @@ function makeStarlightObsidianPlugin(
       })
 
       if (isUsingRemovedSidebarGroupConfig) {
-        throwUserError(
+        throwPluginError(
           'The `sidebar.label` and `sidebar.collapsed` options have been removed.',
           'Create a group in your Starlight sidebar configuration, set the `label` and `collapsed` options on that group, and add `obsidianSidebarEntries` to its `items` array.\nFor more information see https://starlight.astro.build/guides/sidebar/#groups',
         )
@@ -169,13 +169,13 @@ function makeStarlightObsidianPlugin(
       )
 
       if (isUsingDeprecatedCopyStarlightFrontmatter) {
-        throwUserError(
+        throwPluginError(
           'The `copyStarlightFrontmatter` option has been deprecated in favor of the `copyFrontmatter` option.',
           'For more information see https://starlight-obsidian.vercel.app/configuration/#copyfrontmatter',
         )
       }
 
-      throwUserError(
+      throwPluginError(
         `Invalid starlight-obsidian configuration:
 
 ${z.prettifyError(parsedConfig.error)}
@@ -231,7 +231,7 @@ ${z.prettifyError(parsedConfig.error)}
             } catch (error) {
               logger.error(error instanceof Error ? error.message : String(error))
 
-              throwUserError(`Failed to generate Starlight pages from Obsidian vault at '${config.vault}'.`)
+              throwPluginError(`Failed to generate Starlight pages from Obsidian vault at '${config.vault}'.`)
             }
           }
 

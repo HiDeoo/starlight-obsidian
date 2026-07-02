@@ -23,6 +23,7 @@
   "dependencies": {
     "@astro-community/astro-embed-twitter": "^0.5.11",
     "@astro-community/astro-embed-youtube": "^0.5.10",
+    "@nullpinter/satteri-katex": "^0.1.2",
     "decode-uri-component": "^0.4.1",
     "github-slugger": "^2.0.0",
     "globby": "^16.1.1",
@@ -39,6 +40,7 @@
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
+    "satteri": "^0.9.3",
     "unist-util-visit": "^5.1.0",
     "vfile": "^6.0.3",
     "yaml": "^2.8.2"
@@ -52,7 +54,7 @@
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "@astrojs/starlight": ">=0.39.0"
+    "@astrojs/starlight": ">=0.41.0"
   },
   "engines": {
     "node": ">=22.12.0"
