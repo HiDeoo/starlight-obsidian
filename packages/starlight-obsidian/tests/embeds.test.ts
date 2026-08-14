@@ -189,3 +189,24 @@ test('applies transformers to embedded notes', async () => {
     "
   `)
 })
+
+test.for(linkSyntaxAndFormats)(
+  'rebases embeds relative to the configured root in %s with the %s format',
+  async ([syntax, format]) => {
+    const fixtureName = `links-${syntax}-${format}`
+
+    const vault = await getVault(getFixtureConfig(fixtureName, { root: 'folder' }))
+    const paths = await getObsidianPaths(vault)
+    const files = getObsidianVaultFiles(vault, paths)
+
+    const result = await transformFixtureMdFile(fixtureName, 'folder/embeds in folder.md', {
+      context: { copyFrontmatter: 'none', files, output: 'notes', singleDollarTextMath: true, vault },
+    })
+
+    expect(result.content).toMatch('../../../assets/notes/an-image-in-folder.png')
+    expect(result.content).toMatch('../../../assets/notes/nested-folder/an-image-in-nested-folder.png')
+    expect(result.content).toMatch('<audio class="sl-obs-embed-audio" controls src="/notes/A sound.mp3"></audio>')
+
+    expect(result.content).toMatch('<strong>unique file name</strong>')
+  },
+)

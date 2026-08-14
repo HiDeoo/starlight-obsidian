@@ -3,6 +3,7 @@ import path from 'node:path'
 
 import twitterMatcher from '@astro-community/astro-embed-twitter/matcher'
 import youtubeMatcher from '@astro-community/astro-embed-youtube/matcher'
+import decodeUriComponent from 'decode-uri-component'
 import { toHtml } from 'hast-util-to-html'
 import isAbsoluteUrl from 'is-absolute-url'
 import type {
@@ -209,20 +210,19 @@ function handleReplacements(tree: Root, file: VFile) {
 
           switch (file.data.vault.options.linkFormat) {
             case 'relative': {
-              fileUrl = getFileUrl(file.data.output, getRelativeFilePath(file, urlPath), urlAnchor)
+              const matchingFile = getVaultFile(file, urlPath)
+              fileUrl = getFileUrl(
+                file.data.output,
+                matchingFile?.slug ?? getRelativeFilePath(file, urlPath),
+                urlAnchor,
+              )
               break
             }
             case 'absolute':
             case 'shortest': {
-              const matchingFile = file.data.files.find(
-                (vaultFile) => vaultFile.isEqualStem(urlPath) || vaultFile.isEqualFileName(urlPath),
-              )
+              const matchingFile = getVaultFile(file, urlPath)
 
-              fileUrl = getFileUrl(
-                file.data.output,
-                matchingFile ? getFilePathFromVaultFile(matchingFile, urlPath) : urlPath,
-                urlAnchor,
-              )
+              fileUrl = getFileUrl(file.data.output, matchingFile?.slug ?? urlPath, urlAnchor)
               break
             }
           }
@@ -281,25 +281,14 @@ function handleLinks(node: Link, { file }: VisitorContext) {
     return SKIP
   }
 
-  const url = path.basename(decodeURIComponent(node.url))
-  const [urlPath, urlAnchor] = extractPathAndAnchor(url)
-  const matchingFile = file.data.files.find((vaultFile) => vaultFile.isEqualFileName(urlPath))
+  const [urlPath, urlAnchor] = extractPathAndAnchor(node.url)
+  const matchingFile = getVaultFile(file, urlPath)
 
   if (!matchingFile) {
     return SKIP
   }
 
-  switch (file.data.vault.options.linkFormat) {
-    case 'relative': {
-      node.url = getFileUrl(file.data.output, getRelativeFilePath(file, node.url), urlAnchor)
-      break
-    }
-    case 'absolute':
-    case 'shortest': {
-      node.url = getFileUrl(file.data.output, getFilePathFromVaultFile(matchingFile, node.url), urlAnchor)
-      break
-    }
-  }
+  node.url = getFileUrl(file.data.output, matchingFile.slug, urlAnchor)
 
   return SKIP
 }
@@ -335,25 +324,21 @@ async function handleImages(node: Image, context: VisitorContext) {
   let fileUrl = node.url
 
   if (!node.data?.isAssetResolved) {
+    const matchingFile = getVaultFile(file, node.url)
+
     switch (file.data.vault.options.linkFormat) {
       case 'relative': {
-        fileUrl = getFileUrl(file.data.output, getRelativeFilePath(file, node.url))
+        fileUrl = getFileUrl(file.data.output, matchingFile?.slug ?? getRelativeFilePath(file, node.url))
         break
       }
       case 'absolute': {
-        fileUrl = getFileUrl(file.data.output, slugifyObsidianPath(node.url))
+        fileUrl = getFileUrl(file.data.output, matchingFile?.slug ?? slugifyObsidianPath(node.url))
         break
       }
       case 'shortest': {
-        const url = path.basename(decodeURIComponent(node.url))
-        const [urlPath] = extractPathAndAnchor(url)
-        const matchingFile = file.data.files.find((vaultFile) => vaultFile.isEqualFileName(urlPath))
-
-        if (!matchingFile) {
-          break
+        if (matchingFile) {
+          fileUrl = getFileUrl(file.data.output, matchingFile.slug)
         }
-
-        fileUrl = getFileUrl(file.data.output, getFilePathFromVaultFile(matchingFile, node.url))
         break
       }
     }
@@ -565,11 +550,37 @@ function getRelativeFilePath(file: VFile, relativePath: string) {
 function getAssetPath(file: VFile, relativePath: string) {
   ensureTransformContext(file)
 
-  return path.posix.join('../../..', path.posix.relative(file.dirname, file.data.vault.path), 'assets', relativePath)
+  return path.posix.join(
+    '../../..',
+    path.posix.relative(file.dirname, file.data.vault.rootPath),
+    'assets',
+    relativePath,
+  )
 }
 
-function getFilePathFromVaultFile(vaultFile: VaultFile, url: string) {
-  return vaultFile.uniqueFileName ? vaultFile.slug : slugifyObsidianPath(url)
+function getVaultFile(file: VFile, url: string) {
+  ensureTransformContext(file)
+
+  const [urlPath] = extractPathAndAnchor(decodeUriComponent(url))
+
+  const vaultPath =
+    file.data.vault.options.linkFormat === 'relative'
+      ? getObsidianRelativePath(file.data.vault, path.resolve(file.dirname, urlPath))
+      : path.posix.join('/', urlPath)
+
+  const matchingFile = file.data.files.find(
+    (vaultFile) =>
+      vaultFile.vaultPath === vaultPath ||
+      (vaultFile.type === 'content' && getExtension(vaultPath) === '' && vaultFile.vaultPath === `${vaultPath}.md`),
+  )
+
+  if (matchingFile || file.data.vault.options.linkFormat !== 'shortest' || path.basename(urlPath) !== urlPath) {
+    return matchingFile
+  }
+
+  const fileName = path.basename(urlPath)
+
+  return file.data.files.find((vaultFile) => vaultFile.isEqualStem(fileName) || vaultFile.isEqualFileName(fileName))
 }
 
 function isMarkdownFile(filePath: string, file: VFile) {
@@ -670,16 +681,7 @@ async function getMarkdownFileNode(file: VFile, fileUrl: string): Promise<RootCo
 
   const [fileName, ...anchorSegments] = fileUrl.split('#')
   const fileAnchor = anchorSegments.join('#')
-  const fileExt = file.data.vault.options.linkSyntax === 'wikilink' ? '.md' : ''
-  const filePath = decodeURIComponent(
-    file.data.vault.options.linkFormat === 'relative'
-      ? getRelativeFilePath(file, fileName ?? fileUrl)
-      : (fileName ?? fileUrl),
-  )
-  const url = path.posix.join(path.posix.sep, `${filePath}${fileExt}`)
-  const matchingFile = file.data.files.find(
-    (vaultFile) => vaultFile.path === url || vaultFile.isEqualStem(filePath) || vaultFile.isEqualFileName(filePath),
-  )
+  const matchingFile = getVaultFile(file, fileName ?? fileUrl)
 
   if (!matchingFile) {
     return { type: 'text', value: '' }

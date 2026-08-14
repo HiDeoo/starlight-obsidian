@@ -42,6 +42,7 @@ The absolute or relative path to the Obsidian vault to publish.
 
 A list of [glob patterns](https://github.com/mrmlnc/fast-glob#basic-syntax) to ignore when generating the Obsidian vault pages.
 This option can be used to ignore [files](https://help.obsidian.md/Files+and+folders/Accepted+file+formats) or folders.
+Patterns are resolved relative to the [`root`](#root) directory.
 
 ### `output`
 
@@ -49,6 +50,14 @@ This option can be used to ignore [files](https://help.obsidian.md/Files+and+fol
 **Default:** `'notes'`
 
 The name of the output directory containing the generated Obsidian vault pages relative to the `src/content/docs/` directory.
+
+### `root`
+
+**Type:** `string`  
+**Default:** `'.'`
+
+The path to a directory inside the Obsidian vault to publish.
+Only files inside this directory are published, so links and embeds to files outside of it will not work.
 
 ### `skipGeneration`
 

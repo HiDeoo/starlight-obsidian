@@ -31,6 +31,7 @@ export function getFixtureConfig(
     skipGeneration: false,
     tableOfContentsOverview: 'default',
     output: 'notes',
+    root: '.',
     sidebar: {
       collapsedFolders: false,
     },
@@ -72,7 +73,7 @@ export async function transformFixtureMdFile(
         slug: slug(stripExtension(filePath)),
         stem: stripExtension(fileName),
         type: 'content',
-        uniqueFileName: true,
+        vaultPath: path.posix.join('/', filePath),
       }),
     ],
     output: options.context?.output ?? 'notes',
@@ -80,6 +81,7 @@ export async function transformFixtureMdFile(
     vault: options.context?.vault ?? {
       options: { linkFormat: 'shortest', linkSyntax: 'wikilink' },
       path: slashify(fixturePath),
+      rootPath: slashify(fixturePath),
     },
   })
 

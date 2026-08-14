@@ -161,10 +161,49 @@ test('formats link URLs', async () => {
   }
 })
 
+test('supports literal percent signs in wikilinks', async () => {
+  const result = await transformFixtureMdFile('basics', 'Test special % characters.md')
+
+  expect(result.content).toBe('[Test special % characters](/notes/test-special--characters)\n')
+})
+
 test('uses resource links instead of auto links', async () => {
   const result = await transformFixtureMdFile('basics', 'Internal images with dimensions.md')
 
   expect(result.content).toMatch(
     /^Link to \[https:\/\/starlight.astro.build\/]\(https:\/\/starlight.astro.build\/\) which/m,
   )
+})
+
+test.for(linkSyntaxAndFormats)(
+  'rebases links relative to the configured root in %s with the %s format',
+  async ([syntax, format]) => {
+    const fixtureName = `links-${syntax}-${format}`
+
+    const vault = await getVault(getFixtureConfig(fixtureName, { root: 'folder' }))
+    const paths = await getObsidianPaths(vault)
+    const files = getObsidianVaultFiles(vault, paths)
+
+    const result = await transformFixtureMdFile(fixtureName, 'folder/file in folder 1.md', {
+      context: { copyFrontmatter: 'none', files, output: 'notes', singleDollarTextMath: true, vault },
+    })
+
+    expect(result.content).toMatch('[file in folder 2](/notes/file-in-folder-2)')
+    expect(result.content).toMatch('[file in nested folder 1](/notes/nested-folder/file-in-nested-folder-1)')
+    expect(result.content).toMatch('[A link to a file in folder](/notes/an-image-in-folder.png)')
+  },
+)
+
+test('does not redirect shortest links outside the configured root for identical file names', async () => {
+  const fixtureName = 'links-wikilink-shortest'
+
+  const vault = await getVault(getFixtureConfig(fixtureName, { root: 'folder' }))
+  const paths = await getObsidianPaths(vault)
+  const files = getObsidianVaultFiles(vault, paths)
+
+  const result = await transformFixtureMdFile(fixtureName, 'folder/link outside root.md', {
+    context: { copyFrontmatter: 'none', files, output: 'notes', singleDollarTextMath: true, vault },
+  })
+
+  expect(result.content).toBe('[private/duplicate file name](/notes/private/duplicate-file-name)\n')
 })
