@@ -1,5 +1,11 @@
 # starlight-obsidian
 
+## 0.15.0
+
+### Minor Changes
+
+- [#80](https://github.com/HiDeoo/starlight-obsidian/pull/80) [`b4a67e8`](https://github.com/HiDeoo/starlight-obsidian/commit/b4a67e8f56b415738ff850b283bad61be4151c12) Thanks [@HiDeoo](https://github.com/HiDeoo)! - Adds a `root` configuration option to publish a specific directory inside an Obsidian vault.
+
 ## 0.14.0
 
 ### Minor Changes
