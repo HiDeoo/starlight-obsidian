@@ -57,27 +57,32 @@ export async function getVault(config: StarlightObsidianConfig): Promise<Vault> 
     )
   }
 
+  const rootPath = path.resolve(vaultPath, config.root)
+
+  if (!(await isDirectory(rootPath))) {
+    throwPluginError(`The provided \`root\` path is not a directory.\n> Provided path: ${rootPath}`)
+  }
+
   const options = await getVaultOptions(config, vaultPath)
 
   return {
     options,
     path: slashify(vaultPath),
+    rootPath: slashify(rootPath),
   }
 }
 
 export function getObsidianPaths(vault: Vault, ignore: StarlightObsidianConfig['ignore'] = []) {
   return globby(['**/*.md', ...[...fileFormats].map((fileFormat) => `**/*${fileFormat}`)], {
     absolute: true,
-    cwd: vault.path,
+    cwd: vault.rootPath,
     ignore,
   })
 }
 
 export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): VaultFile[] {
-  const allFileNames = obsidianPaths.map((obsidianPath) => path.basename(obsidianPath))
-
-  return obsidianPaths.map((obsidianPath, index) => {
-    const baseFileName = allFileNames[index] as string
+  return obsidianPaths.map((obsidianPath) => {
+    const baseFileName = path.basename(obsidianPath)
     let fileName = baseFileName
 
     const type = isAssetFile(fileName) ? 'asset' : isObsidianFile(fileName) ? 'file' : 'content'
@@ -86,7 +91,7 @@ export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): Va
       fileName = slugifyPath(fileName)
     }
 
-    const filePath = getObsidianRelativePath(vault, obsidianPath)
+    const filePath = getObsidianRelativePath(vault, obsidianPath, vault.rootPath)
     const slug = slugifyObsidianPath(filePath)
 
     return createVaultFile({
@@ -96,13 +101,15 @@ export function getObsidianVaultFiles(vault: Vault, obsidianPaths: string[]): Va
       slug,
       stem: stripExtension(fileName),
       type,
-      uniqueFileName: allFileNames.filter((currentFileName) => currentFileName === baseFileName).length === 1,
+      vaultPath: getObsidianRelativePath(vault, obsidianPath),
     })
   })
 }
 
-export function getObsidianRelativePath(vault: Vault, obsidianPath: string) {
-  return obsidianPath.replace(vault.path, '')
+export function getObsidianRelativePath(vault: Vault, obsidianPath: string, rootPath = vault.path) {
+  const relativePath = path.isAbsolute(obsidianPath) ? path.relative(rootPath, obsidianPath) : obsidianPath
+
+  return path.posix.join('/', slashify(relativePath))
 }
 
 export function slugifyObsidianPath(obsidianPath: string) {
@@ -204,6 +211,7 @@ async function getVaultOptions(config: StarlightObsidianConfig, vaultPath: strin
 export interface Vault {
   options: VaultOptions
   path: string
+  rootPath: string
 }
 
 interface VaultOptions {
@@ -214,13 +222,14 @@ interface VaultOptions {
 interface BaseVaultFile {
   fileName: string
   fsPath: string
-  // The path is relative to the vault root.
+  // The path is relative to the `root` configuration option.
   path: string
   slug: string
   // This represent the file name without the extension.
   stem: string
   type: 'asset' | 'content' | 'file'
-  uniqueFileName: boolean
+  // The path is relative to the vault directory.
+  vaultPath: string
 }
 
 export interface VaultFile extends BaseVaultFile {

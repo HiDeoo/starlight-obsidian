@@ -15,6 +15,7 @@ By adding and setting the `publish` property to `false` in Obsidian, the associa
 
 The Starlight Obsidian plugin [`ignore` configuration option](/configuration/#ignore) can be used to ignore content from being published.
 This option accepts a list of [glob patterns](https://github.com/mrmlnc/fast-glob#basic-syntax) to ignore when generating the Obsidian vault pages.
+The patterns are relative to the configured [`root`](/configuration/#root) directory.
 
 The example below shows various ways to ignore content using the `ignore` configuration option.
 

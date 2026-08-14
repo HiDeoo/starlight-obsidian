@@ -11,6 +11,20 @@ test('returns a vault with an absolute path', async () => {
 
   expect(path.isAbsolute(vault.path)).toBe(true)
   expect(vault.path).toMatch(/fixtures[/\\]basics$/)
+  expect(vault.rootPath).toBe(vault.path)
+})
+
+test('resolves the configured root relative to the vault', async () => {
+  const vault = await getVault(getFixtureConfig('links-markdown-absolute', { root: './folder' }))
+
+  expect(vault.path).toMatch(/fixtures[/\\]links-markdown-absolute$/)
+  expect(vault.rootPath).toMatch(/fixtures[/\\]links-markdown-absolute[/\\]folder$/)
+})
+
+test('rejects a root that is not a valid directory', async () => {
+  await expect(getVault(getFixtureConfig('basics', { root: 'missing' }))).rejects.toThrowError(
+    /The provided `root` path is not a directory/,
+  )
 })
 
 test('throws if the specified vault path is not a directory', async () => {

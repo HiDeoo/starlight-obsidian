@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto'
+import path from 'node:path'
 
 import type { StarlightPlugin, StarlightUserConfig } from '@astrojs/starlight/types'
 import type { AstroIntegrationLogger } from 'astro'
@@ -44,7 +45,7 @@ const starlightObsidianConfigSchema = z.object({
   copyStarlightFrontmatter: z.never().optional(),
   /**
    * A list of glob patterns to ignore when generating the Obsidian vault pages.
-   * This option can be used to ignore files or folders.
+   * This option can be used to ignore files or folders and is resolved relative to {@link StarlightObsidianUserConfig.root}.
    *
    * @default []
    * @see https://github.com/mrmlnc/fast-glob#basic-syntax
@@ -82,6 +83,27 @@ const starlightObsidianConfigSchema = z.object({
       {
         error: "The `output` directory cannot be empty, '.', or start with '..'.",
       },
+    ),
+  /**
+   * The vault-relative directory to publish.
+   *
+   * @default '.'
+   */
+  root: z
+    .string()
+    .default('.')
+    .refine(
+      (value) => {
+        const normalizedRoot = path.normalize(value)
+
+        return (
+          value.length > 0 &&
+          !path.isAbsolute(value) &&
+          normalizedRoot !== '..' &&
+          !normalizedRoot.startsWith(`..${path.sep}`)
+        )
+      },
+      { error: 'The `root` path must be a non-empty relative path within the vault.' },
     ),
   /**
    * Whether the Starlight Obsidian plugin should skip the generation of the Obsidian vault pages.

@@ -1,1 +1,1 @@
-Test
+[[Test special % characters]]

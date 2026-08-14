@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises'
+import path from 'node:path'
 
 import type { AstroIntegrationLogger } from 'astro'
 import { afterAll, afterEach, expect, test, vi } from 'vitest'
@@ -166,4 +167,31 @@ test('clears custom output directories', async () => {
   expect(rmSpy).toHaveBeenNthCalledWith(1, osPath('src/assets/test'), { force: true, recursive: true })
   expect(rmSpy).toHaveBeenNthCalledWith(2, osPath('src/content/docs/test'), { force: true, recursive: true })
   expect(rmSpy).toHaveBeenNthCalledWith(3, osPath('public/test'), { force: true, recursive: true })
+})
+
+test('writes files and aliases relative to the configured root', async () => {
+  readFileSpy.mockReset()
+  readFileSpy = vi.spyOn(fs, 'readFile').mockResolvedValueOnce(`{}`).mockResolvedValue(`---
+aliases:
+  - foo
+---
+
+Test`)
+
+  const config = getFixtureConfig('links-markdown-absolute', { root: 'folder' })
+  const vault = await getVault(config)
+
+  const obsidianFiles = ['Page.md', 'Image.png', 'Document.pdf'].map((file) => path.join(vault.rootPath, file))
+
+  await addObsidianFiles(config, vault, obsidianFiles, logger)
+
+  expect(writeFileSpy).toHaveBeenCalledTimes(2)
+  expect(copyFileSpy).toHaveBeenCalledTimes(2)
+
+  expect(writeFileSpy).toHaveBeenNthCalledWith(1, osPath('src/content/docs/notes/Page.md'), expect.any(String))
+  expect(writeFileSpy).toHaveBeenNthCalledWith(2, osPath('public/notes/foo/index.html'), expect.any(String))
+  expect(writeFileSpy.mock.calls.at(1)?.[1]).toMatch(/<meta http-equiv="refresh" content="0;url=\/notes\/page">/)
+
+  expect(copyFileSpy).toHaveBeenNthCalledWith(1, obsidianFiles[1], osPath('src/assets/notes/image.png'))
+  expect(copyFileSpy).toHaveBeenNthCalledWith(2, obsidianFiles[2], osPath('public/notes/Document.pdf'))
 })

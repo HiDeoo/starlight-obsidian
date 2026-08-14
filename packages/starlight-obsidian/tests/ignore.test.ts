@@ -36,6 +36,23 @@ test('ignores the `.trash` folder', async () => {
   expect(paths).not.toContain('/.trash')
 })
 
+test('resolves ignore patterns relative to the configured root', async () => {
+  const paths = await getFixtureObsidianPaths('links-markdown-absolute', { root: 'folder', ignore: ['nested folder'] })
+
+  expect(paths.every((path) => !path.includes('/nested folder/'))).toBe(true)
+})
+
+test('returns only files inside the configured root with rebased paths', async () => {
+  const paths = await getFixtureObsidianPaths('links-markdown-absolute', { root: 'folder' })
+
+  expect(paths).not.toContain('/root 1.md')
+
+  expect(paths).toContain('/file in folder 1.md')
+  expect(paths).toContain('/nested folder/file in nested folder 1.md')
+
+  expect(paths.every((path) => !path.startsWith('/folder/'))).toBe(true)
+})
+
 async function getFixtureObsidianPaths(fixtureName: string, config: Partial<StarlightObsidianConfig> = {}) {
   const vault = await getVault(getFixtureConfig(fixtureName, config))
   const paths = await getObsidianPaths(vault, config.ignore)
