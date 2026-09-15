@@ -1,7 +1,7 @@
 import type { Element, ElementContent, Root } from 'hast'
 import { CONTINUE, SKIP, visit } from 'unist-util-visit'
 
-import { getBlockIdentifier, getLastContentChild, isNodeWithValue } from './markdown'
+import { getBlockIdentifier, getLastContentChild, isNodeWithValue, isParagraphOrListElement } from './markdown'
 
 export function rehypeStarlightObsidian() {
   return function transformer(tree: Root) {
@@ -13,10 +13,7 @@ export function rehypeStarlightObsidian() {
       if (node.tagName === 'blockquote') {
         const lastChild = getLastContentChild(node.children)?.child
 
-        if (
-          lastChild?.type !== 'element' ||
-          !(lastChild.tagName === 'p' || lastChild.tagName === 'ul' || lastChild.tagName === 'ol')
-        ) {
+        if (!isParagraphOrListElement(lastChild)) {
           return CONTINUE
         }
 
@@ -24,7 +21,9 @@ export function rehypeStarlightObsidian() {
 
         if (lastChild.tagName === 'p') {
           return transformBlockIdentifier(node, lastGrandChild)
-        } else if (lastGrandChild?.type === 'element' && lastGrandChild.tagName === 'li') {
+        }
+
+        if (lastGrandChild?.type === 'element' && lastGrandChild.tagName === 'li') {
           return transformBlockIdentifier(node, getLastContentChild(lastGrandChild.children)?.child)
         }
       } else if (node.tagName === 'p' || node.tagName === 'li') {
@@ -47,7 +46,7 @@ function transformBlockIdentifier(reference: Element, node: ElementContent | und
     return CONTINUE
   }
 
-  node.value = node.value.slice(0, identifier.length * -1)
+  node.value = node.value.slice(0, -identifier.length)
   reference.properties['id'] = `block-${identifier.name}`
 
   return SKIP

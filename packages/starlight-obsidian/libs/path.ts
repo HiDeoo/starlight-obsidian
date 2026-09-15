@@ -50,7 +50,7 @@ export function slashify(filePath: string) {
 }
 
 export function osPath(filePath: string) {
-  return filePath.replaceAll('/', path.sep)
+  return filePath.replaceAll('/', () => path.sep)
 }
 
 function stripLeadingSlash(href: string) {

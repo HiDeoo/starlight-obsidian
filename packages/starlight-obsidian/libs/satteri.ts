@@ -1,7 +1,7 @@
 import type { Element, ElementContent, Parents } from 'hast'
 import { defineHastPlugin, type HastPluginDefinition, type HastVisitorContext } from 'satteri'
 
-import { getBlockIdentifier, getLastContentChild, isNodeWithValue } from './markdown'
+import { getBlockIdentifier, getLastContentChild, isNodeWithValue, isParagraphOrListElement } from './markdown'
 
 export function satteriStarlightObsidian(): HastPluginDefinition {
   return defineHastPlugin({
@@ -12,10 +12,7 @@ export function satteriStarlightObsidian(): HastPluginDefinition {
         if (node.tagName === 'blockquote') {
           const lastChild = getLastContentChild(node.children)?.child
 
-          if (
-            lastChild?.type !== 'element' ||
-            !(lastChild.tagName === 'p' || lastChild.tagName === 'ul' || lastChild.tagName === 'ol')
-          ) {
+          if (!isParagraphOrListElement(lastChild)) {
             return
           }
 
@@ -42,7 +39,7 @@ function transformBlockIdentifier(reference: Element, node: ElementContent | und
   const identifier = getBlockIdentifier(node)
   if (!identifier) return
 
-  ctx.setProperty(node, 'value', node.value.slice(0, identifier.length * -1))
+  ctx.setProperty(node, 'value', node.value.slice(0, -identifier.length))
   ctx.setProperty(reference, 'id', `block-${identifier.name}`)
 }
 
@@ -63,10 +60,7 @@ function isInsideBlockquoteWithIdentifier(node: Element, ctx: HastVisitorContext
 function blockquoteHasIdentifier(blockquote: Element) {
   const lastChild = getLastContentChild(blockquote.children)?.child
 
-  if (
-    lastChild?.type !== 'element' ||
-    !(lastChild.tagName === 'p' || lastChild.tagName === 'ul' || lastChild.tagName === 'ol')
-  ) {
+  if (!isParagraphOrListElement(lastChild)) {
     return false
   }
 
