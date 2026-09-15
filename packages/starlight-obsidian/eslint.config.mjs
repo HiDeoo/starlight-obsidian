@@ -15,4 +15,10 @@ export default hideoo(
       '@typescript-eslint/no-empty-object-type': 'off',
     },
   },
+  {
+    files: ['tests/markdown.test.ts'],
+    rules: {
+      'unicorn/no-incorrect-template-string-interpolation': 'off',
+    },
+  },
 )

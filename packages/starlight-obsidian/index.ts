@@ -270,7 +270,8 @@ function overrideStarlightComponent(
   logger: AstroIntegrationLogger,
   component: keyof NonNullable<StarlightUserConfig['components']>,
 ) {
-  if (components?.[component]) {
+  const override = components?.[component]
+  if (override) {
     if (!overridesInjected) {
       logger.warn(
         `It looks like you already have a \`${component}\` component override in your Starlight configuration.`,

@@ -19,6 +19,8 @@ const obsidianAppConfigSchema = z.object({
   useMarkdownLinks: z.boolean().default(false),
 })
 
+const publishedValues = new Set([undefined, 'true', true])
+
 const obsidianFrontmatterSchema = z.object({
   aliases: z
     .array(z.string())
@@ -33,16 +35,16 @@ const obsidianFrontmatterSchema = z.object({
     .union([z.boolean(), z.literal('true'), z.literal('false')])
     .optional()
     .nullable()
-    .transform((publish) => publish === undefined || publish === 'true' || publish === true),
+    .transform((publish) => publish !== null && publishedValues.has(publish)),
   tags: z.array(z.string()).optional().nullable(),
 })
 
 const imageFileFormats = new Set(['.avif', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp'])
-const audioFileFormats = new Set(['.flac', '.m4a', '.mp3', '.wav', '.ogg', '.wav', '.3gp'])
+const audioFileFormats = new Set(['.flac', '.m4a', '.mp3', '.wav', '.ogg', '.3gp'])
 const videoFileFormats = new Set(['.mkv', '.mov', '.mp4', '.ogv', '.webm'])
 const otherFileFormats = new Set(['.pdf'])
 
-const fileFormats = new Set([...imageFileFormats, ...audioFileFormats, ...videoFileFormats, ...otherFileFormats])
+const fileFormats = imageFileFormats.union(audioFileFormats).union(videoFileFormats).union(otherFileFormats)
 
 export async function getVault(config: StarlightObsidianConfig): Promise<Vault> {
   const vaultPath = path.resolve(config.vault)
@@ -121,9 +123,13 @@ export function slugifyObsidianPath(obsidianPath: string) {
 
       if (!isLastSegment) {
         return slug(decodeUriComponent(segment))
-      } else if (isObsidianFile(segment) && !isAssetFile(segment)) {
+      }
+
+      if (isObsidianFile(segment) && !isAssetFile(segment)) {
         return decodeUriComponent(segment)
-      } else if (isAssetFile(segment)) {
+      }
+
+      if (isAssetFile(segment)) {
         return `${slug(decodeUriComponent(stripExtension(segment)))}${getExtension(segment)}`
       }
 
@@ -175,15 +181,17 @@ export function parseObsidianFrontmatter(content: string): ObsidianFrontmatter |
 }
 
 export function createVaultFile(baseVaultFile: BaseVaultFile) {
-  return {
+  const vaultFile = {
     ...baseVaultFile,
     isEqualFileName(otherFileName: string) {
-      return (isAssetFile(otherFileName) ? slugifyPath(otherFileName) : otherFileName) === this.fileName
+      return (isAssetFile(otherFileName) ? slugifyPath(otherFileName) : otherFileName) === vaultFile.fileName
     },
     isEqualStem(otherStem: string) {
-      return (isAssetFile(otherStem) ? slugifyPath(otherStem) : otherStem) === this.stem
+      return (isAssetFile(otherStem) ? slugifyPath(otherStem) : otherStem) === vaultFile.stem
     },
   }
+
+  return vaultFile
 }
 
 async function isVaultDirectory(config: StarlightObsidianConfig, vaultPath: string) {

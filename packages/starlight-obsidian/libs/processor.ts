@@ -13,7 +13,7 @@ export function applyMarkdownPlugin(processor: MarkdownProcessor, config: Starli
   if (isSatteriProcessor(processor)) {
     processor.options.features ??= {}
     processor.options.features.math = {
-      ...(typeof processor.options.features.math === 'object' ? processor.options.features.math : {}),
+      ...(typeof processor.options.features.math === 'object' && processor.options.features.math),
       singleDollarTextMath: config.math.singleDollarTextMath,
     }
 

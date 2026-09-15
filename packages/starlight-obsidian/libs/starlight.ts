@@ -127,10 +127,12 @@ export async function addObsidianFiles(
   let didFail = false
 
   for (const result of results) {
-    if (result.status === 'rejected') {
-      didFail = true
-      logger.error(result.reason instanceof Error ? result.reason.message : String(result.reason))
+    if (result.status !== 'rejected') {
+      continue
     }
+
+    didFail = true
+    logger.error(result.reason instanceof Error ? result.reason.message : String(result.reason))
   }
 
   if (didFail) {
@@ -150,7 +152,7 @@ export function getStarlightLikeFrontmatter(rawFrontmatter: ObsidianFrontmatter[
   const frontmatter: Record<string, unknown> = {}
 
   for (const key of starlightFrontmatterKeys) {
-    if (key in rawFrontmatter) {
+    if (Object.hasOwn(rawFrontmatter, key)) {
       frontmatter[key] = rawFrontmatter[key]
     }
   }

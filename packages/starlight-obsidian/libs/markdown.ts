@@ -1,4 +1,4 @@
-import type { ElementContent } from 'hast'
+import type { Element, ElementContent } from 'hast'
 import type { Literal } from 'mdast'
 import { fromMarkdown } from 'mdast-util-from-markdown'
 import { remark } from 'remark'
@@ -10,6 +10,8 @@ import { VFile } from 'vfile'
 import { remarkStarlightObsidian, type TransformContext } from './remark'
 
 const blockIdentifierRegex = /(?<identifier> *\^(?<name>[\w-]+))$/
+
+const paragraphOrListTagNames = new Set(['p', 'ul', 'ol'])
 
 let processor: ReturnType<typeof remark> | undefined
 
@@ -74,6 +76,10 @@ export function getLastContentChild(children: ElementContent[]) {
   if (index === -1) return undefined
 
   return { child: children[index], index }
+}
+
+export function isParagraphOrListElement(element: ElementContent | undefined): element is Element {
+  return element?.type === 'element' && paragraphOrListTagNames.has(element.tagName)
 }
 
 interface TransformResult {

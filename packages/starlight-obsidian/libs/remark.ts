@@ -59,7 +59,7 @@ export function remarkStarlightObsidian() {
   return async function transformer(tree: Root, file: VFile) {
     const obsidianFrontmatter = getObsidianFrontmatter(tree)
 
-    if (obsidianFrontmatter && obsidianFrontmatter.publish === false) {
+    if (obsidianFrontmatter && !obsidianFrontmatter.publish) {
       file.data.skip = true
       return
     }
@@ -118,13 +118,10 @@ function handleFrontmatter(tree: Root, file: VFile, obsidianFrontmatter?: Obsidi
   // Remove the existing frontmatter, if any, for embedded notes.
   if (file.data.embedded) {
     // The frontmatter is always at the root of the tree.
-    for (const [index, node] of tree.children.entries()) {
-      if (node.type !== 'yaml') {
-        continue
-      }
+    const index = tree.children.findIndex((node) => node.type === 'yaml')
 
+    if (index !== -1) {
       tree.children.splice(index, 1)
-      break
     }
 
     return
@@ -510,11 +507,11 @@ function getFrontmatterNodeValue(file: VFile, obsidianFrontmatter?: ObsidianFron
   if (ogImage && isAbsoluteUrl(ogImage)) {
     frontmatter.head ??= []
 
-    if (!frontmatter.head.some((tag) => tag.attrs['property'] === 'og:image')) {
+    if (frontmatter.head.every((tag) => tag.attrs['property'] !== 'og:image')) {
       frontmatter.head.push({ tag: 'meta', attrs: { property: 'og:image', content: ogImage } })
     }
 
-    if (!frontmatter.head.some((tag) => tag.attrs['property'] === 'twitter:image')) {
+    if (frontmatter.head.every((tag) => tag.attrs['property'] !== 'twitter:image')) {
       frontmatter.head.push({ tag: 'meta', attrs: { name: 'twitter:image', content: ogImage } })
     }
   }
@@ -663,7 +660,9 @@ function getCustomFileNode(filePath: string): RootContent {
       type: 'html',
       value: `<audio class="sl-obs-embed-audio" controls src="${filePath}"></audio>`,
     }
-  } else if (isObsidianFile(filePath, 'video')) {
+  }
+
+  if (isObsidianFile(filePath, 'video')) {
     return {
       type: 'html',
       value: `<video class="sl-obs-embed-video" controls src="${filePath}"></video>`,
